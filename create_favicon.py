@@ -23,35 +23,9 @@ def create_favicon():
     emblem = emblem_raw.crop(bbox)
     print(f"Cropped emblem size: {emblem.size}")
     
-    # 3. Create a 512x512 canvas for the favicon
+    # 3. Create a 512x512 canvas for the favicon with transparent background
     canvas_size = 512
-    # Navy blue base color matching the site theme: #05070c
-    base_color = (5, 7, 12, 255)
-    canvas = Image.new('RGBA', (canvas_size, canvas_size), base_color)
-    
-    # 4. Create a premium radial glow in the center
-    # We will generate a soft cyan/blue radial gradient
-    glow_layer = Image.new('RGBA', (canvas_size, canvas_size), (0, 0, 0, 0))
-    draw = ImageDraw.Draw(glow_layer)
-    
-    # Draw concentric circles with decreasing opacity to simulate a glow
-    center_x, center_y = canvas_size // 2, canvas_size // 2
-    max_radius = 220
-    glow_color = (0, 240, 255) # Cyan
-    
-    for r in range(max_radius, 0, -2):
-        # Opacity curve: stronger in center, fading to edges
-        ratio = 1.0 - (r / max_radius)
-        opacity = int((ratio ** 2.5) * 55) # Max opacity of 55 (approx 21%)
-        color = glow_color + (opacity,)
-        draw.ellipse(
-            [center_x - r, center_y - r, center_x + r, center_y + r],
-            fill=color
-        )
-        
-    # Apply a light Gaussian blur to smooth the gradient
-    glow_layer = glow_layer.filter(ImageFilter.GaussianBlur(10))
-    canvas = Image.alpha_composite(canvas, glow_layer)
+    canvas = Image.new('RGBA', (canvas_size, canvas_size), (0, 0, 0, 0))
     
     # 5. Resize the emblem to fit beautifully in the center (target width/height around 340px)
     target_max = 320
