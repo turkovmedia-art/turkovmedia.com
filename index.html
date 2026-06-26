@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>מנדי טורקוב | יוצר סרטים, צלם ועורך וידאו</title>
+    
+    <!-- Meta tags for SEO -->
+    <meta name="description" content="תיק עבודות יוקרתי של מנדי טורקוב - יוצר סרטים, צלם ועורך וידאו. מתמחה ביצירת תוכן קולנועי, פרסומות, קליפים וסרטוני AI ברמה הגבוהה ביותר.">
+    <meta name="keywords" content="מנדי טורקוב, עריכת וידאו, צלם, יוצר סרטים, פרסומות, קליפים, וידאו AI, תיק עבודות, וידאוגרף, עריכה מקצועית">
+    <meta name="author" content="מנדי טורקוב">
+    
+    <!-- Google Fonts: Assistant (Hebrew) and Outfit (English/Numbers) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@200;300;400;600;700;800&family=Outfit:wght@100;300;400;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome for Premium Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Header & Navigation -->
+    <header class="main-header">
+        <div class="header-container">
+            <div class="logo">
+                <a href="#hero">
+                    <img src="assets/logo-dark-bg.png" alt="מנדי טורקוב הפקות מולטימדיה" id="header-logo">
+                </a>
+            </div>
+            
+            <!-- Mobile Menu Toggle Button -->
+            <button class="mobile-menu-toggle" id="menuToggle" aria-label="פתח תפריט">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+            
+            <nav class="nav-menu" id="navMenu">
+                <ul>
+                    <li><a href="#hero" class="nav-link active">בית</a></li>
+                    <li><a href="#about" class="nav-link">אודות</a></li>
+                    <li><a href="#services" class="nav-link">שירותים</a></li>
+                    <li><a href="#portfolio" class="nav-link">תיק עבודות</a></li>
+                    <li><a href="#contact" class="nav-link">צרו קשר</a></li>
+                </ul>
+            </nav>
+            
+            <div class="header-cta">
+                <a href="#contact" class="btn btn-primary btn-sm">בואו נדבר</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section id="hero" class="hero-section">
+        <div class="hero-overlay"></div>
+        <div class="hero-container">
+            <div class="hero-content">
+                <span class="hero-tagline animate-fade-in">הדמיון שלכם. המציאות שלנו!</span>
+                <div class="hero-logo-container animate-slide-up">
+                    <img src="assets/logo-dark-bg.png" alt="מנדי טורקוב הפקות מולטימדיה" class="hero-logo">
+                </div>
+                <p class="hero-subtitle animate-slide-up-delay">
+                    יוצר סרטים | צלם | עורך וידאו מתקדם
+                </p>
+                <div class="hero-actions animate-slide-up-delay-more">
+                    <a href="#portfolio" class="btn btn-primary btn-lg">
+                        <i class="fa-solid fa-play"></i> צפו בעבודות
+                    </a>
+                    <a href="#contact" class="btn btn-secondary btn-lg">בואו נדבר</a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Animated Scroll Down Indicator -->
+        <a href="#about" class="scroll-indicator" aria-label="גלול מטה אודותיי">
+            <span class="mouse">
+                <span class="wheel"></span>
+            </span>
+            <span class="touch-indicator">
+                <i class="fa-solid fa-chevron-down chevron-1"></i>
+                <i class="fa-solid fa-chevron-down chevron-2"></i>
+            </span>
+            <span class="arrow-down"></span>
+        </a>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="about-section">
+        <div class="section-glow"></div>
+        <div class="container">
+            <div class="about-grid">
+                
+                <!-- Client Logos Ticker Column (The Box) -->
+                <div class="about-visual scroll-reveal-left">
+                    <h3 class="clients-box-title">הגופים והמותגים שבחרו בנו:</h3>
+                    <div class="logos-marquee-wrapper">
+                        <!-- Row 1: moves left -->
+                        <div class="marquee-row marquee-left">
+                            <div class="marquee-track" id="marquee-track-1"></div>
+                        </div>
+                        <!-- Row 2: moves right -->
+                        <div class="marquee-row marquee-right">
+                            <div class="marquee-track" id="marquee-track-2"></div>
+                        </div>
+                        <!-- Row 3: moves left -->
+                        <div class="marquee-row marquee-left">
+                            <div class="marquee-track" id="marquee-track-3"></div>
+                        </div>
+                        <!-- Row 4: moves right -->
+                        <div class="marquee-row marquee-right">
+                            <div class="marquee-track" id="marquee-track-4"></div>
+                        </div>
+                        <!-- Row 5: moves left -->
+                        <div class="marquee-row marquee-left">
+                            <div class="marquee-track" id="marquee-track-5"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Text / Bio Column -->
+                <div class="about-text scroll-reveal-right">
+                    <span class="section-tag">מי אני</span>
+                    <h2 class="section-title">יוצרים מציאות דרך העדשה</h2>
+                    <p class="about-bio">שלום, אני מנדי טורקוב.</p>
+                    <p class="about-bio-detail">
+                        יוצר סרטים, צלם שטח ואוויר, ועורך וידאו, המתמחה ביצירת תוכן קולנועי, פרסומות, קליפים וסרטוני רשת שמשאירים חותם. אני משלב צילום קרקעי ואווירי מתקדם (רחפן), עריכה קולנועית וטכנולוגיות AI כדי להפוך כל רעיון ליצירה ויזואלית סוחפת ויוצאת דופן. ברוכים הבאים לתיק העבודות שלי.
+                    </p>
+                    
+                    <!-- Stats Grid -->
+                    <div class="stats-grid" id="stats-section">
+                        <div class="stat-item">
+                            <div class="stat-number" data-target="1000">0</div>
+                            <div class="stat-label">עבודות שהושלמו</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number" data-target="7">0</div>
+                            <div class="stat-label">שנות ניסיון</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number" data-target="100">0</div>
+                            <div class="stat-label">לקוחות מרוצים %</div>
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+    </section>
+
+    <!-- Services / Expertise Section -->
+    <section id="services" class="services-section">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">מה אני עושה</span>
+                <h2 class="section-title">תחומי התמחות</h2>
+                <p class="section-desc">פתרונות וידאו מקיפים משלב הרעיון ועד לתוצר המוגמר ברמה הקולנועית הגבוהה ביותר.</p>
+            </div>
+            
+            <div class="services-grid">
+                
+                <!-- Service 1: Cinematic Filming -->
+                <div class="service-card scroll-reveal">
+                    <div class="service-icon-box">
+                        <i class="fa-solid fa-camera-retro"></i>
+                    </div>
+                    <h3 class="service-title">צילום קולנועי</h3>
+                    <p class="service-text">צילום שטח וסטודיו ברמה הגבוהה ביותר, שימוש בציוד מתקדם, עדשות קולנועיות ותאורה יצירתית לבניית קומפוזיציות עוצרות נשימה.</p>
+                </div>
+                
+                <!-- Service 2: Advanced Editing -->
+                <div class="service-card scroll-reveal">
+                    <div class="service-icon-box">
+                        <i class="fa-solid fa-sliders"></i>
+                    </div>
+                    <h3 class="service-title">עריכת וידאו מתקדמת</h3>
+                    <p class="service-text">קאטים דינמיים, תיקוני צבע ועיבוד צבע קולנועי (Color Grading), עריכת סאונד קולנועית (Sound Design), קצב וסגנון המותאמים למותג.</p>
+                </div>
+                
+                <!-- Service 3: Drone & Aerial Filming -->
+                <div class="service-card scroll-reveal">
+                    <div class="service-icon-box">
+                        <svg class="custom-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 1.8rem; height: 1.8rem;">
+                            <!-- Central body -->
+                            <circle cx="12" cy="12" r="3" />
+                            <circle cx="12" cy="12" r="1" fill="currentColor" />
+                            <!-- Arms -->
+                            <path d="M9.5 9.5L5 5" />
+                            <path d="M14.5 9.5L19 5" />
+                            <path d="M9.5 14.5L5 19" />
+                            <path d="M14.5 14.5L19 19" />
+                            <!-- Rotors / Motors -->
+                            <circle cx="5" cy="5" r="1.5" />
+                            <circle cx="19" cy="5" r="1.5" />
+                            <circle cx="5" cy="19" r="1.5" />
+                            <circle cx="19" cy="19" r="1.5" />
+                            <!-- Blades -->
+                            <path d="M3 5h4" />
+                            <path d="M17 5h4" />
+                            <path d="M3 19h4" />
+                            <path d="M17 19h4" />
+                        </svg>
+                    </div>
+                    <h3 class="service-title">צילום רחפן ואווירי</h3>
+                    <p class="service-text">צילום אווירי מתקדם ברזולוציה גבוהה (4K/5K), יצירת שוטים מרהיבים ממעוף הציפור, תנועות מצלמה מורכבות ומדויקות התורמות למימד קולנועי ועוצר נשימה לכל פרויקט.</p>
+                </div>
+                
+                <!-- Service 4: AI & Future Tech -->
+                <div class="service-card scroll-reveal">
+                    <div class="service-icon-box">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i>
+                    </div>
+                    <h3 class="service-title">טכנולוגיות AI מתקדמות</h3>
+                    <p class="service-text">שילוב כלי בינה מלאכותית ליצירת אפקטים מורכבים, שיפור תמונה וסאונד, יצירת אלמנטים ויזואליים חדשניים ופתרונות עריכה מהדור הבא.</p>
+                </div>
+                
+            </div>
+        </div>
+    </section>
+
+    <!-- Portfolio Gallery Section -->
+    <section id="portfolio" class="portfolio-section">
+        <div class="section-glow"></div>
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">עבודות נבחרות</span>
+                <h2 class="section-title">תיק עבודות</h2>
+                <p class="section-desc">הצצה לכמה מהפרויקטים שהובלתי. לחיצה על כל פרויקט תפתח את הסרטון לצפייה מהירה.</p>
+            </div>
+            
+            <!-- Category Filter Buttons -->
+            <div class="portfolio-filters" id="portfolio-filters">
+                <!-- Loaded dynamically by JS -->
+            </div>
+            
+            <!-- Video Grid -->
+            <div class="portfolio-grid" id="portfolio-grid">
+                <!-- Video items will be loaded dynamically by script.js -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="contact-section">
+        <div class="container">
+            <div class="contact-grid">
+                
+                <!-- Contact info -->
+                <div class="contact-info scroll-reveal-left">
+                    <span class="section-tag">בואו ניצור משהו מטורף</span>
+                    <h2 class="section-title">מוכנים להתחיל בפרויקט הבא?</h2>
+                    <p class="contact-desc">
+                        צרו איתי קשר לתיאום פגישה, הזמנת עבודה או סתם כדי להתייעץ על הרעיון הבא שלכם.
+                    </p>
+                    
+                    <div class="contact-methods">
+                        <a href="https://wa.me/972548010231" target="_blank" class="contact-method-item whatsapp">
+                            <div class="method-icon">
+                                <i class="fa-brands fa-whatsapp"></i>
+                            </div>
+                            <div class="method-details">
+                                <span class="method-label">וואטסאפ מהיר</span>
+                                <span class="method-value">לחצו לשליחת הודעה</span>
+                            </div>
+                        </a>
+                        
+                        <a href="tel:+972548010231" class="contact-method-item">
+                            <div class="method-icon">
+                                <i class="fa-solid fa-phone"></i>
+                            </div>
+                            <div class="method-details">
+                                <span class="method-label">טלפון</span>
+                                <span class="method-value">054-801-0231</span>
+                            </div>
+                        </a>
+                        
+                        <a href="mailto:menditurk@gmail.com" class="contact-method-item">
+                            <div class="method-icon">
+                                <i class="fa-solid fa-envelope"></i>
+                            </div>
+                            <div class="method-details">
+                                <span class="method-label">אימייל</span>
+                                <span class="method-value">menditurk@gmail.com</span>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Contact Form -->
+                <div class="contact-form-box scroll-reveal-right">
+                    <form id="contact-form" class="contact-form">
+                        <h3 class="form-title">שלחו לי הודעה</h3>
+                        
+                        <div class="form-group">
+                            <label for="name">שם מלא</label>
+                            <input type="text" id="name" required placeholder="ישראל ישראלי">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="phone">טלפון ליצירת קשר</label>
+                            <input type="tel" id="phone" required placeholder="050-1234567">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="email">כתובת אימייל</label>
+                            <input type="email" id="email" required placeholder="name@example.com">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="message">פרטים על הפרויקט</label>
+                            <textarea id="message" rows="4" required placeholder="ספרו לי על הפרויקט שלכם... (סוג הסרטון, אורך משוער, לוח זמנים וכדומה)"></textarea>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary btn-block">
+                            שליחת הודעה <i class="fa-solid fa-paper-plane"></i>
+                        </button>
+                    </form>
+                </div>
+                
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="main-footer">
+        <div class="container">
+            <div class="footer-bottom">
+                <p id="admin-trigger-text">&copy; 2026 מנדי טורקוב הפקות מולטימדיה. כל הזכויות שמורות.</p>
+                <div class="footer-socials">
+                    <a href="#" aria-label="YouTube"><i class="fa-brands fa-youtube"></i></a>
+                    <a href="#" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+                    <a href="#" aria-label="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- HTML5 Video Player Dialog / Modal -->
+    <dialog id="videoDialog" class="video-dialog">
+        <div class="dialog-content">
+            <button class="dialog-close" id="closeDialog" aria-label="סגור נגן">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <div class="video-container" id="dialogVideoContainer">
+                <!-- Iframe or Video Tag will be injected here -->
+            </div>
+            <div class="dialog-info">
+                <h3 id="dialogVideoTitle" class="dialog-video-title">שם הסרטון</h3>
+                <p id="dialogVideoDesc" class="dialog-video-desc">תיאור קצר של הסרטון</p>
+            </div>
+        </div>
+    </dialog>
+
+    <!-- Admin Auth Dialog -->
+    <dialog id="adminAuthDialog" class="admin-dialog">
+        <div class="admin-dialog-card">
+            <button class="admin-dialog-close" id="closeAdminAuth" aria-label="סגור">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <h3 class="admin-title">קוד גישה למנהל</h3>
+            <p class="admin-subtitle">הזן את קוד הגישה כדי לפתוח את פאנל הניהול</p>
+            <div class="admin-input-group">
+                <input type="password" id="admin-passcode" placeholder="•••••" maxlength="10" autocomplete="off">
+                <div class="error-msg" id="admin-auth-error">קוד שגוי, נסה שוב</div>
+            </div>
+            <button class="btn btn-primary btn-admin-submit" id="submitAdminAuth">כניסה</button>
+        </div>
+    </dialog>
+
+    <!-- Admin Panel Dialog -->
+    <dialog id="adminPanelDialog" class="admin-dialog admin-panel-dialog">
+        <div class="admin-dialog-card panel-card">
+            <button class="admin-dialog-close" id="closeAdminPanel" aria-label="סגור">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <h3 class="admin-title">מערכת ניהול האתר</h3>
+            
+            <div class="admin-tabs">
+                <button class="admin-tab-btn active" data-tab="tab-videos">ניהול סרטונים</button>
+                <button class="admin-tab-btn" data-tab="tab-categories">ניהול קטגוריות</button>
+                <button class="admin-tab-btn" data-tab="tab-logos">ניהול לוגואים</button>
+            </div>
+            
+            <!-- Tab: Manage Videos -->
+            <div class="admin-tab-content active" id="tab-videos">
+                <div class="admin-panel-grid">
+                    <!-- Form Column -->
+                    <div class="admin-form-col">
+                        <h4 id="admin-video-form-title">הוספת סרטון חדש</h4>
+                        <form id="admin-add-video-form" onsubmit="return false;">
+                            <input type="hidden" id="admin-video-id">
+                            <div class="form-group">
+                                <label for="admin-video-name">שם הסרטון</label>
+                                <input type="text" id="admin-video-name" placeholder="לדוגמה: פרומו כינוס השלוחים..." required>
+                            </div>
+                            <div class="form-group">
+                                <label for="admin-video-link">קישור YouTube (רגיל או Shorts)</label>
+                                <input type="url" id="admin-video-link" placeholder="https://youtu.be/... או https://youtube.com/shorts/..." required>
+                            </div>
+                            <div class="form-group">
+                                <label>תיוגים / קטגוריות</label>
+                                <div class="tags-checkbox-grid" id="admin-video-tags-container">
+                                    <!-- Rendered dynamically in JS -->
+                                </div>
+                            </div>
+                            <div class="form-actions-row">
+                                <button type="submit" class="btn btn-primary w-100" id="btn-add-video-submit">הוסף סרטון לגלריה</button>
+                                <button type="button" class="btn btn-secondary w-100" id="btn-cancel-video-edit" style="display: none; background: rgba(255,255,255,0.05); margin-top: 10px;">ביטול עריכה</button>
+                            </div>
+                        </form>
+                    </div>
+                    <!-- List Column -->
+                    <div class="admin-list-col">
+                        <h4>רשימת כל הסרטונים באתר</h4>
+                        <div class="custom-videos-list" id="all-videos-list-container">
+                            <!-- Rendered dynamically in JS -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Tab: Manage Categories -->
+            <div class="admin-tab-content" id="tab-categories">
+                <div class="admin-panel-grid">
+                    <!-- Form Column -->
+                    <div class="admin-form-col">
+                        <h4>הוספת קטגוריה חדשה</h4>
+                        <form id="admin-add-category-form" onsubmit="return false;">
+                            <div class="form-group">
+                                <label for="admin-category-name">שם הקטגוריה בעברית</label>
+                                <input type="text" id="admin-category-name" placeholder="לדוגמה: סרטוני תדמית, מאחורי הקלעים..." required>
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100" id="btn-add-category-submit">הוסף קטגוריה</button>
+                        </form>
+                    </div>
+                    <!-- List Column -->
+                    <div class="admin-list-col">
+                        <h4>קטגוריות קיימות</h4>
+                        <div class="custom-videos-list" id="all-categories-list-container">
+                            <!-- Rendered dynamically in JS -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Tab: Manage Logos -->
+            <div class="admin-tab-content" id="tab-logos">
+                <div class="admin-panel-grid" style="flex-grow: 1; overflow: hidden; margin-bottom: 20px;">
+                    <!-- Form Column -->
+                    <div class="admin-form-col">
+                        <h4>הוספת לוגו חדש</h4>
+                        <form id="admin-add-logo-form" onsubmit="return false;">
+                            <div class="form-group">
+                                <label for="admin-logo-upload">בחר קובץ תמונה (מומלץ PNG שקוף)</label>
+                                <input type="file" id="admin-logo-upload" accept="image/*" style="padding: 8px 0;" required>
+                            </div>
+                            <div class="logo-preview-box" id="admin-logo-preview" style="display: none; text-align: center; margin-bottom: 20px; padding: 15px; border: 1px dashed rgba(255,255,255,0.1); border-radius: 10px; background: rgba(0,0,0,0.2);">
+                                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 10px;">תצוגה מקדימה (יומר ללבן בקרוסלה):</p>
+                                <img src="" alt="Preview" style="max-height: 40px; filter: brightness(0) invert(1);">
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100" id="btn-add-logo-submit">הוסף לוגו לקרוסלה</button>
+                        </form>
+                    </div>
+                    <!-- List Column -->
+                    <div class="admin-list-col">
+                        <h4>לוגואים קיימים בקרוסלה</h4>
+                        <div class="logos-admin-list" id="all-logos-list-container">
+                            <!-- Rendered dynamically in JS -->
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Moving Marquee Preview inside Admin Panel -->
+                <div class="admin-marquee-preview-section" style="border-top: 1px solid rgba(255,255,255,0.08); padding-top: 15px; flex-shrink: 0;">
+                    <h4 style="margin-bottom: 10px; color: var(--text-light); font-size: 0.95rem; text-align: right;">תצוגה מקדימה של הקרוסלה (זז בזמן אמת)</h4>
+                    <div class="logos-marquee-wrapper" id="admin-marquee-preview-container" style="background: rgba(4, 8, 20, 0.95); border-radius: 14px; border: 1px solid rgba(255,255,255,0.05); padding: 10px 0; overflow: hidden; display: flex; flex-direction: column; gap: 6px;">
+                        <div class="marquee-row marquee-left"><div class="marquee-track" id="admin-marquee-track-1"></div></div>
+                        <div class="marquee-row marquee-right"><div class="marquee-track" id="admin-marquee-track-2"></div></div>
+                        <div class="marquee-row marquee-left"><div class="marquee-track" id="admin-marquee-track-3"></div></div>
+                        <div class="marquee-row marquee-right"><div class="marquee-track" id="admin-marquee-track-4"></div></div>
+                        <div class="marquee-row marquee-left"><div class="marquee-track" id="admin-marquee-track-5"></div></div>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </dialog>
+
+    <!-- Custom JS -->
+    <script src="script.js"></script>
+</body>
+</html>
