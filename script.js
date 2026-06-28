@@ -509,6 +509,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initContactForm();
     initActiveNavLinkTracker();
     initLogosMarquee();
+    initMarqueeDragAndScroll(); // Start smooth auto-scroll with mouse/touch drag support
     initAdminPanel();
     initVisitorAlert();
 });
@@ -1029,7 +1030,7 @@ function initLogosMarquee() {
     const logos4 = getRowLogos(3);
     const logos5 = getRowLogos(4);
     
-    // Helper to inject and clone images for CSS composition loop
+    // Helper to inject and clone images for JS-based smooth scrolling and dragging loop (exactly 3 copies)
     const fillRow = (rowElement, adminRowElement, logosArray) => {
         if (logosArray.length === 0) {
             if (rowElement) rowElement.innerHTML = '';
@@ -1044,11 +1045,11 @@ function initLogosMarquee() {
         }).join('');
         
         // Ensure base content is wide enough to fill any screen (min 20 images in base content)
-        // Then repeat it exactly 2 times to enable seamless 50% translation keyframe looping in CSS
+        // Then repeat it exactly 3 times so the scroll range resides safely in the middle copy (between W and 2*W)
         const minImagesBase = 20;
         const repeatCount = Math.max(1, Math.ceil(minImagesBase / logosArray.length));
         const baseContent = logoHTML.repeat(repeatCount);
-        const content = baseContent + baseContent;
+        const content = baseContent + baseContent + baseContent;
         
         if (rowElement) rowElement.innerHTML = content;
         if (adminRowElement) adminRowElement.innerHTML = content;
@@ -1061,7 +1062,118 @@ function initLogosMarquee() {
     fillRow(row5, adminRow5, logos5);
 }
 
-
+// 11.5 Marquee Mouse and Touch Drag/Swipe Controller (JS-based, perfectly smooth, supports drag & infinite wrap)
+function initMarqueeDragAndScroll() {
+    const rows = document.querySelectorAll('.marquee-row');
+    rows.forEach((row) => {
+        const track = row.querySelector('.marquee-track');
+        if (!track) return;
+        
+        const isLeft = row.classList.contains('marquee-left');
+        const speed = 0.6; // pixels per frame (smooth slow flow)
+        
+        let activeDrag = false;
+        let startX, scrollLeftVal;
+        
+        // Touch events
+        row.addEventListener('touchstart', (e) => {
+            activeDrag = true;
+            startX = e.touches[0].pageX - row.offsetLeft;
+            scrollLeftVal = row.scrollLeft;
+        }, { passive: true });
+        
+        row.addEventListener('touchend', () => {
+            activeDrag = false;
+        }, { passive: true });
+        
+        row.addEventListener('touchmove', (e) => {
+            if (!activeDrag) return;
+            const x = e.touches[0].pageX - row.offsetLeft;
+            const walk = (x - startX); 
+            row.scrollLeft = scrollLeftVal - walk;
+        }, { passive: true });
+        
+        // Mouse drag events
+        row.addEventListener('mousedown', (e) => {
+            activeDrag = true;
+            row.classList.add('dragging');
+            startX = e.pageX - row.offsetLeft;
+            scrollLeftVal = row.scrollLeft;
+        });
+        
+        row.addEventListener('mouseleave', () => {
+            activeDrag = false;
+            row.classList.remove('dragging');
+        });
+        
+        row.addEventListener('mouseup', () => {
+            activeDrag = false;
+            row.classList.remove('dragging');
+        });
+        
+        row.addEventListener('mousemove', (e) => {
+            if (!activeDrag) return;
+            e.preventDefault();
+            const x = e.pageX - row.offsetLeft;
+            const walk = (x - startX);
+            row.scrollLeft = scrollLeftVal - walk;
+        });
+        
+        // Track width change detection for seamless image load scaling (ignoring subpixel jitters)
+        let lastTrackWidth = 0;
+        
+        // Auto scroll loop with requestAnimationFrame
+        function step() {
+            const trackWidth = track.offsetWidth;
+            if (trackWidth > 0) {
+                const W = trackWidth / 3;
+                
+                // Initialize scroll position to the middle copy (W) when width is first detected
+                if (lastTrackWidth === 0) {
+                    row.scrollLeft = W;
+                    lastTrackWidth = trackWidth;
+                }
+                
+                // Scale scroll position only if track width changes significantly (e.g. images loaded or window resized)
+                if (lastTrackWidth > 0 && Math.abs(trackWidth - lastTrackWidth) > 10) {
+                    row.scrollLeft = (row.scrollLeft / lastTrackWidth) * trackWidth;
+                    if (activeDrag) scrollLeftVal = (scrollLeftVal / lastTrackWidth) * trackWidth;
+                    lastTrackWidth = trackWidth;
+                }
+                
+                // Auto scroll if the user is not actively dragging
+                if (!activeDrag) {
+                    if (isLeft) {
+                        row.scrollLeft += speed;
+                    } else {
+                        row.scrollLeft -= speed;
+                    }
+                }
+                
+                // Wrap scroll position instantly into the range [W, 2 * W - 1]
+                if (row.scrollLeft >= 2 * W) {
+                    const offset = row.scrollLeft - 2 * W;
+                    row.scrollLeft = W + (offset % W);
+                    if (activeDrag) {
+                        const dragOffset = scrollLeftVal - 2 * W;
+                        scrollLeftVal = W + (dragOffset % W);
+                    }
+                } else if (row.scrollLeft < W) {
+                    const offset = W - row.scrollLeft;
+                    row.scrollLeft = 2 * W - (offset % W);
+                    if (activeDrag) {
+                        const dragOffset = W - scrollLeftVal;
+                        scrollLeftVal = 2 * W - (dragOffset % W);
+                    }
+                }
+            }
+            requestAnimationFrame(step);
+        }
+        
+        // Start loop immediately
+        requestAnimationFrame(step);
+    });
+}
 
 // ==========================================================================
 // 12. Dynamic Database Initialization & Management Panel

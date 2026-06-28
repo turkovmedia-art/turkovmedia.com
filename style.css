@@ -544,44 +544,26 @@ img {
 .marquee-row {
     display: flex;
     width: 100%;
-    overflow: hidden !important;
+    overflow-x: hidden !important;
+    touch-action: pan-y;
     user-select: none;
     -webkit-user-select: none;
-    pointer-events: none; /* Disable all hover/clicks/dragging on logos */
+    pointer-events: auto;
+    cursor: grab;
+}
+
+.marquee-row::-webkit-scrollbar {
+    display: none; /* Hide scrollbar for Chrome/Safari */
+}
+
+.marquee-row.dragging {
+    cursor: grabbing;
 }
 
 .marquee-track {
     display: flex;
     width: max-content;
     align-items: center;
-    will-change: transform;
-}
-
-/* GPU Accelerated smooth marquee keyframes */
-@keyframes marquee-scroll-left {
-    0% {
-        transform: translate3d(0, 0, 0);
-    }
-    100% {
-        transform: translate3d(-50%, 0, 0);
-    }
-}
-
-@keyframes marquee-scroll-right {
-    0% {
-        transform: translate3d(-50%, 0, 0);
-    }
-    100% {
-        transform: translate3d(0, 0, 0);
-    }
-}
-
-.marquee-row.marquee-left .marquee-track {
-    animation: marquee-scroll-left 25s linear infinite;
-}
-
-.marquee-row.marquee-right .marquee-track {
-    animation: marquee-scroll-right 25s linear infinite;
 }
 
 .marquee-track img {
@@ -1402,12 +1384,6 @@ img {
     
     .about-section, .services-section, .portfolio-section, .contact-section {
         padding: 80px 0;
-    }
-    
-    /* Optimize logos marquee on mobile */
-    .marquee-row:nth-of-type(4),
-    .marquee-row:nth-of-type(5) {
-        display: none !important; /* Only show 3 alternating rows on mobile to prevent clutter */
     }
     
     .logos-marquee-wrapper {
