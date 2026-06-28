@@ -544,8 +544,16 @@ img {
 .marquee-row {
     display: flex;
     width: 100%;
-    overflow: hidden;
+    overflow-x: auto;
+    scrollbar-width: none; /* Hide scrollbar for Firefox */
+    -ms-overflow-style: none; /* Hide scrollbar for IE/Edge */
     user-select: none;
+    -webkit-user-select: none;
+    -webkit-overflow-scrolling: touch;
+}
+
+.marquee-row::-webkit-scrollbar {
+    display: none; /* Hide scrollbar for Chrome/Safari */
 }
 
 .marquee-track {
@@ -574,7 +582,7 @@ img {
     transform: scale(1.08);
 }
 
-/* Ticker Animations */
+/* Ticker Animations (Disabled in favor of smooth interactive JS auto-scroll) */
 @keyframes marqueeLeft {
     0% {
         transform: translateX(0);
@@ -594,11 +602,11 @@ img {
 }
 
 .marquee-left .marquee-track {
-    animation: marqueeLeft 80s linear infinite;
+    /* animation: marqueeLeft 80s linear infinite; */
 }
 
 .marquee-right .marquee-track {
-    animation: marqueeRight 80s linear infinite;
+    /* animation: marqueeRight 80s linear infinite; */
 }
 
 /* NOTE: Hover pause removed as requested for uninterrupted flow */
@@ -676,7 +684,7 @@ img {
     transition: var(--transition-smooth);
     position: relative;
     overflow: hidden;
-    text-align: right;
+    text-align: center;
 }
 
 .service-card::before {
@@ -732,12 +740,14 @@ img {
     font-size: 1.4rem;
     margin-bottom: 15px;
     color: var(--text-light);
+    text-align: center;
 }
 
 .service-text {
     color: var(--text-muted);
     font-size: 0.95rem;
     font-weight: 300;
+    text-align: center;
 }
 
 /* ==========================================================================
@@ -1312,6 +1322,13 @@ img {
     
     .about-visual {
         order: 2; /* Move visual (logos box) below text on mobile for better reading flow */
+    }
+    
+    .about-text {
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
     }
     
     .hero-actions {
@@ -1947,12 +1964,19 @@ img {
 }
 
 @media (max-width: 992px) {
-    .admin-dialog-card.panel-card {
+    .admin-panel-dialog {
         height: 100vh !important;
         max-height: 100vh !important;
         overflow-y: auto !important;
         -webkit-overflow-scrolling: touch !important;
-        padding: 24px 16px !important;
+    }
+    
+    .admin-dialog-card.panel-card {
+        height: auto !important;
+        min-height: 100vh !important;
+        max-height: none !important;
+        overflow: visible !important;
+        padding: 24px 16px 80px 16px !important; /* Added 80px bottom padding to prevent mobile browser UI overlap */
     }
     
     .admin-dialog-close {

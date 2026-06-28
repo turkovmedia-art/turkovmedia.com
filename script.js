@@ -509,6 +509,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initContactForm();
     initActiveNavLinkTracker();
     initLogosMarquee();
+    initMarqueeDragAndScroll(); // Start smooth auto-scroll with mouse/touch drag support
     initAdminPanel();
     initVisitorAlert();
 });
@@ -1048,6 +1049,105 @@ function initLogosMarquee() {
     fillRow(row3, adminRow3, logos3);
     fillRow(row4, adminRow4, logos4);
     fillRow(row5, adminRow5, logos5);
+}
+
+// 11.5 Marquee Mouse and Touch Drag/Swipe Controller
+function initMarqueeDragAndScroll() {
+    const rows = document.querySelectorAll('.marquee-row');
+    rows.forEach((row) => {
+        const track = row.querySelector('.marquee-track');
+        if (!track) return;
+        
+        const isLeft = row.classList.contains('marquee-left');
+        const speed = 0.5; // pixels per frame (smooth slow flow)
+        
+        let activeDrag = false;
+        let startX, scrollLeftVal;
+        
+        // Touch events
+        row.addEventListener('touchstart', (e) => {
+            activeDrag = true;
+            startX = e.touches[0].pageX - row.offsetLeft;
+            scrollLeftVal = row.scrollLeft;
+        }, { passive: true });
+        
+        row.addEventListener('touchend', () => {
+            activeDrag = false;
+        }, { passive: true });
+        
+        row.addEventListener('touchmove', (e) => {
+            if (!activeDrag) return;
+            const x = e.touches[0].pageX - row.offsetLeft;
+            const walk = (x - startX); 
+            row.scrollLeft = scrollLeftVal - walk;
+        }, { passive: true });
+        
+        // Mouse drag events
+        row.addEventListener('mousedown', (e) => {
+            activeDrag = true;
+            row.classList.add('dragging');
+            startX = e.pageX - row.offsetLeft;
+            scrollLeftVal = row.scrollLeft;
+            row.style.cursor = 'grabbing';
+        });
+        
+        row.addEventListener('mouseleave', () => {
+            activeDrag = false;
+            row.classList.remove('dragging');
+            row.style.cursor = 'grab';
+        });
+        
+        row.addEventListener('mouseup', () => {
+            activeDrag = false;
+            row.classList.remove('dragging');
+            row.style.cursor = 'grab';
+        });
+        
+        row.addEventListener('mousemove', (e) => {
+            if (!activeDrag) return;
+            e.preventDefault();
+            const x = e.pageX - row.offsetLeft;
+            const walk = (x - startX);
+            row.scrollLeft = scrollLeftVal - walk;
+        });
+        
+        row.style.cursor = 'grab';
+        
+        // Auto scroll loop with requestAnimationFrame
+        function step() {
+            const trackWidth = track.offsetWidth;
+            if (trackWidth > 0) {
+                const oneThird = trackWidth / 3;
+                
+                // Wrap scroll position during active drag or auto scroll
+                if (row.scrollLeft >= oneThird) {
+                    row.scrollLeft -= oneThird;
+                    if (activeDrag) scrollLeftVal -= oneThird; // adjust drag base
+                } else if (row.scrollLeft <= 0) {
+                    row.scrollLeft += oneThird;
+                    if (activeDrag) scrollLeftVal += oneThird; // adjust drag base
+                }
+                
+                if (!activeDrag) {
+                    if (isLeft) {
+                        row.scrollLeft += speed;
+                    } else {
+                        row.scrollLeft -= speed;
+                    }
+                }
+            }
+            requestAnimationFrame(step);
+        }
+        
+        // Initialize position for right-moving row to middle to avoid wrapping boundary triggers on start
+        setTimeout(() => {
+            const trackWidth = track.offsetWidth;
+            if (!isLeft && trackWidth > 0) {
+                row.scrollLeft = trackWidth / 3;
+            }
+            requestAnimationFrame(step);
+        }, 100);
+    });
 }
 
 // ==========================================================================
