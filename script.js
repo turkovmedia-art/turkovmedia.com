@@ -1124,8 +1124,8 @@ function initMarqueeDragAndScroll() {
         
         row.style.cursor = 'grab';
         
-        // Track width change detection for seamless image load scaling
-        let lastTrackWidth = track.offsetWidth || 0;
+        // Track initialization flag
+        let initialized = false;
         
         // Auto scroll loop with requestAnimationFrame
         function step() {
@@ -1133,25 +1133,26 @@ function initMarqueeDragAndScroll() {
             if (trackWidth > 0) {
                 const oneThird = trackWidth / 3;
                 
-                // If track width changed (e.g., images loaded asynchronously), scale scrollLeft proportionally
-                if (lastTrackWidth > 0 && trackWidth !== lastTrackWidth) {
-                    row.scrollLeft = (row.scrollLeft / lastTrackWidth) * trackWidth;
-                    if (activeDrag) scrollLeftVal = (scrollLeftVal / lastTrackWidth) * trackWidth;
-                } else if (lastTrackWidth === 0) {
-                    // Initial detection setup
+                // One-time initialization of scroll position
+                if (!initialized) {
                     if (!isLeft) {
                         row.scrollLeft = oneThird;
                     }
+                    initialized = true;
                 }
-                lastTrackWidth = trackWidth;
                 
-                // Wrap scroll position during active drag or auto scroll
+                // Wrap scroll position instantly (handles fast swipes)
                 if (row.scrollLeft >= oneThird) {
-                    row.scrollLeft -= oneThird;
-                    if (activeDrag) scrollLeftVal -= oneThird; // adjust drag base
+                    const excess = Math.floor(row.scrollLeft / oneThird) * oneThird;
+                    row.scrollLeft -= excess;
+                    if (activeDrag) scrollLeftVal -= excess;
                 } else if (row.scrollLeft <= 0) {
-                    row.scrollLeft += oneThird;
-                    if (activeDrag) scrollLeftVal += oneThird; // adjust drag base
+                    if (row.scrollLeft < 0 || !isLeft) {
+                        const deficit = Math.ceil(Math.abs(row.scrollLeft) / oneThird) * oneThird;
+                        const adjust = deficit === 0 ? oneThird : deficit;
+                        row.scrollLeft += adjust;
+                        if (activeDrag) scrollLeftVal += adjust;
+                    }
                 }
                 
                 if (!activeDrag) {
