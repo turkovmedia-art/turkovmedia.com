@@ -509,7 +509,6 @@ document.addEventListener('DOMContentLoaded', () => {
     initContactForm();
     initActiveNavLinkTracker();
     initLogosMarquee();
-    initMarqueeDragAndScroll(); // Start smooth auto-scroll with mouse/touch drag support
     initAdminPanel();
     initVisitorAlert();
 });
@@ -1030,7 +1029,7 @@ function initLogosMarquee() {
     const logos4 = getRowLogos(3);
     const logos5 = getRowLogos(4);
     
-    // Helper to inject and clone images for seamless scroll loop with inline scaling overrides
+    // Helper to inject and clone images for CSS composition loop
     const fillRow = (rowElement, adminRowElement, logosArray) => {
         if (logosArray.length === 0) {
             if (rowElement) rowElement.innerHTML = '';
@@ -1044,12 +1043,12 @@ function initLogosMarquee() {
             return `<img src="${src}" alt="${details.name}" style="height: ${heightPx}px;" loading="lazy">`;
         }).join('');
         
-        // Ensure there are enough images to stretch far beyond any wide screen (min 36 images)
-        // Repeat count must be a multiple of 3 so oneThird width corresponds exactly to a whole number of cycles
-        const minImages = 36;
-        const cycles = Math.max(1, Math.ceil(minImages / (3 * logosArray.length)));
-        const repeatCount = cycles * 3;
-        const content = logoHTML.repeat(repeatCount);
+        // Ensure base content is wide enough to fill any screen (min 20 images in base content)
+        // Then repeat it exactly 2 times to enable seamless 50% translation keyframe looping in CSS
+        const minImagesBase = 20;
+        const repeatCount = Math.max(1, Math.ceil(minImagesBase / logosArray.length));
+        const baseContent = logoHTML.repeat(repeatCount);
+        const content = baseContent + baseContent;
         
         if (rowElement) rowElement.innerHTML = content;
         if (adminRowElement) adminRowElement.innerHTML = content;
@@ -1062,121 +1061,7 @@ function initLogosMarquee() {
     fillRow(row5, adminRow5, logos5);
 }
 
-// 11.5 Marquee Mouse and Touch Drag/Swipe Controller
-function initMarqueeDragAndScroll() {
-    const rows = document.querySelectorAll('.marquee-row');
-    rows.forEach((row) => {
-        const track = row.querySelector('.marquee-track');
-        if (!track) return;
-        
-        const isLeft = row.classList.contains('marquee-left');
-        const speed = 0.5; // pixels per frame (smooth slow flow)
-        
-        let activeDrag = false;
-        let startX, scrollLeftVal;
-        
-        // Touch events
-        row.addEventListener('touchstart', (e) => {
-            activeDrag = true;
-            startX = e.touches[0].pageX - row.offsetLeft;
-            scrollLeftVal = row.scrollLeft;
-        }, { passive: true });
-        
-        row.addEventListener('touchend', () => {
-            activeDrag = false;
-        }, { passive: true });
-        
-        row.addEventListener('touchmove', (e) => {
-            if (!activeDrag) return;
-            const x = e.touches[0].pageX - row.offsetLeft;
-            const walk = (x - startX); 
-            row.scrollLeft = scrollLeftVal - walk;
-        }, { passive: true });
-        
-        // Mouse drag events
-        row.addEventListener('mousedown', (e) => {
-            activeDrag = true;
-            row.classList.add('dragging');
-            startX = e.pageX - row.offsetLeft;
-            scrollLeftVal = row.scrollLeft;
-            row.style.cursor = 'grabbing';
-        });
-        
-        row.addEventListener('mouseleave', () => {
-            activeDrag = false;
-            row.classList.remove('dragging');
-            row.style.cursor = 'grab';
-        });
-        
-        row.addEventListener('mouseup', () => {
-            activeDrag = false;
-            row.classList.remove('dragging');
-            row.style.cursor = 'grab';
-        });
-        
-        row.addEventListener('mousemove', (e) => {
-            if (!activeDrag) return;
-            e.preventDefault();
-            const x = e.pageX - row.offsetLeft;
-            const walk = (x - startX);
-            row.scrollLeft = scrollLeftVal - walk;
-        });
-        
-        row.style.cursor = 'grab';
-        
-        // Track width change detection for seamless image load scaling (ignoring subpixel jitters)
-        let lastTrackWidth = 0;
-        
-        // Auto scroll loop with requestAnimationFrame
-        function step() {
-            const trackWidth = track.offsetWidth;
-            if (trackWidth > 0) {
-                const oneThird = trackWidth / 3;
-                
-                // Initialize scroll position when width is first detected
-                if (lastTrackWidth === 0) {
-                    if (!isLeft) {
-                        row.scrollLeft = oneThird;
-                    }
-                    lastTrackWidth = trackWidth;
-                }
-                
-                // Scale scroll position only if track width changes significantly (e.g. images loaded or window resized)
-                if (lastTrackWidth > 0 && Math.abs(trackWidth - lastTrackWidth) > 10) {
-                    row.scrollLeft = (row.scrollLeft / lastTrackWidth) * trackWidth;
-                    if (activeDrag) scrollLeftVal = (scrollLeftVal / lastTrackWidth) * trackWidth;
-                    lastTrackWidth = trackWidth;
-                }
-                
-                // Wrap scroll position instantly (handles fast swipes)
-                if (row.scrollLeft >= oneThird) {
-                    const excess = Math.floor(row.scrollLeft / oneThird) * oneThird;
-                    row.scrollLeft -= excess;
-                    if (activeDrag) scrollLeftVal -= excess;
-                } else if (row.scrollLeft <= 0) {
-                    if (row.scrollLeft < 0 || !isLeft) {
-                        const deficit = Math.ceil(Math.abs(row.scrollLeft) / oneThird) * oneThird;
-                        const adjust = deficit === 0 ? oneThird : deficit;
-                        row.scrollLeft += adjust;
-                        if (activeDrag) scrollLeftVal += adjust;
-                    }
-                }
-                
-                if (!activeDrag) {
-                    if (isLeft) {
-                        row.scrollLeft += speed;
-                    } else {
-                        row.scrollLeft -= speed;
-                    }
-                }
-            }
-            requestAnimationFrame(step);
-        }
-        
-        // Start loop immediately
-        requestAnimationFrame(step);
-    });
-}
+
 
 // ==========================================================================
 // 12. Dynamic Database Initialization & Management Panel

@@ -544,23 +544,44 @@ img {
 .marquee-row {
     display: flex;
     width: 100%;
-    overflow-x: hidden !important;
-    touch-action: pan-y;
-    scrollbar-width: none; /* Hide scrollbar for Firefox */
-    -ms-overflow-style: none; /* Hide scrollbar for IE/Edge */
+    overflow: hidden !important;
     user-select: none;
     -webkit-user-select: none;
-    -webkit-overflow-scrolling: touch;
-}
-
-.marquee-row::-webkit-scrollbar {
-    display: none; /* Hide scrollbar for Chrome/Safari */
+    pointer-events: none; /* Disable all hover/clicks/dragging on logos */
 }
 
 .marquee-track {
     display: flex;
     width: max-content;
     align-items: center;
+    will-change: transform;
+}
+
+/* GPU Accelerated smooth marquee keyframes */
+@keyframes marquee-scroll-left {
+    0% {
+        transform: translate3d(0, 0, 0);
+    }
+    100% {
+        transform: translate3d(-50%, 0, 0);
+    }
+}
+
+@keyframes marquee-scroll-right {
+    0% {
+        transform: translate3d(-50%, 0, 0);
+    }
+    100% {
+        transform: translate3d(0, 0, 0);
+    }
+}
+
+.marquee-row.marquee-left .marquee-track {
+    animation: marquee-scroll-left 25s linear infinite;
+}
+
+.marquee-row.marquee-right .marquee-track {
+    animation: marquee-scroll-right 25s linear infinite;
 }
 
 .marquee-track img {
