@@ -586,7 +586,7 @@ img {
 
 .marquee-track img {
     height: 38px;
-    width: auto;
+    width: 100px; /* Fixed width to prevent any layout shifts while loading */
     object-fit: contain;
     margin: 0 28px; /* Slightly increased margin to add a tiny bit more spacing between logos */
     opacity: 0.65;
@@ -1402,6 +1402,23 @@ img {
     
     .about-section, .services-section, .portfolio-section, .contact-section {
         padding: 80px 0;
+    }
+    
+    /* Optimize logos marquee on mobile */
+    .marquee-row:nth-of-type(4),
+    .marquee-row:nth-of-type(5) {
+        display: none !important; /* Only show 3 alternating rows on mobile to prevent clutter */
+    }
+    
+    .logos-marquee-wrapper {
+        gap: 12px; /* Slightly tighter gap on mobile */
+        padding: 16px 0;
+    }
+    
+    .marquee-track img {
+        height: 28px; /* Slightly smaller height on mobile */
+        width: 80px; /* Slightly smaller fixed width on mobile */
+        margin: 0 16px; /* Tighter margins on mobile */
     }
 }
 
