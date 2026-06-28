@@ -1062,7 +1062,7 @@ function initLogosMarquee() {
     fillRow(row5, adminRow5, logos5);
 }
 
-// 11.5 Marquee Mouse and Touch Drag/Swipe Controller (JS-based, perfectly smooth, supports drag & infinite wrap)
+// 11.5 Marquee Mouse and Touch Drag/Swipe Controller (JS-based, perfectly smooth, delta-based dragging & infinite wrap)
 function initMarqueeDragAndScroll() {
     const rows = document.querySelectorAll('.marquee-row');
     rows.forEach((row) => {
@@ -1073,13 +1073,12 @@ function initMarqueeDragAndScroll() {
         const speed = 0.6; // pixels per frame (smooth slow flow)
         
         let activeDrag = false;
-        let startX, scrollLeftVal;
+        let startX;
         
         // Touch events - set passive: false to allow e.preventDefault() to block native swipe behaviors
         row.addEventListener('touchstart', (e) => {
             activeDrag = true;
-            startX = e.touches[0].pageX - row.offsetLeft;
-            scrollLeftVal = row.scrollLeft;
+            startX = e.touches[0].pageX;
         }, { passive: false });
         
         row.addEventListener('touchend', () => {
@@ -1089,17 +1088,17 @@ function initMarqueeDragAndScroll() {
         row.addEventListener('touchmove', (e) => {
             if (!activeDrag) return;
             e.preventDefault(); // Stop horizontal mobile swipe page navigation and momentum scrolls!
-            const x = e.touches[0].pageX - row.offsetLeft;
-            const walk = (x - startX); 
-            row.scrollLeft = scrollLeftVal - walk;
+            const x = e.touches[0].pageX;
+            const deltaX = x - startX;
+            row.scrollLeft -= deltaX;
+            startX = x; // Continuous delta update
         }, { passive: false });
         
         // Mouse drag events
         row.addEventListener('mousedown', (e) => {
             activeDrag = true;
             row.classList.add('dragging');
-            startX = e.pageX - row.offsetLeft;
-            scrollLeftVal = row.scrollLeft;
+            startX = e.pageX;
         });
         
         row.addEventListener('mouseleave', () => {
@@ -1115,9 +1114,10 @@ function initMarqueeDragAndScroll() {
         row.addEventListener('mousemove', (e) => {
             if (!activeDrag) return;
             e.preventDefault();
-            const x = e.pageX - row.offsetLeft;
-            const walk = (x - startX);
-            row.scrollLeft = scrollLeftVal - walk;
+            const x = e.pageX;
+            const deltaX = x - startX;
+            row.scrollLeft -= deltaX;
+            startX = x; // Continuous delta update
         });
         
         // Track width change detection for seamless image load scaling (ignoring subpixel jitters)
@@ -1141,7 +1141,6 @@ function initMarqueeDragAndScroll() {
                 // Scale scroll position only if track width changes significantly (e.g. images loaded or window resized)
                 if (lastTrackWidth > 0 && Math.abs(trackWidth - lastTrackWidth) > 10) {
                     row.scrollLeft = (row.scrollLeft / lastTrackWidth) * trackWidth;
-                    if (activeDrag) scrollLeftVal = (scrollLeftVal / lastTrackWidth) * trackWidth;
                     lastTrackWidth = trackWidth;
                 }
                 
@@ -1159,12 +1158,10 @@ function initMarqueeDragAndScroll() {
                     const offset = row.scrollLeft - maxBound;
                     const adjust = Math.floor(offset / range) * range + range;
                     row.scrollLeft -= adjust;
-                    if (activeDrag) scrollLeftVal -= adjust;
                 } else if (row.scrollLeft < minBound) {
                     const offset = minBound - row.scrollLeft;
                     const adjust = Math.floor(offset / range) * range + range;
                     row.scrollLeft += adjust;
-                    if (activeDrag) scrollLeftVal += adjust;
                 }
             }
             requestAnimationFrame(step);
