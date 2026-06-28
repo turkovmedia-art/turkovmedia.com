@@ -850,9 +850,14 @@ function initContactForm() {
         const email = emailEl ? emailEl.value.trim() : '';
         const message = document.getElementById('message').value.trim();
         
-        // Validation: require email only if the field is present in the DOM
-        if (emailEl && !email) return;
-        if (!name || !phone || !message) return;
+        if (!name || !message) {
+            return; // Browser validation handles required fields, but just in case
+        }
+        
+        if (!phone && !email) {
+            alert('אנא הזן לפחות פרט קשר אחד: מספר טלפון או כתובת אימייל.');
+            return;
+        }
         
         // Send details to Telegram Bot
         const telegramText = `<b>📬 פנייה חדשה מאתר הפקות מולטימדיה!</b>\n\n` +
@@ -1039,7 +1044,13 @@ function initLogosMarquee() {
             return `<img src="${src}" alt="${details.name}" style="height: ${heightPx}px;" loading="lazy">`;
         }).join('');
         
-        const content = logoHTML + logoHTML + logoHTML;
+        // Ensure there are enough images to stretch far beyond any wide screen (min 36 images)
+        // Repeat count must be a multiple of 3 so oneThird width corresponds exactly to a whole number of cycles
+        const minImages = 36;
+        const cycles = Math.max(1, Math.ceil(minImages / (3 * logosArray.length)));
+        const repeatCount = cycles * 3;
+        const content = logoHTML.repeat(repeatCount);
+        
         if (rowElement) rowElement.innerHTML = content;
         if (adminRowElement) adminRowElement.innerHTML = content;
     };
@@ -1301,6 +1312,9 @@ function initAdminPanel() {
     const videoIdField = document.getElementById('admin-video-id');
     const videoNameField = document.getElementById('admin-video-name');
     const videoLinkField = document.getElementById('admin-video-link');
+    const videoClientField = document.getElementById('admin-video-client');
+    const videoYearField = document.getElementById('admin-video-year');
+    const videoDescField = document.getElementById('admin-video-desc');
     const videoTagsContainer = document.getElementById('admin-video-tags-container');
     const allVideosContainer = document.getElementById('all-videos-list-container');
     
@@ -1320,9 +1334,13 @@ function initAdminPanel() {
     // ----------------------------------------------------------------------
     triggerText.addEventListener('dblclick', (e) => {
         e.preventDefault();
-        passcodeField.value = '';
-        authError.style.display = 'none';
-        authDialog.showModal();
+        if (localStorage.getItem('mendy_portfolio_admin_remembered') === 'true') {
+            openAdminPanel();
+        } else {
+            passcodeField.value = '';
+            authError.style.display = 'none';
+            authDialog.showModal();
+        }
     });
     
     closeAuth.addEventListener('click', () => authDialog.close());
@@ -1336,12 +1354,18 @@ function initAdminPanel() {
         const passcode = passcodeField.value.trim();
         if (passcode === '77077') {
             authDialog.close();
-            openAdminPanel();
+            setTimeout(() => {
+                if (confirm('האם לשמור את המחשב כך שלא תצטרך להקליד שוב את הקוד?')) {
+                    localStorage.setItem('mendy_portfolio_admin_remembered', 'true');
+                }
+                openAdminPanel();
+            }, 100);
         } else {
             authError.style.display = 'block';
             const card = authDialog.querySelector('.admin-dialog-card');
             card.classList.add('shake');
             setTimeout(() => card.classList.remove('shake'), 400);
+            passcodeField.value = ''; // Auto-clear incorrect code
         }
     };
     
@@ -1455,6 +1479,9 @@ function initAdminPanel() {
         const idVal = videoIdField.value;
         const title = videoNameField.value.trim();
         const videoUrl = videoLinkField.value.trim();
+        const client = videoClientField.value.trim() || "מנדי טורקוב הפקות";
+        const year = videoYearField.value.trim() || new Date().getFullYear().toString();
+        const desc = videoDescField.value.trim() || title;
         
         const checkedBoxes = videoTagsContainer.querySelectorAll('input:checked');
         const categories = Array.from(checkedBoxes).map(cb => cb.value);
@@ -1481,7 +1508,9 @@ function initAdminPanel() {
                 videoProjects[index].title = title;
                 videoProjects[index].videoUrl = videoUrl;
                 videoProjects[index].categories = categories;
-                videoProjects[index].desc = title;
+                videoProjects[index].desc = desc;
+                videoProjects[index].client = client;
+                videoProjects[index].year = year;
                 videoProjects[index].thumbnail = thumbnail;
             }
             alert('הסרטון עודכן בהצלחה!');
@@ -1491,11 +1520,11 @@ function initAdminPanel() {
                 id: Date.now(),
                 title: title,
                 categories: categories,
-                desc: title,
+                desc: desc,
                 thumbnail: thumbnail,
                 videoUrl: videoUrl,
-                client: "מנדי טורקוב הפקות",
-                year: new Date().getFullYear().toString()
+                client: client,
+                year: year
             };
             videoProjects.unshift(newProject);
             alert('הסרטון נוסף בהצלחה!');
@@ -1516,6 +1545,9 @@ function initAdminPanel() {
         videoIdField.value = video.id;
         videoNameField.value = video.title;
         videoLinkField.value = video.videoUrl;
+        videoClientField.value = video.client || "";
+        videoYearField.value = video.year || "";
+        videoDescField.value = video.desc || "";
         
         // Check corresponding checkboxes
         const checkboxes = videoTagsContainer.querySelectorAll('input');
