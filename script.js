@@ -1124,8 +1124,8 @@ function initMarqueeDragAndScroll() {
         
         row.style.cursor = 'grab';
         
-        // Track initialization flag
-        let initialized = false;
+        // Track width change detection for seamless image load scaling (ignoring subpixel jitters)
+        let lastTrackWidth = 0;
         
         // Auto scroll loop with requestAnimationFrame
         function step() {
@@ -1133,12 +1133,19 @@ function initMarqueeDragAndScroll() {
             if (trackWidth > 0) {
                 const oneThird = trackWidth / 3;
                 
-                // One-time initialization of scroll position
-                if (!initialized) {
+                // Initialize scroll position when width is first detected
+                if (lastTrackWidth === 0) {
                     if (!isLeft) {
                         row.scrollLeft = oneThird;
                     }
-                    initialized = true;
+                    lastTrackWidth = trackWidth;
+                }
+                
+                // Scale scroll position only if track width changes significantly (e.g. images loaded or window resized)
+                if (lastTrackWidth > 0 && Math.abs(trackWidth - lastTrackWidth) > 10) {
+                    row.scrollLeft = (row.scrollLeft / lastTrackWidth) * trackWidth;
+                    if (activeDrag) scrollLeftVal = (scrollLeftVal / lastTrackWidth) * trackWidth;
+                    lastTrackWidth = trackWidth;
                 }
                 
                 // Wrap scroll position instantly (handles fast swipes)
