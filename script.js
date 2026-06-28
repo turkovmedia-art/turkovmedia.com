@@ -1051,8 +1051,15 @@ function initLogosMarquee() {
         const baseContent = logoHTML.repeat(repeatCount);
         const content = baseContent + baseContent + baseContent;
         
-        if (rowElement) rowElement.innerHTML = content;
-        if (adminRowElement) adminRowElement.innerHTML = content;
+        const numImagesInBase = logosArray.length * repeatCount;
+        if (rowElement) {
+            rowElement.innerHTML = content;
+            rowElement.setAttribute('data-base-count', numImagesInBase);
+        }
+        if (adminRowElement) {
+            adminRowElement.innerHTML = content;
+            adminRowElement.setAttribute('data-base-count', numImagesInBase);
+        }
     };
     
     fillRow(row1, adminRow1, logos1);
@@ -1071,6 +1078,7 @@ function initMarqueeDragAndScroll() {
         
         const isLeft = row.classList.contains('marquee-left');
         const speed = 0.6; // pixels per frame (smooth slow flow)
+        const numImagesInBase = parseInt(track.getAttribute('data-base-count')) || 0;
         
         let activeDrag = false;
         let startX;
@@ -1107,22 +1115,29 @@ function initMarqueeDragAndScroll() {
         
         // Track width change detection for seamless image load scaling
         let lastTrackWidth = 0;
+        let W_cached = 0;
         
         // Auto scroll loop with requestAnimationFrame
         function step() {
             const trackWidth = track.offsetWidth;
             if (trackWidth > 0) {
-                const W = trackWidth / 3; // The track has exactly 3 copies of the base block
+                let W = W_cached;
                 
-                // Initialize position to the middle copy (-W) when width is first detected
-                if (lastTrackWidth === 0) {
-                    translateX = -W;
-                    lastTrackWidth = trackWidth;
-                }
-                
-                // Scale translation position only if track width changes significantly (e.g. images loaded or window resized)
-                if (lastTrackWidth > 0 && Math.abs(trackWidth - lastTrackWidth) > 10) {
-                    translateX = (translateX / lastTrackWidth) * trackWidth;
+                // If track width changed significantly (e.g. images loaded or window resized), recalculate W
+                if (trackWidth !== lastTrackWidth) {
+                    if (track.children && track.children[numImagesInBase]) {
+                        W = track.children[numImagesInBase].offsetLeft;
+                    } else {
+                        W = trackWidth / 3;
+                    }
+                    W_cached = W;
+                    
+                    // Initialize or rescale position to the middle copy (-W)
+                    if (lastTrackWidth === 0) {
+                        translateX = -W;
+                    } else if (lastTrackWidth > 0 && Math.abs(trackWidth - lastTrackWidth) > 10) {
+                        translateX = (translateX / lastTrackWidth) * trackWidth;
+                    }
                     lastTrackWidth = trackWidth;
                 }
                 
