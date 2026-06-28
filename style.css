@@ -562,6 +562,10 @@ img {
     opacity: 0.65;
     transition: opacity 0.3s ease, filter 0.3s ease, transform 0.3s ease;
     filter: brightness(0) invert(1); /* Ensure pure white logos */
+    pointer-events: none; /* Prevent clicks, taps, and sticky hover highlights on mobile */
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-user-drag: none;
 }
 
 .marquee-track img:hover {
@@ -1943,16 +1947,88 @@ img {
 }
 
 @media (max-width: 992px) {
-    .admin-panel-grid {
-        grid-template-columns: 1fr;
-        overflow-y: auto;
+    .admin-dialog-card.panel-card {
+        height: 100vh !important;
+        max-height: 100vh !important;
+        overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+        padding: 24px 16px !important;
     }
+    
+    .admin-dialog-close {
+        position: fixed !important;
+        top: 16px !important;
+        left: 16px !important;
+        z-index: 1000 !important;
+        background: rgba(10, 16, 32, 0.9) !important;
+        backdrop-filter: blur(10px) !important;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5) !important;
+    }
+    
+    .admin-title {
+        font-size: 1.5rem !important;
+        margin-top: 15px !important;
+    }
+    
+    .admin-tabs {
+        display: flex !important;
+        gap: 8px !important;
+        overflow-x: auto !important;
+        white-space: nowrap !important;
+        padding-bottom: 8px !important;
+        margin-bottom: 20px !important;
+        -webkit-overflow-scrolling: touch !important;
+        scrollbar-width: none !important; /* Hide scrollbar for Firefox */
+    }
+    
+    .admin-tabs::-webkit-scrollbar {
+        display: none !important; /* Hide scrollbar for Safari/Chrome */
+    }
+    
+    .admin-tab-btn {
+        flex-shrink: 0 !important;
+        padding: 8px 12px !important;
+        font-size: 0.9rem !important;
+    }
+    
     .admin-tab-content.active {
-        height: auto;
-        overflow-y: auto;
+        height: auto !important;
+        overflow: visible !important;
     }
+    
+    .admin-panel-grid {
+        grid-template-columns: 1fr !important;
+        overflow: visible !important;
+        height: auto !important;
+        gap: 30px !important;
+    }
+    
+    .admin-list-col, .admin-form-col {
+        height: auto !important;
+        overflow: visible !important;
+    }
+    
     .custom-videos-list, .logos-admin-list {
-        height: 400px !important;
+        height: 350px !important;
+        max-height: 350px !important;
+        overflow-y: auto !important;
+    }
+    
+    .logo-admin-row {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 15px !important;
+        padding: 15px !important;
+    }
+    
+    .logo-admin-left {
+        width: 100% !important;
+    }
+    
+    .logo-admin-actions {
+        justify-content: space-between !important;
+        width: 100% !important;
+        gap: 10px !important;
     }
 }
 
