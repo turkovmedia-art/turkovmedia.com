@@ -2,8 +2,8 @@ import os
 from PIL import Image
 
 def create_favicon():
-    # 1. Load the original logo
-    logo_path = 'assets/logo-original.png'
+    # 1. Load the logo with white text designed for dark backgrounds
+    logo_path = 'assets/logo-dark-bg.png'
     if not os.path.exists(logo_path):
         print(f"Error: {logo_path} does not exist.")
         return
@@ -54,8 +54,9 @@ def create_favicon():
     for size in ico_sizes:
         ico_images.append(canvas.resize(size, Image.Resampling.LANCZOS))
         
+    # Save favicon.ico in the root directory
     ico_images[0].save('favicon.ico', format='ICO', append_images=ico_images[1:])
-    print("Favicon created successfully as assets/favicon.png and favicon.ico from the entire transparent logo!")
+    print("Favicon created successfully from the entire logo-dark-bg.png (white text)!")
 
 if __name__ == '__main__':
     create_favicon()
