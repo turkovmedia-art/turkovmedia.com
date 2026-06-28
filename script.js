@@ -1030,7 +1030,7 @@ function initLogosMarquee() {
     const logos4 = getRowLogos(3);
     const logos5 = getRowLogos(4);
     
-    // Helper to inject and clone images for JS-based smooth scrolling and dragging loop (exactly 3 copies)
+    // Helper to inject and clone images for JS-based smooth scrolling and dragging loop (exactly 30 copies)
     const fillRow = (rowElement, adminRowElement, logosArray) => {
         if (logosArray.length === 0) {
             if (rowElement) rowElement.innerHTML = '';
@@ -1045,11 +1045,11 @@ function initLogosMarquee() {
         }).join('');
         
         // Ensure base content is wide enough to fill any screen (min 20 images in base content)
-        // Then repeat it exactly 3 times so the scroll range resides safely in the middle copy (between W and 2*W)
+        // Then repeat it exactly 30 times to create a massive buffer that prevents stutters or jumps
         const minImagesBase = 20;
         const repeatCount = Math.max(1, Math.ceil(minImagesBase / logosArray.length));
         const baseContent = logoHTML.repeat(repeatCount);
-        const content = baseContent + baseContent + baseContent;
+        const content = baseContent.repeat(30);
         
         if (rowElement) rowElement.innerHTML = content;
         if (adminRowElement) adminRowElement.innerHTML = content;
@@ -1075,23 +1075,24 @@ function initMarqueeDragAndScroll() {
         let activeDrag = false;
         let startX, scrollLeftVal;
         
-        // Touch events
+        // Touch events - set passive: false to allow e.preventDefault() to block native swipe behaviors
         row.addEventListener('touchstart', (e) => {
             activeDrag = true;
             startX = e.touches[0].pageX - row.offsetLeft;
             scrollLeftVal = row.scrollLeft;
-        }, { passive: true });
+        }, { passive: false });
         
         row.addEventListener('touchend', () => {
             activeDrag = false;
-        }, { passive: true });
+        }, { passive: false });
         
         row.addEventListener('touchmove', (e) => {
             if (!activeDrag) return;
+            e.preventDefault(); // Stop horizontal mobile swipe page navigation and momentum scrolls!
             const x = e.touches[0].pageX - row.offsetLeft;
             const walk = (x - startX); 
             row.scrollLeft = scrollLeftVal - walk;
-        }, { passive: true });
+        }, { passive: false });
         
         // Mouse drag events
         row.addEventListener('mousedown', (e) => {
@@ -1126,11 +1127,14 @@ function initMarqueeDragAndScroll() {
         function step() {
             const trackWidth = track.offsetWidth;
             if (trackWidth > 0) {
-                const W = trackWidth / 3;
+                const W = trackWidth / 30; // The track has 30 copies of the base block
+                const minBound = 10 * W;   // Lower wrapping boundary
+                const maxBound = 20 * W;   // Upper wrapping boundary
+                const range = 10 * W;      // Wrapping interval (must be a multiple of W, here exactly 10 copies)
                 
-                // Initialize scroll position to the middle copy (W) when width is first detected
+                // Initialize scroll position to the exact middle of the 30 copies (15 * W)
                 if (lastTrackWidth === 0) {
-                    row.scrollLeft = W;
+                    row.scrollLeft = 15 * W;
                     lastTrackWidth = trackWidth;
                 }
                 
@@ -1150,21 +1154,17 @@ function initMarqueeDragAndScroll() {
                     }
                 }
                 
-                // Wrap scroll position instantly into the range [W, 2 * W - 1]
-                if (row.scrollLeft >= 2 * W) {
-                    const offset = row.scrollLeft - 2 * W;
-                    row.scrollLeft = W + (offset % W);
-                    if (activeDrag) {
-                        const dragOffset = scrollLeftVal - 2 * W;
-                        scrollLeftVal = W + (dragOffset % W);
-                    }
-                } else if (row.scrollLeft < W) {
-                    const offset = W - row.scrollLeft;
-                    row.scrollLeft = 2 * W - (offset % W);
-                    if (activeDrag) {
-                        const dragOffset = W - scrollLeftVal;
-                        scrollLeftVal = 2 * W - (dragOffset % W);
-                    }
+                // Wrap scroll position instantly into the safe middle range [10*W, 20*W]
+                if (row.scrollLeft >= maxBound) {
+                    const offset = row.scrollLeft - maxBound;
+                    const adjust = Math.floor(offset / range) * range + range;
+                    row.scrollLeft -= adjust;
+                    if (activeDrag) scrollLeftVal -= adjust;
+                } else if (row.scrollLeft < minBound) {
+                    const offset = minBound - row.scrollLeft;
+                    const adjust = Math.floor(offset / range) * range + range;
+                    row.scrollLeft += adjust;
+                    if (activeDrag) scrollLeftVal += adjust;
                 }
             }
             requestAnimationFrame(step);
