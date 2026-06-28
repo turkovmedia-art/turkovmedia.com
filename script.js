@@ -1181,21 +1181,56 @@ let categoriesList = [];
 
 // Initialize database by saving defaults to localStorage if empty
 function initializeDatabase() {
-    // 1. Videos
-    const storedVideos = localStorage.getItem(DB_VIDEOS_KEY);
-    if (!storedVideos) {
-        localStorage.setItem(DB_VIDEOS_KEY, JSON.stringify(videoProjects));
-    } else {
-        videoProjects = JSON.parse(storedVideos);
-    }
+    const isAdmin = localStorage.getItem('mendy_portfolio_admin_remembered') === 'true';
+    
+    // Choose source of truth: use data.js if loaded, otherwise fall back to script.js defaults
+    const sourceVideos = (typeof defaultVideoProjects !== 'undefined') ? defaultVideoProjects : videoProjects;
+    const sourceLogos = (typeof defaultClientLogos !== 'undefined') ? defaultClientLogos : clientLogos;
+    const sourceCategories = (typeof defaultCategories !== 'undefined') ? defaultCategories : [
+        { id: "documentary", name: "תוכן דוקומנטרי" },
+        { id: "narrative", name: "תוכן עלילתי" },
+        { id: "commercial", name: "פרסומות וקמפיינים" },
+        { id: "music_summary", name: "קליפים וסיכומים" },
+        { id: "ai", name: "סרטוני AI" },
+        { id: "social", name: "סושיאל" }
+    ];
 
-    // 2. Logos
-    const storedLogos = localStorage.getItem(DB_LOGOS_KEY);
-    if (!storedLogos) {
-        localStorage.setItem(DB_LOGOS_KEY, JSON.stringify(clientLogos));
-    } else {
-        clientLogos = JSON.parse(storedLogos);
+    if (!isAdmin) {
+        // Normal visitors always fetch live synced data.js and bypass local modifications
+        localStorage.setItem(DB_VIDEOS_KEY, JSON.stringify(sourceVideos));
+        localStorage.setItem(DB_LOGOS_KEY, JSON.stringify(sourceLogos));
+        localStorage.setItem(DB_CATEGORIES_KEY, JSON.stringify(sourceCategories));
         
+        videoProjects = JSON.parse(JSON.stringify(sourceVideos));
+        clientLogos = JSON.parse(JSON.stringify(sourceLogos));
+        categoriesList = JSON.parse(JSON.stringify(sourceCategories));
+    } else {
+        // Admins load their pending modifications from localStorage for local preview
+        const storedVideos = localStorage.getItem(DB_VIDEOS_KEY);
+        if (!storedVideos) {
+            localStorage.setItem(DB_VIDEOS_KEY, JSON.stringify(sourceVideos));
+            videoProjects = JSON.parse(JSON.stringify(sourceVideos));
+        } else {
+            videoProjects = JSON.parse(storedVideos);
+        }
+
+        const storedLogos = localStorage.getItem(DB_LOGOS_KEY);
+        if (!storedLogos) {
+            localStorage.setItem(DB_LOGOS_KEY, JSON.stringify(sourceLogos));
+            clientLogos = JSON.parse(JSON.stringify(sourceLogos));
+        } else {
+            clientLogos = JSON.parse(storedLogos);
+        }
+
+        const storedCategories = localStorage.getItem(DB_CATEGORIES_KEY);
+        if (!storedCategories) {
+            localStorage.setItem(DB_CATEGORIES_KEY, JSON.stringify(sourceCategories));
+            categoriesList = JSON.parse(JSON.stringify(sourceCategories));
+        } else {
+            categoriesList = JSON.parse(storedCategories);
+        }
+        
+        // Run migration on admin data in localStorage to keep it clean
         let modified = false;
         clientLogos = clientLogos.map(logo => {
             const details = getLogoDetails(logo);
@@ -1230,23 +1265,6 @@ function initializeDatabase() {
         if (modified) {
             localStorage.setItem(DB_LOGOS_KEY, JSON.stringify(clientLogos));
         }
-    }
-
-    // 3. Categories
-    const storedCategories = localStorage.getItem(DB_CATEGORIES_KEY);
-    if (!storedCategories) {
-        const defaultCategories = [
-            { id: "documentary", name: "תוכן דוקומנטרי" },
-            { id: "narrative", name: "תוכן עלילתי" },
-            { id: "commercial", name: "פרסומות וקמפיינים" },
-            { id: "music_summary", name: "קליפים וסיכומים" },
-            { id: "ai", name: "סרטוני AI" },
-            { id: "social", name: "סושיאל" }
-        ];
-        localStorage.setItem(DB_CATEGORIES_KEY, JSON.stringify(defaultCategories));
-        categoriesList = defaultCategories;
-    } else {
-        categoriesList = JSON.parse(storedCategories);
     }
 }
 
@@ -1393,6 +1411,8 @@ function initAdminPanel() {
                 renderAdminCategoriesList();
             } else if (tabId === 'tab-logos') {
                 renderAdminLogosList();
+            } else if (tabId === 'tab-publish') {
+                loadPublishTabToken();
             }
         });
     });
@@ -1792,6 +1812,161 @@ function initAdminPanel() {
         renderAdminLogosList();
         initLogosMarquee(); // Hot-reload the marquee
     };
+    
+    // ----------------------------------------------------------------------
+    // TAB 4: Publish to GitHub
+    // ----------------------------------------------------------------------
+    const githubTokenInput = document.getElementById('github-pat-token');
+    const btnPublishDb = document.getElementById('btn-publish-db');
+    const btnDownloadDb = document.getElementById('btn-download-db');
+    const publishStatusMsg = document.getElementById('publish-status-msg');
+    
+    // Load saved GitHub PAT from localStorage
+    window.loadPublishTabToken = function() {
+        if (githubTokenInput) {
+            const savedToken = localStorage.getItem('mendy_portfolio_github_pat') || '';
+            githubTokenInput.value = savedToken;
+        }
+        if (publishStatusMsg) {
+            publishStatusMsg.style.display = 'none';
+        }
+    };
+    
+    // Helper to format output data.js content
+    function generateDataJsContent() {
+        // Clean database objects before outputting
+        const cleanVideos = videoProjects.map(v => ({
+            id: v.id,
+            title: v.title,
+            categories: v.categories,
+            desc: v.desc || v.title,
+            thumbnail: v.thumbnail || `https://img.youtube.com/vi/${getYouTubeId(v.videoUrl)}/hqdefault.jpg`,
+            videoUrl: v.videoUrl,
+            client: v.client || '',
+            year: v.year || ''
+        }));
+        
+        return `// data.js - External database for Mendy Turkov Portfolio
+// This file is loaded first to provide the default database state.
+
+const defaultVideoProjects = ${JSON.stringify(cleanVideos, null, 4)};
+
+const defaultClientLogos = ${JSON.stringify(clientLogos, null, 4)};
+
+const defaultCategories = ${JSON.stringify(categoriesList, null, 4)};
+`;
+    }
+    
+    if (btnDownloadDb) {
+        btnDownloadDb.addEventListener('click', () => {
+            const fileContent = generateDataJsContent();
+            const blob = new Blob([fileContent], { type: 'application/javascript;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'data.js';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        });
+    }
+    
+    if (btnPublishDb) {
+        btnPublishDb.addEventListener('click', async () => {
+            const token = githubTokenInput.value.trim();
+            if (!token) {
+                showPublishStatus('אנא הזן קוד גישה (Personal Access Token) של GitHub.', 'error');
+                return;
+            }
+            
+            // Save token locally
+            localStorage.setItem('mendy_portfolio_github_pat', token);
+            
+            showPublishStatus('מתחיל בפרסום... אנא המתן ⏳', 'info');
+            btnPublishDb.disabled = true;
+            
+            try {
+                const owner = 'turkovmedia-art';
+                const repo = 'turkovmedia.com';
+                const path = 'data.js';
+                const fileContent = generateDataJsContent();
+                
+                const apiUrl = `https://api.github.com/repos/${owner}/${repo}/contents/${path}`;
+                
+                // 1. Fetch file SHA
+                const getRes = await fetch(apiUrl, {
+                    headers: {
+                        'Authorization': `token ${token}`,
+                        'Accept': 'application/vnd.github.v3+json',
+                        'Cache-Control': 'no-cache'
+                    }
+                });
+                
+                if (!getRes.ok) {
+                    throw new Error('לא ניתן לגשת לקובץ ב-GitHub. ודא שהטוקן תקין ושם המאגר נכון.');
+                }
+                
+                const getData = await getRes.json();
+                const sha = getData.sha;
+                
+                // Safe UTF-8 base64 encoding
+                const utf8Bytes = new TextEncoder().encode(fileContent);
+                let binaryStr = "";
+                for (let i = 0; i < utf8Bytes.length; i++) {
+                    binaryStr += String.fromCharCode(utf8Bytes[i]);
+                }
+                const base64Content = btoa(binaryStr);
+                
+                // 2. Commit updated data.js to GitHub
+                const putRes = await fetch(apiUrl, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `token ${token}`,
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/vnd.github.v3+json'
+                    },
+                    body: JSON.stringify({
+                        message: 'admin: update database via admin panel',
+                        content: base64Content,
+                        sha: sha
+                    })
+                });
+                
+                if (!putRes.ok) {
+                    const errData = await putRes.json();
+                    throw new Error(errData.message || 'שגיאה בעדכון הקובץ ב-GitHub.');
+                }
+                
+                showPublishStatus('השינויים פורסמו בהצלחה ל-GitHub! 🎉 האתר החי יתעדכן לכולם תוך כדקה.', 'success');
+            } catch (err) {
+                console.error(err);
+                showPublishStatus(`שגיאה בפרסום: ${err.message}`, 'error');
+            } finally {
+                btnPublishDb.disabled = false;
+            }
+        });
+    }
+    
+    function showPublishStatus(msg, type) {
+        if (!publishStatusMsg) return;
+        publishStatusMsg.style.display = 'block';
+        publishStatusMsg.textContent = msg;
+        
+        if (type === 'success') {
+            publishStatusMsg.style.background = 'rgba(74, 222, 128, 0.1)';
+            publishStatusMsg.style.border = '1px solid rgba(74, 222, 128, 0.3)';
+            publishStatusMsg.style.color = '#4ade80';
+        } else if (type === 'error') {
+            publishStatusMsg.style.background = 'rgba(248, 113, 113, 0.1)';
+            publishStatusMsg.style.border = '1px solid rgba(248, 113, 113, 0.3)';
+            publishStatusMsg.style.color = '#f87171';
+        } else {
+            publishStatusMsg.style.background = 'rgba(99, 102, 241, 0.1)';
+            publishStatusMsg.style.border = '1px solid rgba(99, 102, 241, 0.3)';
+            publishStatusMsg.style.color = '#a5b4fc';
+        }
+    }
 }
 
 /**
