@@ -1941,7 +1941,11 @@ const defaultCategories = ${JSON.stringify(categoriesList, null, 4)};
                 showPublishStatus('השינויים פורסמו בהצלחה ל-GitHub! 🎉 האתר החי יתעדכן לכולם תוך כדקה.', 'success');
             } catch (err) {
                 console.error(err);
-                showPublishStatus(`שגיאה בפרסום: ${err.message}`, 'error');
+                let friendlyMsg = err.message;
+                if (err.message === 'Failed to fetch' || err.message.includes('fetch')) {
+                    friendlyMsg = 'קוד הגישה (GitHub Token) שהזנת אינו תקין, פג תוקפו, או שחסרה לו הרשאת כתיבה (write/repo).';
+                }
+                showPublishStatus(`שגיאה בפרסום: ${friendlyMsg}`, 'error');
             } finally {
                 btnPublishDb.disabled = false;
             }
