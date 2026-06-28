@@ -1030,7 +1030,7 @@ function initLogosMarquee() {
     const logos4 = getRowLogos(3);
     const logos5 = getRowLogos(4);
     
-    // Helper to inject and clone images for JS-based smooth scrolling and dragging loop (exactly 30 copies)
+    // Helper to inject and clone images for JS-based smooth scrolling and dragging loop (exactly 3 copies)
     const fillRow = (rowElement, adminRowElement, logosArray) => {
         if (logosArray.length === 0) {
             if (rowElement) rowElement.innerHTML = '';
@@ -1045,11 +1045,11 @@ function initLogosMarquee() {
         }).join('');
         
         // Ensure base content is wide enough to fill any screen (min 20 images in base content)
-        // Then repeat it exactly 30 times to create a massive buffer that prevents stutters or jumps
+        // Then repeat it exactly 3 times so the translate3d range resides safely in the middle copy
         const minImagesBase = 20;
         const repeatCount = Math.max(1, Math.ceil(minImagesBase / logosArray.length));
         const baseContent = logoHTML.repeat(repeatCount);
-        const content = baseContent.repeat(30);
+        const content = baseContent + baseContent + baseContent;
         
         if (rowElement) rowElement.innerHTML = content;
         if (adminRowElement) adminRowElement.innerHTML = content;
@@ -1062,7 +1062,7 @@ function initLogosMarquee() {
     fillRow(row5, adminRow5, logos5);
 }
 
-// 11.5 Marquee Mouse and Touch Drag/Swipe Controller (JS-based, perfectly smooth, delta-based dragging & infinite wrap)
+// 11.5 Marquee Mouse Drag Controller (JS-driven translate3d GPU-composited smooth marquee, touch drag disabled on mobile)
 function initMarqueeDragAndScroll() {
     const rows = document.querySelectorAll('.marquee-row');
     rows.forEach((row) => {
@@ -1074,10 +1074,9 @@ function initMarqueeDragAndScroll() {
         
         let activeDrag = false;
         let startX;
+        let translateX = 0;
         
-
-        
-        // Mouse drag events
+        // Mouse drag events (only active on desktop/mouse)
         row.addEventListener('mousedown', (e) => {
             activeDrag = true;
             row.classList.add('dragging');
@@ -1099,53 +1098,53 @@ function initMarqueeDragAndScroll() {
             e.preventDefault();
             const x = e.pageX;
             const deltaX = x - startX;
-            row.scrollLeft -= deltaX;
-            startX = x; // Continuous delta update
+            translateX += deltaX;
+            startX = x;
+            
+            // Apply translation immediately during drag
+            track.style.transform = `translate3d(${translateX}px, 0, 0)`;
         });
         
-        // Track width change detection for seamless image load scaling (ignoring subpixel jitters)
+        // Track width change detection for seamless image load scaling
         let lastTrackWidth = 0;
         
         // Auto scroll loop with requestAnimationFrame
         function step() {
             const trackWidth = track.offsetWidth;
             if (trackWidth > 0) {
-                const W = trackWidth / 30; // The track has 30 copies of the base block
-                const minBound = 10 * W;   // Lower wrapping boundary
-                const maxBound = 20 * W;   // Upper wrapping boundary
-                const range = 10 * W;      // Wrapping interval (must be a multiple of W, here exactly 10 copies)
+                const W = trackWidth / 3; // The track has exactly 3 copies of the base block
                 
-                // Initialize scroll position to the exact middle of the 30 copies (15 * W)
+                // Initialize position to the middle copy (-W) when width is first detected
                 if (lastTrackWidth === 0) {
-                    row.scrollLeft = 15 * W;
+                    translateX = -W;
                     lastTrackWidth = trackWidth;
                 }
                 
-                // Scale scroll position only if track width changes significantly (e.g. images loaded or window resized)
+                // Scale translation position only if track width changes significantly (e.g. images loaded or window resized)
                 if (lastTrackWidth > 0 && Math.abs(trackWidth - lastTrackWidth) > 10) {
-                    row.scrollLeft = (row.scrollLeft / lastTrackWidth) * trackWidth;
+                    translateX = (translateX / lastTrackWidth) * trackWidth;
                     lastTrackWidth = trackWidth;
                 }
                 
                 // Auto scroll if the user is not actively dragging
                 if (!activeDrag) {
                     if (isLeft) {
-                        row.scrollLeft += speed;
+                        translateX -= speed;
                     } else {
-                        row.scrollLeft -= speed;
+                        translateX += speed;
                     }
                 }
                 
-                // Wrap scroll position instantly into the safe middle range [10*W, 20*W]
-                if (row.scrollLeft >= maxBound) {
-                    const offset = row.scrollLeft - maxBound;
-                    const adjust = Math.floor(offset / range) * range + range;
-                    row.scrollLeft -= adjust;
-                } else if (row.scrollLeft < minBound) {
-                    const offset = minBound - row.scrollLeft;
-                    const adjust = Math.floor(offset / range) * range + range;
-                    row.scrollLeft += adjust;
+                // Wrap translateX instantly into the safe middle range [-2*W, -W]
+                while (translateX <= -2 * W) {
+                    translateX += W;
                 }
+                while (translateX >= -W) {
+                    translateX -= W;
+                }
+                
+                // Render translation via GPU-composited translate3d
+                track.style.transform = `translate3d(${translateX}px, 0, 0)`;
             }
             requestAnimationFrame(step);
         }

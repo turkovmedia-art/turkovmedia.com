@@ -544,16 +544,11 @@ img {
 .marquee-row {
     display: flex;
     width: 100%;
-    overflow-x: hidden !important;
-    touch-action: pan-y;
+    overflow: hidden !important;
     user-select: none;
     -webkit-user-select: none;
     pointer-events: auto;
     cursor: grab;
-}
-
-.marquee-row::-webkit-scrollbar {
-    display: none; /* Hide scrollbar for Chrome/Safari */
 }
 
 .marquee-row.dragging {
