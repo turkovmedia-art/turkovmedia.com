@@ -1075,24 +1075,7 @@ function initMarqueeDragAndScroll() {
         let activeDrag = false;
         let startX;
         
-        // Touch events - set passive: false to allow e.preventDefault() to block native swipe behaviors
-        row.addEventListener('touchstart', (e) => {
-            activeDrag = true;
-            startX = e.touches[0].pageX;
-        }, { passive: false });
-        
-        row.addEventListener('touchend', () => {
-            activeDrag = false;
-        }, { passive: false });
-        
-        row.addEventListener('touchmove', (e) => {
-            if (!activeDrag) return;
-            e.preventDefault(); // Stop horizontal mobile swipe page navigation and momentum scrolls!
-            const x = e.touches[0].pageX;
-            const deltaX = x - startX;
-            row.scrollLeft -= deltaX;
-            startX = x; // Continuous delta update
-        }, { passive: false });
+
         
         // Mouse drag events
         row.addEventListener('mousedown', (e) => {
