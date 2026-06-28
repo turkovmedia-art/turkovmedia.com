@@ -1113,11 +1113,26 @@ function initMarqueeDragAndScroll() {
         
         row.style.cursor = 'grab';
         
+        // Track width change detection for seamless image load scaling
+        let lastTrackWidth = track.offsetWidth || 0;
+        
         // Auto scroll loop with requestAnimationFrame
         function step() {
             const trackWidth = track.offsetWidth;
             if (trackWidth > 0) {
                 const oneThird = trackWidth / 3;
+                
+                // If track width changed (e.g., images loaded asynchronously), scale scrollLeft proportionally
+                if (lastTrackWidth > 0 && trackWidth !== lastTrackWidth) {
+                    row.scrollLeft = (row.scrollLeft / lastTrackWidth) * trackWidth;
+                    if (activeDrag) scrollLeftVal = (scrollLeftVal / lastTrackWidth) * trackWidth;
+                } else if (lastTrackWidth === 0) {
+                    // Initial detection setup
+                    if (!isLeft) {
+                        row.scrollLeft = oneThird;
+                    }
+                }
+                lastTrackWidth = trackWidth;
                 
                 // Wrap scroll position during active drag or auto scroll
                 if (row.scrollLeft >= oneThird) {
@@ -1139,14 +1154,8 @@ function initMarqueeDragAndScroll() {
             requestAnimationFrame(step);
         }
         
-        // Initialize position for right-moving row to middle to avoid wrapping boundary triggers on start
-        setTimeout(() => {
-            const trackWidth = track.offsetWidth;
-            if (!isLeft && trackWidth > 0) {
-                row.scrollLeft = trackWidth / 3;
-            }
-            requestAnimationFrame(step);
-        }, 100);
+        // Start loop immediately
+        requestAnimationFrame(step);
     });
 }
 
