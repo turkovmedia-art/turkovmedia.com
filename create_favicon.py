@@ -21,7 +21,7 @@ def create_favicon():
     
     # 3. Create a 512x512 canvas for the favicon with transparent background
     canvas_size = 512
-    canvas = Image.new('RGBA', (canvas_size, canvas_size), (0, 0, 0, 0))
+    canvas = Image.new('RGBA', (canvas_size, canvas_size), (5, 8, 20, 255))
     
     # 4. Resize the cropped logo to fit the canvas width (leaving margins, max width 480px)
     target_width = 480
