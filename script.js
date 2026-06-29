@@ -497,8 +497,8 @@ let clientLogos = [
 // ==========================================================================
 // 2. DOM Elements & Initialization
 // ==========================================================================
-document.addEventListener('DOMContentLoaded', () => {
-    initializeDatabase();
+document.addEventListener('DOMContentLoaded', async () => {
+    await initializeDatabase();
     renderCategoryFilters();
     initHeaderScroll();
     initMobileMenu();
@@ -1179,92 +1179,158 @@ const DB_CATEGORIES_KEY = 'mendy_portfolio_categories_db';
 
 let categoriesList = [];
 
-// Initialize database by saving defaults to localStorage if empty
-function initializeDatabase() {
-    const isAdmin = localStorage.getItem('mendy_portfolio_admin_remembered') === 'true';
-    
-    // Choose source of truth: use data.js if loaded, otherwise fall back to script.js defaults
-    const sourceVideos = (typeof defaultVideoProjects !== 'undefined') ? defaultVideoProjects : videoProjects;
-    const sourceLogos = (typeof defaultClientLogos !== 'undefined') ? defaultClientLogos : clientLogos;
-    const sourceCategories = (typeof defaultCategories !== 'undefined') ? defaultCategories : [
-        { id: "documentary", name: "תוכן דוקומנטרי" },
-        { id: "narrative", name: "תוכן עלילתי" },
-        { id: "commercial", name: "פרסומות וקמפיינים" },
-        { id: "music_summary", name: "קליפים וסיכומים" },
-        { id: "ai", name: "סרטוני AI" },
-        { id: "social", name: "סושיאל" }
-    ];
+// ==========================================================================
+// Firebase Firestore Database Integration
+// ==========================================================================
+const firebaseConfig = {
+  apiKey: "AIzaSyC9249rv6jZ1ffzcuWmXXOqLFM2NM0E3jY",
+  authDomain: "turkovmedia-c36af.firebaseapp.com",
+  projectId: "turkovmedia-c36af",
+  storageBucket: "turkovmedia-c36af.firebasestorage.app",
+  messagingSenderId: "354082577982",
+  appId: "1:354082577982:web:07e1204be3d9f10afcbb6f",
+  measurementId: "G-D91LZNWHMK"
+};
 
-    if (!isAdmin) {
-        // Normal visitors always fetch live synced data.js and bypass local modifications
-        localStorage.setItem(DB_VIDEOS_KEY, JSON.stringify(sourceVideos));
-        localStorage.setItem(DB_LOGOS_KEY, JSON.stringify(sourceLogos));
-        localStorage.setItem(DB_CATEGORIES_KEY, JSON.stringify(sourceCategories));
-        
-        videoProjects = JSON.parse(JSON.stringify(sourceVideos));
-        clientLogos = JSON.parse(JSON.stringify(sourceLogos));
-        categoriesList = JSON.parse(JSON.stringify(sourceCategories));
+let db = null;
+try {
+    if (typeof firebase !== 'undefined') {
+        firebase.initializeApp(firebaseConfig);
+        db = firebase.firestore();
+        console.log("Firebase initialized successfully!");
     } else {
-        // Admins load their pending modifications from localStorage for local preview
-        const storedVideos = localStorage.getItem(DB_VIDEOS_KEY);
-        if (!storedVideos) {
-            localStorage.setItem(DB_VIDEOS_KEY, JSON.stringify(sourceVideos));
+        console.warn("Firebase SDK is not available.");
+    }
+} catch (e) {
+    console.error("Error initializing Firebase:", e);
+}
+
+// Save all database arrays to Firestore under a single document for optimized quota consumption
+async function saveDatabaseToFirestore() {
+    if (!db) return;
+    try {
+        await db.collection("portfolio").doc("data").set({
+            videoProjects: videoProjects,
+            clientLogos: clientLogos,
+            categoriesList: categoriesList,
+            lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        console.log("Portfolio database successfully saved to Firestore!");
+    } catch (e) {
+        console.error("Error saving database to Firestore:", e);
+    }
+}
+
+// Load database arrays from Firestore
+async function loadDatabaseFromFirestore() {
+    if (!db) return false;
+    try {
+        const doc = await db.collection("portfolio").doc("data").get();
+        if (doc.exists) {
+            const data = doc.data();
+            if (data.videoProjects) videoProjects = data.videoProjects;
+            if (data.clientLogos) clientLogos = data.clientLogos;
+            if (data.categoriesList) categoriesList = data.categoriesList;
+            return true;
+        }
+    } catch (e) {
+        console.error("Error loading database from Firestore:", e);
+    }
+    return false;
+}
+
+// Synchronize all modifications to local preview (localStorage) and cloud database (Firestore)
+function syncChanges() {
+    // 1. Save locally for fallback
+    localStorage.setItem(DB_VIDEOS_KEY, JSON.stringify(videoProjects));
+    localStorage.setItem(DB_LOGOS_KEY, JSON.stringify(clientLogos));
+    localStorage.setItem(DB_CATEGORIES_KEY, JSON.stringify(categoriesList));
+    
+    // 2. Save globally to Firestore
+    saveDatabaseToFirestore();
+}
+
+// Initialize database by fetching from Firestore, and falling back to data.js/localStorage
+async function initializeDatabase() {
+    // 1. Try to load from Firestore cloud database
+    let loaded = await loadDatabaseFromFirestore();
+    
+    if (loaded) {
+        console.log("Successfully loaded dynamic database from Firestore!");
+    } else {
+        console.log("Firestore document not found or offline. Falling back to data.js defaults.");
+        
+        // Choose source of truth: use data.js if loaded, otherwise fall back to script.js defaults
+        const sourceVideos = (typeof defaultVideoProjects !== 'undefined') ? defaultVideoProjects : videoProjects;
+        const sourceLogos = (typeof defaultClientLogos !== 'undefined') ? defaultClientLogos : clientLogos;
+        const sourceCategories = (typeof defaultCategories !== 'undefined') ? defaultCategories : [
+            { id: "documentary", name: "תוכן דוקומנטרי" },
+            { id: "narrative", name: "תוכן עלילתי" },
+            { id: "commercial", name: "פרסומות וקמפיינים" },
+            { id: "music_summary", name: "קליפים וסיכומים" },
+            { id: "ai", name: "סרטוני AI" },
+            { id: "social", name: "סושיאל" }
+        ];
+
+        const isAdmin = localStorage.getItem('mendy_portfolio_admin_remembered') === 'true';
+        
+        if (!isAdmin) {
+            // Normal visitors load from data.js
             videoProjects = JSON.parse(JSON.stringify(sourceVideos));
-        } else {
-            videoProjects = JSON.parse(storedVideos);
-        }
-
-        const storedLogos = localStorage.getItem(DB_LOGOS_KEY);
-        if (!storedLogos) {
-            localStorage.setItem(DB_LOGOS_KEY, JSON.stringify(sourceLogos));
             clientLogos = JSON.parse(JSON.stringify(sourceLogos));
-        } else {
-            clientLogos = JSON.parse(storedLogos);
-        }
-
-        const storedCategories = localStorage.getItem(DB_CATEGORIES_KEY);
-        if (!storedCategories) {
-            localStorage.setItem(DB_CATEGORIES_KEY, JSON.stringify(sourceCategories));
             categoriesList = JSON.parse(JSON.stringify(sourceCategories));
         } else {
-            categoriesList = JSON.parse(storedCategories);
-        }
-        
-        // Run migration on admin data in localStorage to keep it clean
-        let modified = false;
-        clientLogos = clientLogos.map(logo => {
-            const details = getLogoDetails(logo);
-            if (details.name === 'חב"ד' || details.name === 'חבד' || details.name === 'חב"ד-מסגרת') {
-                const targetSrc = 'חב\"ד-מסגרת.png';
-                if (typeof logo === 'string') {
-                    if (logo !== targetSrc) {
-                        modified = true;
-                        return targetSrc;
-                    }
-                } else if (typeof logo === 'object' && logo !== null) {
-                    if (logo.src !== targetSrc) {
-                        modified = true;
-                        logo.src = targetSrc;
-                        logo.name = 'חב\"ד-מסגרת';
-                    }
-                }
-            }
-            return logo;
-        });
-        
-        // Migration: Ensure 'שניאור קורטס.png' is added to existing local lists
-        const hasCortes = clientLogos.some(logo => {
-            const details = getLogoDetails(logo);
-            return details.src === 'שניאור קורטס.png';
-        });
-        if (!hasCortes) {
-            clientLogos.push('שניאור קורטס.png');
-            modified = true;
+            // Admins load their pending modifications from localStorage
+            const storedVideos = localStorage.getItem(DB_VIDEOS_KEY);
+            videoProjects = storedVideos ? JSON.parse(storedVideos) : JSON.parse(JSON.stringify(sourceVideos));
+
+            const storedLogos = localStorage.getItem(DB_LOGOS_KEY);
+            clientLogos = storedLogos ? JSON.parse(storedLogos) : JSON.parse(JSON.stringify(sourceLogos));
+
+            const storedCategories = localStorage.getItem(DB_CATEGORIES_KEY);
+            categoriesList = storedCategories ? JSON.parse(storedCategories) : JSON.parse(JSON.stringify(sourceCategories));
         }
 
-        if (modified) {
-            localStorage.setItem(DB_LOGOS_KEY, JSON.stringify(clientLogos));
+        // Initialize Firestore with this default data if Firestore is online
+        if (db) {
+            console.log("Auto-initializing Firestore document with default data...");
+            await saveDatabaseToFirestore();
         }
+    }
+
+    // Run logo migrations to keep list clean
+    let modified = false;
+    clientLogos = clientLogos.map(logo => {
+        const details = getLogoDetails(logo);
+        if (details.name === 'חב"ד' || details.name === 'חבד' || details.name === 'חב"ד-מסגרת') {
+            const targetSrc = 'חב\"ד-מסגרת.png';
+            if (typeof logo === 'string') {
+                if (logo !== targetSrc) {
+                    modified = true;
+                    return targetSrc;
+                }
+            } else if (typeof logo === 'object' && logo !== null) {
+                if (logo.src !== targetSrc) {
+                    modified = true;
+                    logo.src = targetSrc;
+                    logo.name = 'חב\"ד-מסגרת';
+                }
+            }
+        }
+        return logo;
+    });
+    
+    const hasCortes = clientLogos.some(logo => {
+        const details = getLogoDetails(logo);
+        return details.src === 'שניאור קורטס.png';
+    });
+    if (!hasCortes) {
+        clientLogos.push('שניאור קורטס.png');
+        modified = true;
+    }
+
+    if (modified) {
+        syncChanges();
     }
 }
 
@@ -1550,7 +1616,7 @@ function initAdminPanel() {
         }
         
         // Save database & refresh views
-        localStorage.setItem(DB_VIDEOS_KEY, JSON.stringify(videoProjects));
+        syncChanges();
         resetVideoForm();
         renderAdminVideosList();
         renderPortfolioGrid('all');
@@ -1587,7 +1653,7 @@ function initAdminPanel() {
         if (!confirm('האם אתה בטוח שברצונך למחוק סרטון זה מהגלריה?')) return;
         
         videoProjects = videoProjects.filter(v => v.id !== id);
-        localStorage.setItem(DB_VIDEOS_KEY, JSON.stringify(videoProjects));
+        syncChanges();
         
         renderAdminVideosList();
         renderPortfolioGrid('all');
@@ -1642,7 +1708,7 @@ function initAdminPanel() {
         };
         
         categoriesList.push(newCat);
-        localStorage.setItem(DB_CATEGORIES_KEY, JSON.stringify(categoriesList));
+        syncChanges();
         
         addCategoryForm.reset();
         renderAdminCategoriesList();
@@ -1656,7 +1722,6 @@ function initAdminPanel() {
         
         // 1. Remove from categories list
         categoriesList = categoriesList.filter(c => c.id !== id);
-        localStorage.setItem(DB_CATEGORIES_KEY, JSON.stringify(categoriesList));
         
         // 2. Remove category from any videos that use it
         videoProjects.forEach(video => {
@@ -1664,9 +1729,11 @@ function initAdminPanel() {
                 video.categories = video.categories.filter(c => c !== id);
             }
         });
-        localStorage.setItem(DB_VIDEOS_KEY, JSON.stringify(videoProjects));
         
-        // 3. Refresh views
+        // 3. Save globally
+        syncChanges();
+        
+        // 4. Refresh views
         renderAdminCategoriesList();
         renderCategoryFilters();
         renderPortfolioGrid('all');
@@ -1724,7 +1791,7 @@ function initAdminPanel() {
         };
         
         clientLogos.push(newLogo);
-        localStorage.setItem(DB_LOGOS_KEY, JSON.stringify(clientLogos));
+        syncChanges();
         
         addLogoForm.reset();
         uploadedLogoBase64 = '';
@@ -1796,7 +1863,7 @@ function initAdminPanel() {
         };
         
         // 4. Save
-        localStorage.setItem(DB_LOGOS_KEY, JSON.stringify(clientLogos));
+        syncChanges();
         
         // 5. Hot-reload the main portfolio marquee!
         initLogosMarquee();
@@ -1807,29 +1874,19 @@ function initAdminPanel() {
         if (!confirm('האם אתה בטוח שברצונך למחוק לוגו זה מהקרוסלה?')) return;
         
         clientLogos.splice(index, 1);
-        localStorage.setItem(DB_LOGOS_KEY, JSON.stringify(clientLogos));
+        syncChanges();
         
         renderAdminLogosList();
         initLogosMarquee(); // Hot-reload the marquee
     };
     
     // ----------------------------------------------------------------------
-    // TAB 4: Publish to GitHub
+    // TAB 4: Cloud Sync Database status
     // ----------------------------------------------------------------------
-    const githubTokenInput = document.getElementById('github-pat-token');
-    const btnPublishDb = document.getElementById('btn-publish-db');
     const btnDownloadDb = document.getElementById('btn-download-db');
-    const publishStatusMsg = document.getElementById('publish-status-msg');
     
-    // Load saved GitHub PAT from localStorage
     window.loadPublishTabToken = function() {
-        if (githubTokenInput) {
-            const savedToken = localStorage.getItem('mendy_portfolio_github_pat') || '';
-            githubTokenInput.value = savedToken;
-        }
-        if (publishStatusMsg) {
-            publishStatusMsg.style.display = 'none';
-        }
+        // No-op now since we are connected directly to Firebase Firestore
     };
     
     // Helper to format output data.js content
@@ -1870,106 +1927,6 @@ const defaultCategories = ${JSON.stringify(categoriesList, null, 4)};
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
         });
-    }
-    
-    if (btnPublishDb) {
-        btnPublishDb.addEventListener('click', async () => {
-            const token = githubTokenInput.value.trim();
-            if (!token) {
-                showPublishStatus('אנא הזן קוד גישה (Personal Access Token) של GitHub.', 'error');
-                return;
-            }
-            
-            // Save token locally
-            localStorage.setItem('mendy_portfolio_github_pat', token);
-            
-            showPublishStatus('מתחיל בפרסום... אנא המתן ⏳', 'info');
-            btnPublishDb.disabled = true;
-            
-            try {
-                const owner = 'turkovmedia-art';
-                const repo = 'turkovmedia.com';
-                const path = 'data.js';
-                const fileContent = generateDataJsContent();
-                
-                const apiUrl = `https://api.github.com/repos/${owner}/${repo}/contents/${path}`;
-                
-                // 1. Fetch file SHA
-                const getRes = await fetch(apiUrl, {
-                    headers: {
-                        'Authorization': `token ${token}`,
-                        'Accept': 'application/vnd.github.v3+json',
-                        'Cache-Control': 'no-cache'
-                    }
-                });
-                
-                if (!getRes.ok) {
-                    throw new Error('לא ניתן לגשת לקובץ ב-GitHub. ודא שהטוקן תקין ושם המאגר נכון.');
-                }
-                
-                const getData = await getRes.json();
-                const sha = getData.sha;
-                
-                // Safe UTF-8 base64 encoding
-                const utf8Bytes = new TextEncoder().encode(fileContent);
-                let binaryStr = "";
-                for (let i = 0; i < utf8Bytes.length; i++) {
-                    binaryStr += String.fromCharCode(utf8Bytes[i]);
-                }
-                const base64Content = btoa(binaryStr);
-                
-                // 2. Commit updated data.js to GitHub
-                const putRes = await fetch(apiUrl, {
-                    method: 'PUT',
-                    headers: {
-                        'Authorization': `token ${token}`,
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/vnd.github.v3+json'
-                    },
-                    body: JSON.stringify({
-                        message: 'admin: update database via admin panel',
-                        content: base64Content,
-                        sha: sha
-                    })
-                });
-                
-                if (!putRes.ok) {
-                    const errData = await putRes.json();
-                    throw new Error(errData.message || 'שגיאה בעדכון הקובץ ב-GitHub.');
-                }
-                
-                showPublishStatus('השינויים פורסמו בהצלחה ל-GitHub! 🎉 האתר החי יתעדכן לכולם תוך כדקה.', 'success');
-            } catch (err) {
-                console.error(err);
-                let friendlyMsg = err.message;
-                if (err.message === 'Failed to fetch' || err.message.includes('fetch')) {
-                    friendlyMsg = 'קוד הגישה (GitHub Token) שהזנת אינו תקין, פג תוקפו, או שחסרה לו הרשאת כתיבה (write/repo).';
-                }
-                showPublishStatus(`שגיאה בפרסום: ${friendlyMsg}`, 'error');
-            } finally {
-                btnPublishDb.disabled = false;
-            }
-        });
-    }
-    
-    function showPublishStatus(msg, type) {
-        if (!publishStatusMsg) return;
-        publishStatusMsg.style.display = 'block';
-        publishStatusMsg.textContent = msg;
-        
-        if (type === 'success') {
-            publishStatusMsg.style.background = 'rgba(74, 222, 128, 0.1)';
-            publishStatusMsg.style.border = '1px solid rgba(74, 222, 128, 0.3)';
-            publishStatusMsg.style.color = '#4ade80';
-        } else if (type === 'error') {
-            publishStatusMsg.style.background = 'rgba(248, 113, 113, 0.1)';
-            publishStatusMsg.style.border = '1px solid rgba(248, 113, 113, 0.3)';
-            publishStatusMsg.style.color = '#f87171';
-        } else {
-            publishStatusMsg.style.background = 'rgba(99, 102, 241, 0.1)';
-            publishStatusMsg.style.border = '1px solid rgba(99, 102, 241, 0.3)';
-            publishStatusMsg.style.color = '#a5b4fc';
-        }
     }
 }
 
