@@ -327,6 +327,23 @@ img {
     pointer-events: none;
 }
 
+.hero-video-bg.video-desktop {
+    display: block;
+}
+
+.hero-video-bg.video-mobile {
+    display: none;
+}
+
+@media (max-width: 768px) {
+    .hero-video-bg.video-desktop {
+        display: none;
+    }
+    .hero-video-bg.video-mobile {
+        display: block;
+    }
+}
+
 .hero-overlay {
     position: absolute;
     top: 0;
