@@ -1218,6 +1218,7 @@ async function saveDatabaseToFirestore() {
         console.log("Portfolio database successfully saved to Firestore!");
     } catch (e) {
         console.error("Error saving database to Firestore:", e);
+        alert("שגיאה בשמירה לענן פיירבייס: " + e.message + "\n\nעל מנת לפתור זאת, ודא שהפעלת את Firestore ב-Firebase Console והגדרת כללי גישה (Rules) פתוחים לקריאה וכתיבה (allow read, write: if true;).");
     }
 }
 
