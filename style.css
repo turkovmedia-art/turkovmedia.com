@@ -2656,5 +2656,17 @@ dialog {
         overflow: visible !important;
         display: block !important;
     }
+    
+    /* Logos Tab: Always show both Add Form and Logos List stacked on mobile */
+    #tab-logos .admin-form-col {
+        display: block !important;
+    }
+    #tab-logos .admin-list-col {
+        display: block !important;
+    }
+    #tab-logos .mobile-add-btn,
+    #tab-logos .mobile-form-back-btn {
+        display: none !important;
+    }
 }
 
