@@ -2047,22 +2047,23 @@ img {
         top: 0 !important;
         left: 0 !important;
         background: #050814 !important;
-        display: block !important;
-        overflow-y: auto !important;
-        -webkit-overflow-scrolling: touch !important;
+        display: flex !important;
+        flex-direction: column !important;
+        overflow: hidden !important;
     }
     
     .admin-dialog-card.panel-card {
         width: 100% !important;
-        height: auto !important;
+        height: 100% !important;
         min-height: 100% !important;
-        max-height: none !important;
+        max-height: 100% !important;
         border: none !important;
         border-radius: 0 !important;
         background: transparent !important;
-        padding: 70px 16px 80px 16px !important;
-        display: block !important;
-        overflow: visible !important;
+        padding: 70px 16px 15px 16px !important;
+        display: flex !important;
+        flex-direction: column !important;
+        overflow: hidden !important;
     }
     
     .admin-dialog-close {
@@ -2087,6 +2088,7 @@ img {
     
     .admin-tabs {
         display: flex !important;
+        flex-shrink: 0 !important;
         gap: 8px !important;
         overflow-x: auto !important;
         white-space: nowrap !important;
@@ -2107,14 +2109,22 @@ img {
     }
     
     .admin-tab-content.active {
-        display: block !important;
-        height: auto !important;
-        overflow: visible !important;
+        display: flex !important;
+        flex-direction: column !important;
+        flex-grow: 1 !important;
+        overflow: hidden !important;
+        min-height: 0 !important;
     }
     
     .admin-panel-grid {
-        display: block !important;
-        height: auto !important;
+        display: flex !important;
+        flex-direction: column !important;
+        flex-grow: 1 !important;
+        overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+        min-height: 0 !important;
+        gap: 20px !important;
+        padding-bottom: 20px !important;
     }
     
     .admin-list-col, .admin-form-col {
@@ -2638,9 +2648,20 @@ img {
     }
 }
 
-html.modal-open, body.modal-open {
-    overflow: hidden !important;
-    height: 100% !important;
+/* Prevent background body/html scrolling when a dialog modal is open (Desktop only) */
+@media (min-width: 993px) {
+    html.modal-open, body.modal-open {
+        overflow: hidden !important;
+        height: 100% !important;
+    }
+}
+
+@media (max-width: 992px) {
+    /* Allow scrolling on mobile body to prevent WebKit scroll lock bug */
+    html.modal-open, body.modal-open {
+        overflow: visible !important;
+        height: auto !important;
+    }
 }
 
 dialog {
@@ -2669,22 +2690,23 @@ dialog {
         display: none !important;
     }
     
-    /* Make the moving marquee preview section fixed at the bottom of the viewport on mobile devices */
-    #tab-logos .admin-marquee-preview-section {
-        position: fixed !important;
-        bottom: 0 !important;
-        left: 0 !important;
-        width: 100% !important;
-        background: #050814 !important;
-        border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
-        padding: 10px 16px 20px 16px !important;
-        box-shadow: 0 -10px 20px rgba(0, 0, 0, 0.9) !important;
-        z-index: 1010 !important;
+    /* Force Logos Tab to be a full-height flex container on mobile */
+    #tab-logos.admin-tab-content.active {
+        display: flex !important;
+        flex-direction: column !important;
+        height: 100% !important;
+        overflow: hidden !important;
     }
     
-    /* Ensure the scrollable logos list has enough bottom spacing so items don't get covered by the fixed marquee */
-    #tab-logos .logos-admin-list {
-        padding-bottom: 200px !important;
+    /* Dock the moving marquee preview section natively at the bottom of the tab */
+    #tab-logos .admin-marquee-preview-section {
+        flex-shrink: 0 !important;
+        background: #050814 !important;
+        border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
+        padding: 12px 0 20px 0 !important;
+        box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.95) !important;
+        z-index: 100 !important;
+        margin: 0 !important;
     }
 }
 
