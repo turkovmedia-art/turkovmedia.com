@@ -2059,11 +2059,10 @@ img {
         border: none !important;
         border-radius: 0 !important;
         background: transparent !important;
-        padding: 70px 16px 20px 16px !important;
+        padding: 70px 16px 15px 16px !important;
         display: flex !important;
         flex-direction: column !important;
-        overflow-y: auto !important;
-        -webkit-overflow-scrolling: touch !important;
+        overflow: hidden !important;
     }
     
     .admin-dialog-close {
@@ -2088,11 +2087,12 @@ img {
     
     .admin-tabs {
         display: flex !important;
+        flex-shrink: 0 !important;
         gap: 8px !important;
         overflow-x: auto !important;
         white-space: nowrap !important;
         padding-bottom: 8px !important;
-        margin-bottom: 20px !important;
+        margin-bottom: 15px !important;
         -webkit-overflow-scrolling: touch !important;
         scrollbar-width: none !important; /* Hide scrollbar for Firefox */
     }
@@ -2108,26 +2108,33 @@ img {
     }
     
     .admin-tab-content.active {
-        height: auto !important;
-        overflow: visible !important;
+        display: flex !important;
+        flex-direction: column !important;
+        flex-grow: 1 !important;
+        overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+        padding-bottom: 50px !important;
     }
     
     .admin-panel-grid {
-        grid-template-columns: 1fr !important;
-        overflow: visible !important;
+        display: flex !important;
+        flex-direction: column !important;
+        flex-grow: 1 !important;
         height: auto !important;
-        gap: 30px !important;
+        gap: 20px !important;
     }
     
     .admin-list-col, .admin-form-col {
         height: auto !important;
         overflow: visible !important;
+        display: flex !important;
+        flex-direction: column !important;
     }
     
     .custom-videos-list, .logos-admin-list {
-        height: 350px !important;
-        max-height: 350px !important;
-        overflow-y: auto !important;
+        height: auto !important;
+        max-height: none !important;
+        overflow: visible !important;
     }
     
     .logo-admin-row {
@@ -2613,13 +2620,6 @@ img {
         border-radius: 8px;
         width: max-content;
     }
-    
-    /* Limit height of lists on mobile so they don't scroll infinitely */
-    .custom-videos-list, .logos-admin-list {
-        height: calc(100vh - 250px) !important;
-        max-height: calc(100vh - 250px) !important;
-        overflow-y: auto !important;
-        -webkit-overflow-scrolling: touch !important;
     }
 }
 
