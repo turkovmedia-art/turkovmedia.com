@@ -1459,6 +1459,192 @@ function initAdminPanel() {
     });
     
     // ----------------------------------------------------------------------
+    // Drag and Drop Reordering Logic (Desktop Mouse & Mobile Touch)
+    // ----------------------------------------------------------------------
+    function initDragAndDrop(container, listName, onReorder) {
+        if (!container) return;
+        
+        let draggedElement = null;
+        let draggedIndex = -1;
+        
+        // --- Desktop Drag & Drop (Mouse) ---
+        container.addEventListener('dragstart', (e) => {
+            const item = e.target.closest('[draggable="true"]');
+            if (!item) return;
+            draggedElement = item;
+            item.classList.add('dragging');
+            
+            if (listName === 'videos') {
+                draggedIndex = videoProjects.findIndex(v => v.id.toString() === item.dataset.id);
+            } else if (listName === 'categories') {
+                draggedIndex = categoriesList.findIndex(c => c.id === item.dataset.id);
+            } else if (listName === 'logos') {
+                draggedIndex = parseInt(item.dataset.index);
+            }
+            
+            e.dataTransfer.effectAllowed = 'move';
+        });
+        
+        container.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            const item = e.target.closest('[draggable="true"]');
+            if (!item || item === draggedElement) return;
+            
+            const bounding = item.getBoundingClientRect();
+            const offset = e.clientY - bounding.top;
+            if (offset > bounding.height / 2) {
+                item.style.borderBottom = '2px dashed var(--accent-cyan)';
+                item.style.borderTop = '';
+            } else {
+                item.style.borderTop = '2px dashed var(--accent-cyan)';
+                item.style.borderBottom = '';
+            }
+        });
+        
+        container.addEventListener('dragleave', (e) => {
+            const item = e.target.closest('[draggable="true"]');
+            if (item) {
+                item.style.borderTop = '';
+                item.style.borderBottom = '';
+            }
+        });
+        
+        container.addEventListener('drop', (e) => {
+            e.preventDefault();
+            const targetItem = e.target.closest('[draggable="true"]');
+            if (!targetItem || targetItem === draggedElement) return;
+            
+            targetItem.style.borderTop = '';
+            targetItem.style.borderBottom = '';
+            
+            let targetIndex = -1;
+            if (listName === 'videos') {
+                targetIndex = videoProjects.findIndex(v => v.id.toString() === targetItem.dataset.id);
+            } else if (listName === 'categories') {
+                targetIndex = categoriesList.findIndex(c => c.id === targetItem.dataset.id);
+            } else if (listName === 'logos') {
+                targetIndex = parseInt(targetItem.dataset.index);
+            }
+            
+            if (draggedIndex > -1 && targetIndex > -1) {
+                let list = [];
+                if (listName === 'videos') list = videoProjects;
+                else if (listName === 'categories') list = categoriesList;
+                else if (listName === 'logos') list = clientLogos;
+                
+                const [reorderedItem] = list.splice(draggedIndex, 1);
+                list.splice(targetIndex, 0, reorderedItem);
+                
+                syncChanges();
+                if (onReorder) onReorder();
+            }
+        });
+        
+        container.addEventListener('dragend', (e) => {
+            if (draggedElement) {
+                draggedElement.classList.remove('dragging');
+            }
+            const items = container.querySelectorAll('[draggable="true"]');
+            items.forEach(item => {
+                item.style.borderTop = '';
+                item.style.borderBottom = '';
+            });
+            draggedElement = null;
+            draggedIndex = -1;
+        });
+        
+        // --- Mobile Touch Reordering (TouchEvents conversion) ---
+        let touchStartY = 0;
+        let touchStartItem = null;
+        let touchStartIndex = -1;
+        
+        container.addEventListener('touchstart', (e) => {
+            const handle = e.target.closest('.cv-drag-handle, .cat-drag-handle, .logo-drag-handle');
+            if (!handle) return;
+            
+            const item = handle.closest('[draggable="true"]');
+            if (!item) return;
+            
+            touchStartItem = item;
+            item.classList.add('dragging');
+            touchStartY = e.touches[0].clientY;
+            
+            if (listName === 'videos') {
+                touchStartIndex = videoProjects.findIndex(v => v.id.toString() === item.dataset.id);
+            } else if (listName === 'categories') {
+                touchStartIndex = categoriesList.findIndex(c => c.id === item.dataset.id);
+            } else if (listName === 'logos') {
+                touchStartIndex = parseInt(item.dataset.index);
+            }
+        }, { passive: true });
+        
+        container.addEventListener('touchmove', (e) => {
+            if (!touchStartItem) return;
+            const currentY = e.touches[0].clientY;
+            const targetElement = document.elementFromPoint(e.touches[0].clientX, e.touches[0].clientY);
+            const item = targetElement ? targetElement.closest('[draggable="true"]') : null;
+            
+            const items = container.querySelectorAll('[draggable="true"]');
+            items.forEach(it => {
+                it.style.borderTop = '';
+                it.style.borderBottom = '';
+            });
+            
+            if (item && item !== touchStartItem) {
+                const bounding = item.getBoundingClientRect();
+                const offset = currentY - bounding.top;
+                if (offset > bounding.height / 2) {
+                    item.style.borderBottom = '2px dashed var(--accent-cyan)';
+                } else {
+                    item.style.borderTop = '2px dashed var(--accent-cyan)';
+                }
+            }
+        }, { passive: true });
+        
+        container.addEventListener('touchend', (e) => {
+            if (!touchStartItem) return;
+            touchStartItem.classList.remove('dragging');
+            
+            const changedTouch = e.changedTouches[0];
+            const targetElement = document.elementFromPoint(changedTouch.clientX, changedTouch.clientY);
+            const targetItem = targetElement ? targetElement.closest('[draggable="true"]') : null;
+            
+            const items = container.querySelectorAll('[draggable="true"]');
+            items.forEach(it => {
+                it.style.borderTop = '';
+                it.style.borderBottom = '';
+            });
+            
+            if (targetItem && targetItem !== touchStartItem) {
+                let targetIndex = -1;
+                if (listName === 'videos') {
+                    targetIndex = videoProjects.findIndex(v => v.id.toString() === targetItem.dataset.id);
+                } else if (listName === 'categories') {
+                    targetIndex = categoriesList.findIndex(c => c.id === targetItem.dataset.id);
+                } else if (listName === 'logos') {
+                    targetIndex = parseInt(targetItem.dataset.index);
+                }
+                
+                if (touchStartIndex > -1 && targetIndex > -1) {
+                    let list = [];
+                    if (listName === 'videos') list = videoProjects;
+                    else if (listName === 'categories') list = categoriesList;
+                    else if (listName === 'logos') list = clientLogos;
+                    
+                    const [reorderedItem] = list.splice(touchStartIndex, 1);
+                    list.splice(targetIndex, 0, reorderedItem);
+                    
+                    syncChanges();
+                    if (onReorder) onReorder();
+                }
+            }
+            
+            touchStartItem = null;
+            touchStartIndex = -1;
+        });
+    }
+
+    // ----------------------------------------------------------------------
     // Tab Navigation Logic
     // ----------------------------------------------------------------------
     tabButtons.forEach(btn => {
@@ -1473,11 +1659,14 @@ function initAdminPanel() {
             // Refresh views specific to the tab
             if (tabId === 'tab-videos') {
                 renderAdminVideosList();
+                initDragAndDrop(allVideosContainer, 'videos', () => { renderAdminVideosList(); renderPortfolioGrid('all'); });
                 renderVideoFormCheckboxes();
             } else if (tabId === 'tab-categories') {
                 renderAdminCategoriesList();
+                initDragAndDrop(allCategoriesContainer, 'categories', () => { renderAdminCategoriesList(); renderCategoryFilters(); renderPortfolioGrid('all'); });
             } else if (tabId === 'tab-logos') {
                 renderAdminLogosList();
+                initDragAndDrop(allLogosContainer, 'logos', () => { renderAdminLogosList(); initLogosMarquee(); });
             } else if (tabId === 'tab-publish') {
                 loadPublishTabToken();
             }
@@ -1493,6 +1682,7 @@ function initAdminPanel() {
         document.getElementById('tab-videos').classList.add('active');
         
         renderAdminVideosList();
+        initDragAndDrop(allVideosContainer, 'videos', () => { renderAdminVideosList(); renderPortfolioGrid('all'); });
         renderVideoFormCheckboxes();
         panelDialog.showModal();
     }
@@ -1521,7 +1711,7 @@ function initAdminPanel() {
         allVideosContainer.innerHTML = videoProjects.map(video => {
             const tagBadges = (video.categories || []).map(c => `<span class="cv-tag-badge">${getCategoryHebrew(c)}</span>`).join('');
             return `
-                <div class="custom-video-item" data-id="${video.id}">
+                <div class="custom-video-item" draggable="true" data-id="${video.id}">
                     <div class="cv-action-buttons">
                         <button class="cv-delete-btn" aria-label="מחק סרטון" onclick="deleteVideoItem(${video.id})">
                             <i class="fa-regular fa-trash-can"></i>
@@ -1541,6 +1731,9 @@ function initAdminPanel() {
                                 <i class="fa-solid fa-play"></i>
                             </div>
                         </div>
+                    </div>
+                    <div class="cv-drag-handle" style="cursor: grab; color: rgba(255,255,255,0.3); padding: 10px 5px 10px 15px; display: flex; align-items: center; justify-content: center;">
+                        <i class="fa-solid fa-grip-vertical"></i>
                     </div>
                 </div>
             `;
@@ -1685,11 +1878,14 @@ function initAdminPanel() {
         }
         
         allCategoriesContainer.innerHTML = categoriesList.map(cat => `
-            <div class="category-admin-item" data-id="${cat.id}">
+            <div class="category-admin-item" draggable="true" data-id="${cat.id}">
                 <button class="cat-delete-btn" aria-label="מחק קטגוריה" onclick="deleteCategoryItem('${cat.id}')">
                     <i class="fa-regular fa-trash-can"></i>
                 </button>
                 <div class="cat-info">${cat.name}</div>
+                <div class="cat-drag-handle" style="cursor: grab; color: rgba(255,255,255,0.3); padding: 5px 10px; display: flex; align-items: center; justify-content: center;">
+                    <i class="fa-solid fa-grip-vertical"></i>
+                </div>
             </div>
         `).join('');
     }
@@ -1817,7 +2013,7 @@ function initAdminPanel() {
             const details = getLogoDetails(logo);
             const src = details.src.startsWith('data:image/') ? details.src : `assets/client_logos/${encodeURIComponent(details.src)}`;
             return `
-                <div class="logo-admin-row" data-index="${index}">
+                <div class="logo-admin-row" draggable="true" data-index="${index}">
                     <div class="logo-admin-actions">
                         <button class="logo-admin-delete-btn" aria-label="מחק לוגו" onclick="deleteLogoItem(${index})">
                             <i class="fa-regular fa-trash-can"></i>
@@ -1832,6 +2028,9 @@ function initAdminPanel() {
                             <img src="${src}" alt="${details.name}" style="height: ${Math.round(40 * details.scale)}px;">
                         </div>
                         <span class="logo-admin-name">${details.name}</span>
+                    </div>
+                    <div class="logo-drag-handle" style="cursor: grab; color: rgba(255,255,255,0.3); padding: 10px 15px; display: flex; align-items: center; justify-content: center;">
+                        <i class="fa-solid fa-grip-vertical"></i>
                     </div>
                 </div>
             `;

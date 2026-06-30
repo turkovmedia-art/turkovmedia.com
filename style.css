@@ -2493,3 +2493,23 @@ img {
     border-color: #ff4d4d;
 }
 
+/* Drag and Drop Styling */
+[draggable="true"] {
+    user-select: none;
+    -webkit-user-drag: element;
+}
+
+.dragging {
+    opacity: 0.4;
+    background: rgba(37, 99, 235, 0.1) !important;
+    border: 1px dashed #2563eb !important;
+}
+
+.cv-drag-handle, .cat-drag-handle, .logo-drag-handle {
+    transition: color 0.2s ease;
+}
+
+.cv-drag-handle:hover, .cat-drag-handle:hover, .logo-drag-handle:hover {
+    color: var(--accent-cyan) !important;
+}
+
