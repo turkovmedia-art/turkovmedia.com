@@ -2612,7 +2612,6 @@ img {
         border-radius: 8px;
         width: max-content;
     }
-    }
 }
 
 /* Footer Bottom Layout Centering on Mobile */
@@ -2646,5 +2645,16 @@ html.modal-open, body.modal-open {
 
 dialog {
     overscroll-behavior: contain !important;
+}
+
+/* Final overrides to solve cascade priority issues for mobile admin lists */
+@media (max-width: 992px) {
+    .custom-videos-list, .logos-admin-list {
+        height: auto !important;
+        max-height: none !important;
+        min-height: auto !important;
+        overflow: visible !important;
+        display: block !important;
+    }
 }
 

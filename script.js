@@ -2413,7 +2413,7 @@ window.closeMobileForm = function(tabId) {
 };
 
 // Lock/Unlock background scroll when any dialog is opened/closed
-document.addEventListener('DOMContentLoaded', () => {
+const initDialogScrollObserver = () => {
     const dialogObserver = new MutationObserver((mutations) => {
         mutations.forEach((mutation) => {
             if (mutation.type === 'attributes' && mutation.attributeName === 'open') {
@@ -2432,10 +2432,16 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('dialog').forEach(dialog => {
         dialogObserver.observe(dialog, { attributes: true, attributeFilter: ['open'] });
         
-        // Also ensure background scroll is locked if a dialog was opened prior to DOMContentLoaded
+        // Also ensure background scroll is locked if a dialog was opened prior to execution
         if (dialog.hasAttribute('open')) {
             document.documentElement.classList.add('modal-open');
             document.body.classList.add('modal-open');
         }
     });
-});
+};
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initDialogScrollObserver);
+} else {
+    initDialogScrollObserver();
+}
