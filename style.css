@@ -2668,5 +2668,23 @@ dialog {
     #tab-logos .mobile-form-back-btn {
         display: none !important;
     }
+    
+    /* Make the moving marquee preview section fixed at the bottom of the viewport on mobile devices */
+    #tab-logos .admin-marquee-preview-section {
+        position: fixed !important;
+        bottom: 0 !important;
+        left: 0 !important;
+        width: 100% !important;
+        background: #050814 !important;
+        border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
+        padding: 10px 16px 20px 16px !important;
+        box-shadow: 0 -10px 20px rgba(0, 0, 0, 0.9) !important;
+        z-index: 1010 !important;
+    }
+    
+    /* Ensure the scrollable logos list has enough bottom spacing so items don't get covered by the fixed marquee */
+    #tab-logos .logos-admin-list {
+        padding-bottom: 200px !important;
+    }
 }
 
