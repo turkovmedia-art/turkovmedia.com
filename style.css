@@ -56,6 +56,8 @@ html {
     font-size: 16px;
     background-color: var(--bg-primary);
     color: var(--text-body);
+    overflow-x: hidden;
+    width: 100%;
 }
 
 body {
@@ -63,22 +65,25 @@ body {
     line-height: 1.6;
     overflow-x: hidden;
     position: relative;
+    width: 100%;
 }
 
-/* Custom Scrollbar */
-::-webkit-scrollbar {
-    width: 8px;
-}
-::-webkit-scrollbar-track {
-    background: var(--bg-primary);
-}
-::-webkit-scrollbar-thumb {
-    background: #111e3d;
-    border-radius: 4px;
-    border: 1px solid var(--bg-primary);
-}
-::-webkit-scrollbar-thumb:hover {
-    background: var(--accent-cyan);
+/* Custom Scrollbar for Desktop */
+@media (min-width: 769px) {
+    ::-webkit-scrollbar {
+        width: 8px;
+    }
+    ::-webkit-scrollbar-track {
+        background: var(--bg-primary);
+    }
+    ::-webkit-scrollbar-thumb {
+        background: #111e3d;
+        border-radius: 4px;
+        border: 1px solid var(--bg-primary);
+    }
+    ::-webkit-scrollbar-thumb:hover {
+        background: var(--accent-cyan);
+    }
 }
 
 /* Base typography elements */
@@ -1333,6 +1338,10 @@ img {
 }
 
 @media (max-width: 768px) {
+    .main-header {
+        border-bottom: none !important;
+    }
+
     /* Navigation Menu Toggle for Mobile */
     .mobile-menu-toggle {
         display: block;
