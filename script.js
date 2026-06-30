@@ -1576,10 +1576,16 @@ function initAdminPanel() {
             } else if (listName === 'logos') {
                 touchStartIndex = parseInt(item.dataset.index);
             }
-        }, { passive: true });
+        }, { passive: false });
         
         container.addEventListener('touchmove', (e) => {
             if (!touchStartItem) return;
+            
+            // Prevent background page scrolling while dragging on mobile touch screen
+            if (e.cancelable) {
+                e.preventDefault();
+            }
+            
             const currentY = e.touches[0].clientY;
             const targetElement = document.elementFromPoint(e.touches[0].clientX, e.touches[0].clientY);
             const item = targetElement ? targetElement.closest('[draggable="true"]') : null;
@@ -1599,7 +1605,7 @@ function initAdminPanel() {
                     item.style.borderTop = '2px dashed var(--accent-cyan)';
                 }
             }
-        }, { passive: true });
+        }, { passive: false });
         
         container.addEventListener('touchend', (e) => {
             if (!touchStartItem) return;
