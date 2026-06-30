@@ -2548,7 +2548,7 @@ img {
     -webkit-user-drag: element;
 }
 
-.dragging {
+.dragging:not(.marquee-row) {
     opacity: 0.4;
     background: rgba(37, 99, 235, 0.1) !important;
     border: 1px dashed #2563eb !important;
