@@ -2642,3 +2642,12 @@ img {
     }
 }
 
+html.modal-open, body.modal-open {
+    overflow: hidden !important;
+    height: 100% !important;
+}
+
+dialog {
+    overscroll-behavior: contain !important;
+}
+

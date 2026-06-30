@@ -2411,3 +2411,31 @@ window.closeMobileForm = function(tabId) {
         }
     }
 };
+
+// Lock/Unlock background scroll when any dialog is opened/closed
+document.addEventListener('DOMContentLoaded', () => {
+    const dialogObserver = new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => {
+            if (mutation.type === 'attributes' && mutation.attributeName === 'open') {
+                const anyDialogOpen = Array.from(document.querySelectorAll('dialog')).some(dialog => dialog.hasAttribute('open'));
+                if (anyDialogOpen) {
+                    document.documentElement.classList.add('modal-open');
+                    document.body.classList.add('modal-open');
+                } else {
+                    document.documentElement.classList.remove('modal-open');
+                    document.body.classList.remove('modal-open');
+                }
+            }
+        });
+    });
+
+    document.querySelectorAll('dialog').forEach(dialog => {
+        dialogObserver.observe(dialog, { attributes: true, attributeFilter: ['open'] });
+        
+        // Also ensure background scroll is locked if a dialog was opened prior to DOMContentLoaded
+        if (dialog.hasAttribute('open')) {
+            document.documentElement.classList.add('modal-open');
+            document.body.classList.add('modal-open');
+        }
+    });
+});
