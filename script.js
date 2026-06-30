@@ -2451,3 +2451,52 @@ if (document.readyState === 'loading') {
 } else {
     initDialogScrollObserver();
 }
+
+// Force background video autoplay on iOS/Safari (handles Low Power Mode & autoplay restrictions)
+const initHeroVideosAutoplay = () => {
+    const videos = [
+        document.getElementById('heroVideoBgDesktop'),
+        document.getElementById('heroVideoBgMobile')
+    ].filter(Boolean);
+
+    videos.forEach(video => {
+        // Double-check attributes programmatically
+        video.muted = true;
+        video.playsInline = true;
+        video.setAttribute('muted', '');
+        video.setAttribute('playsinline', '');
+
+        // Try playing immediately
+        const playPromise = video.play();
+
+        if (playPromise !== undefined) {
+            playPromise.catch(() => {
+                // Autoplay failed (e.g. low power mode, browser policies)
+                // Try to play again on first user interaction (touchstart, click, scroll)
+                const playOnInteraction = () => {
+                    video.play().then(() => {
+                        removeInteractionListeners();
+                    }).catch(err => {
+                        console.log("Play failed on interaction, retrying...", err);
+                    });
+                };
+
+                const removeInteractionListeners = () => {
+                    document.removeEventListener('touchstart', playOnInteraction);
+                    document.removeEventListener('click', playOnInteraction);
+                    document.removeEventListener('scroll', playOnInteraction);
+                };
+
+                document.addEventListener('touchstart', playOnInteraction, { passive: true });
+                document.addEventListener('click', playOnInteraction, { passive: true });
+                document.addEventListener('scroll', playOnInteraction, { passive: true });
+            });
+        }
+    });
+};
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initHeroVideosAutoplay);
+} else {
+    initHeroVideosAutoplay();
+}
