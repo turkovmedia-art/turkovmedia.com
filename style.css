@@ -327,9 +327,20 @@ img {
     pointer-events: none;
 }
 
+.video-desktop {
+    display: block;
+}
+
+.video-mobile {
+    display: none;
+}
+
 @media (max-width: 768px) {
-    .hero-video-bg {
+    .video-desktop {
         display: none;
+    }
+    .video-mobile {
+        display: block;
     }
 }
 
