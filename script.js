@@ -1929,6 +1929,38 @@ const defaultCategories = ${JSON.stringify(categoriesList, null, 4)};
             URL.revokeObjectURL(url);
         });
     }
+    
+    const btnRestoreLocal = document.getElementById('btn-restore-local');
+    if (btnRestoreLocal) {
+        btnRestoreLocal.addEventListener('click', async () => {
+            const localVideos = localStorage.getItem(DB_VIDEOS_KEY);
+            const localLogos = localStorage.getItem(DB_LOGOS_KEY);
+            const localCats = localStorage.getItem(DB_CATEGORIES_KEY);
+            
+            if (!localVideos && !localLogos && !localCats) {
+                alert('לא נמצאו שינויים מקומיים שמורים בדפדפן זה.');
+                return;
+            }
+            
+            if (!confirm('האם אתה בטוח שברצונך לדרוס את הנתונים הנוכחיים בענן ולהעלות את השינויים השמורים מקומית בדפדפן זה?')) {
+                return;
+            }
+            
+            try {
+                if (localVideos) videoProjects = JSON.parse(localVideos);
+                if (localLogos) clientLogos = JSON.parse(localLogos);
+                if (localCats) categoriesList = JSON.parse(localCats);
+                
+                await saveDatabaseToFirestore();
+                
+                alert('הנתונים המקומיים שוחזרו וסונכרנו בהצלחה לענן! האתר מתרענן כעת... 🎉');
+                window.location.reload();
+            } catch (err) {
+                console.error(err);
+                alert('שגיאה בשחזור הנתונים לענן: ' + err.message);
+            }
+        });
+    }
 }
 
 /**
