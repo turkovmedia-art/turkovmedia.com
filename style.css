@@ -2047,22 +2047,22 @@ img {
         top: 0 !important;
         left: 0 !important;
         background: #050814 !important;
-        display: flex !important;
-        flex-direction: column !important;
+        display: block !important;
+        overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch !important;
     }
     
     .admin-dialog-card.panel-card {
         width: 100% !important;
-        height: 100% !important;
+        height: auto !important;
         min-height: 100% !important;
-        max-height: 100% !important;
+        max-height: none !important;
         border: none !important;
         border-radius: 0 !important;
         background: transparent !important;
-        padding: 70px 16px 15px 16px !important;
-        display: flex !important;
-        flex-direction: column !important;
-        overflow: hidden !important;
+        padding: 70px 16px 80px 16px !important;
+        display: block !important;
+        overflow: visible !important;
     }
     
     .admin-dialog-close {
@@ -2087,12 +2087,11 @@ img {
     
     .admin-tabs {
         display: flex !important;
-        flex-shrink: 0 !important;
         gap: 8px !important;
         overflow-x: auto !important;
         white-space: nowrap !important;
         padding-bottom: 8px !important;
-        margin-bottom: 15px !important;
+        margin-bottom: 20px !important;
         -webkit-overflow-scrolling: touch !important;
         scrollbar-width: none !important; /* Hide scrollbar for Firefox */
     }
@@ -2108,27 +2107,20 @@ img {
     }
     
     .admin-tab-content.active {
-        display: flex !important;
-        flex-direction: column !important;
-        flex-grow: 1 !important;
-        overflow-y: auto !important;
-        -webkit-overflow-scrolling: touch !important;
-        padding-bottom: 50px !important;
+        display: block !important;
+        height: auto !important;
+        overflow: visible !important;
     }
     
     .admin-panel-grid {
-        display: flex !important;
-        flex-direction: column !important;
-        flex-grow: 1 !important;
+        display: block !important;
         height: auto !important;
-        gap: 20px !important;
     }
     
     .admin-list-col, .admin-form-col {
         height: auto !important;
         overflow: visible !important;
-        display: flex !important;
-        flex-direction: column !important;
+        display: block !important;
     }
     
     .custom-videos-list, .logos-admin-list {
@@ -2624,21 +2616,26 @@ img {
 }
 
 /* Footer Bottom Layout Centering on Mobile */
-@media (max-width: 768px) {
+@media (max-width: 992px) {
     .footer-bottom {
         flex-direction: column !important;
         align-items: center !important;
+        justify-content: center !important;
         text-align: center !important;
         gap: 15px !important;
-        justify-content: center !important;
     }
     .footer-bottom p {
         text-align: center !important;
         margin: 0 !important;
+        width: 100% !important;
     }
     .footer-socials {
+        display: flex !important;
         justify-content: center !important;
+        align-items: center !important;
         width: 100% !important;
+        margin: 0 auto !important;
+        gap: 15px !important;
     }
 }
 
