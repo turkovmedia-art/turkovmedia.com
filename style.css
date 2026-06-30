@@ -2036,7 +2036,7 @@ img {
 }
 
 @media (max-width: 992px) {
-    .admin-panel-dialog {
+    .admin-panel-dialog[open] {
         width: 100% !important;
         max-width: 100% !important;
         height: 100% !important;
