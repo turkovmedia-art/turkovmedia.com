@@ -438,6 +438,9 @@
                 <div class="admin-panel-grid">
                     <!-- Form Column -->
                     <div class="admin-form-col">
+                        <button type="button" class="mobile-form-back-btn" onclick="closeMobileForm('tab-videos')">
+                            <i class="fa-solid fa-arrow-right"></i> חזרה לרשימה
+                        </button>
                         <h4 id="admin-video-form-title">הוספת סרטון חדש</h4>
                         <form id="admin-add-video-form" onsubmit="return false;">
                             <input type="hidden" id="admin-video-id">
@@ -473,8 +476,10 @@
                             </div>
                         </form>
                     </div>
-                    <!-- List Column -->
                     <div class="admin-list-col">
+                        <button type="button" class="mobile-add-btn" onclick="openMobileForm('tab-videos')">
+                            <i class="fa-solid fa-plus"></i> הוספת סרטון חדש
+                        </button>
                         <h4>רשימת כל הסרטונים באתר</h4>
                         <div class="custom-videos-list" id="all-videos-list-container">
                             <!-- Rendered dynamically in JS -->
@@ -488,6 +493,9 @@
                 <div class="admin-panel-grid">
                     <!-- Form Column -->
                     <div class="admin-form-col">
+                        <button type="button" class="mobile-form-back-btn" onclick="closeMobileForm('tab-categories')">
+                            <i class="fa-solid fa-arrow-right"></i> חזרה לרשימה
+                        </button>
                         <h4>הוספת קטגוריה חדשה</h4>
                         <form id="admin-add-category-form" onsubmit="return false;">
                             <div class="form-group">
@@ -499,6 +507,9 @@
                     </div>
                     <!-- List Column -->
                     <div class="admin-list-col">
+                        <button type="button" class="mobile-add-btn" onclick="openMobileForm('tab-categories')">
+                            <i class="fa-solid fa-plus"></i> הוספת קטגוריה חדשה
+                        </button>
                         <h4>קטגוריות קיימות</h4>
                         <div class="custom-videos-list" id="all-categories-list-container">
                             <!-- Rendered dynamically in JS -->
@@ -512,6 +523,9 @@
                 <div class="admin-panel-grid" style="flex-grow: 1; overflow: hidden; margin-bottom: 20px;">
                     <!-- Form Column -->
                     <div class="admin-form-col">
+                        <button type="button" class="mobile-form-back-btn" onclick="closeMobileForm('tab-logos')">
+                            <i class="fa-solid fa-arrow-right"></i> חזרה לרשימה
+                        </button>
                         <h4>הוספת לוגו חדש</h4>
                         <form id="admin-add-logo-form" onsubmit="return false;">
                             <div class="form-group">
@@ -527,6 +541,9 @@
                     </div>
                     <!-- List Column -->
                     <div class="admin-list-col">
+                        <button type="button" class="mobile-add-btn" onclick="openMobileForm('tab-logos')">
+                            <i class="fa-solid fa-plus"></i> הוספת לוגו חדש
+                        </button>
                         <h4>לוגואים קיימים בקרוסלה</h4>
                         <div class="logos-admin-list" id="all-logos-list-container">
                             <!-- Rendered dynamically in JS -->

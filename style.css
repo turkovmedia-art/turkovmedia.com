@@ -2037,18 +2037,33 @@ img {
 
 @media (max-width: 992px) {
     .admin-panel-dialog {
-        height: 100vh !important;
-        max-height: 100vh !important;
-        overflow-y: auto !important;
-        -webkit-overflow-scrolling: touch !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        height: 100% !important;
+        max-height: 100% !important;
+        border: none !important;
+        border-radius: 0 !important;
+        margin: 0 !important;
+        top: 0 !important;
+        left: 0 !important;
+        background: #050814 !important;
+        display: flex !important;
+        flex-direction: column !important;
     }
     
     .admin-dialog-card.panel-card {
-        height: auto !important;
-        min-height: 100vh !important;
-        max-height: none !important;
-        overflow: visible !important;
-        padding: 24px 16px 80px 16px !important; /* Added 80px bottom padding to prevent mobile browser UI overlap */
+        width: 100% !important;
+        height: 100% !important;
+        min-height: 100% !important;
+        max-height: 100% !important;
+        border: none !important;
+        border-radius: 0 !important;
+        background: transparent !important;
+        padding: 70px 16px 20px 16px !important;
+        display: flex !important;
+        flex-direction: column !important;
+        overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch !important;
     }
     
     .admin-dialog-close {
@@ -2062,8 +2077,13 @@ img {
     }
     
     .admin-title {
-        font-size: 1.5rem !important;
-        margin-top: 15px !important;
+        position: fixed !important;
+        top: 18px !important;
+        right: 16px !important;
+        margin: 0 !important;
+        font-size: 1.3rem !important;
+        z-index: 999 !important;
+        color: var(--text-light) !important;
     }
     
     .admin-tabs {
@@ -2531,5 +2551,94 @@ img {
 
 .cv-drag-handle:hover, .cat-drag-handle:hover, .logo-drag-handle:hover {
     color: var(--accent-cyan) !important;
+}
+
+/* Mobile-only toggle buttons & Form overlay layout */
+.mobile-add-btn, .mobile-form-back-btn {
+    display: none;
+}
+
+@media (max-width: 992px) {
+    /* Hide forms by default on mobile */
+    .admin-form-col {
+        display: none !important;
+    }
+    
+    /* When form is open, show the form column and hide the list column */
+    .form-open .admin-form-col {
+        display: block !important;
+        height: 100% !important;
+        overflow-y: auto !important;
+    }
+    .form-open .admin-list-col {
+        display: none !important;
+    }
+    
+    /* Segmented add button at the top of lists */
+    .mobile-add-btn {
+        display: flex !important;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        width: 100%;
+        padding: 14px;
+        background: rgba(0, 240, 255, 0.08);
+        border: 1px solid var(--accent-cyan);
+        color: var(--accent-cyan);
+        border-radius: 12px;
+        font-weight: 600;
+        margin-bottom: 20px;
+        cursor: pointer;
+        font-size: 0.95rem;
+        transition: all 0.2s ease;
+    }
+    
+    .mobile-add-btn:active {
+        background: rgba(0, 240, 255, 0.2);
+    }
+    
+    /* Close/Back button at the top of forms on mobile */
+    .mobile-form-back-btn {
+        display: flex !important;
+        align-items: center;
+        gap: 6px;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        color: var(--text-light);
+        font-size: 0.9rem;
+        font-weight: 600;
+        cursor: pointer;
+        margin-bottom: 20px;
+        padding: 8px 16px;
+        border-radius: 8px;
+        width: max-content;
+    }
+    
+    /* Limit height of lists on mobile so they don't scroll infinitely */
+    .custom-videos-list, .logos-admin-list {
+        height: calc(100vh - 250px) !important;
+        max-height: calc(100vh - 250px) !important;
+        overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+    }
+}
+
+/* Footer Bottom Layout Centering on Mobile */
+@media (max-width: 768px) {
+    .footer-bottom {
+        flex-direction: column !important;
+        align-items: center !important;
+        text-align: center !important;
+        gap: 15px !important;
+        justify-content: center !important;
+    }
+    .footer-bottom p {
+        text-align: center !important;
+        margin: 0 !important;
+    }
+    .footer-socials {
+        justify-content: center !important;
+        width: 100% !important;
+    }
 }
 

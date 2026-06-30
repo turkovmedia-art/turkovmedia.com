@@ -1838,6 +1838,9 @@ function initAdminPanel() {
         btnVideoSubmit.textContent = 'עדכן סרטון';
         btnCancelVideoEdit.style.display = 'block';
         
+        // Open mobile form view if on mobile screen
+        window.openMobileForm('tab-videos');
+        
         // Scroll form into view
         addVideoForm.scrollIntoView({ behavior: 'smooth' });
     };
@@ -1908,6 +1911,7 @@ function initAdminPanel() {
         syncChanges();
         
         addCategoryForm.reset();
+        window.closeMobileForm('tab-categories');
         renderAdminCategoriesList();
         renderCategoryFilters();
         alert('הקטגוריה נוספה בהצלחה!');
@@ -1994,6 +1998,7 @@ function initAdminPanel() {
         uploadedLogoBase64 = '';
         uploadedLogoName = '';
         logoPreviewContainer.style.display = 'none';
+        window.closeMobileForm('tab-logos');
         
         renderAdminLogosList();
         initLogosMarquee(); // Hot-reload the marquee running rows!
@@ -2384,3 +2389,25 @@ async function sendEmailMessage(name, email, phone, message) {
         console.error('Error sending email via Web3Forms:', error);
     }
 }
+
+// Mobile Admin Form Toggle Helpers
+window.openMobileForm = function(tabId) {
+    const tab = document.getElementById(tabId);
+    if (tab) {
+        tab.classList.add('form-open');
+    }
+};
+
+window.closeMobileForm = function(tabId) {
+    const tab = document.getElementById(tabId);
+    if (tab) {
+        tab.classList.remove('form-open');
+        // If it was videos tab, reset the form
+        if (tabId === 'tab-videos') {
+            const btnCancel = document.getElementById('btn-cancel-video-edit');
+            if (btnCancel && btnCancel.style.display !== 'none') {
+                btnCancel.click();
+            }
+        }
+    }
+};
