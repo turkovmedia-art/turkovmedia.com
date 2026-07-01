@@ -5,39 +5,159 @@
 // ==========================================================================
 let videoProjects = [
     {
-        "id": 1,
-        "title": "My Journey with Einstein (Final version)",
-        "categories": [
-            "ai"
-        ],
-        "desc": "My Journey with Einstein (Final version)",
-        "thumbnail": "https://img.youtube.com/vi/GI5NtGSD8lo/hqdefault.jpg",
-        "videoUrl": "https://youtu.be/GI5NtGSD8lo",
-        "client": "מנדי טורקוב הפקות",
-        "year": "2026"
-    },
-    {
-        "id": 2,
-        "title": "כינוס השלוחים העולמי תשפ\"ו",
-        "categories": [
-            "music_summary"
-        ],
-        "desc": "כינוס השלוחים העולמי תשפ\"ו | קליפ סיכום",
-        "thumbnail": "https://img.youtube.com/vi/6MI2JYS-iwY/hqdefault.jpg",
-        "videoUrl": "https://youtu.be/6MI2JYS-iwY",
-        "client": "קליפ סיכום",
-        "year": "2026"
-    },
-    {
         "id": 3,
-        "title": "שורד השבי שגב כלפון",
+        "title": "מעזה לטיימס סקוור",
         "categories": [
             "documentary"
         ],
         "desc": "שורד השבי שגב כלפון | סרטון הרצאות",
         "thumbnail": "https://img.youtube.com/vi/e_MrJiBTwIo/hqdefault.jpg",
         "videoUrl": "https://youtu.be/e_MrJiBTwIo",
-        "client": "סרטון הרצאות",
+        "client": "שגב כלפון",
+        "year": "2026"
+    },
+    {
+        "id": 1,
+        "title": "המסע שלי עם אינשטיין",
+        "categories": [
+            "ai"
+        ],
+        "desc": "מרכז חב\"ד העולמי",
+        "thumbnail": "https://img.youtube.com/vi/GI5NtGSD8lo/hqdefault.jpg",
+        "videoUrl": "https://youtu.be/GI5NtGSD8lo",
+        "client": "מרכז חב\"ד העולמי",
+        "year": "2026"
+    },
+    {
+        "id": 2,
+        "title": "כינוס השלוחים העולמי",
+        "categories": [
+            "music_summary"
+        ],
+        "desc": "הרגעים הגדולים",
+        "thumbnail": "https://img.youtube.com/vi/6MI2JYS-iwY/hqdefault.jpg",
+        "videoUrl": "https://youtu.be/6MI2JYS-iwY",
+        "client": "מרכז חב\"ד העולמי",
+        "year": "2026"
+    },
+    {
+        "id": 8,
+        "title": "505 ימים במנהרות עזה",
+        "categories": [
+            "documentary"
+        ],
+        "desc": "הסיפור של אליה כהן",
+        "thumbnail": "https://img.youtube.com/vi/GVkPM7iox8A/hqdefault.jpg",
+        "videoUrl": "https://youtu.be/GVkPM7iox8A",
+        "client": "אליה כהן",
+        "year": "2026"
+    },
+    {
+        "id": 13,
+        "title": "רון דרמר",
+        "categories": [
+            "documentary"
+        ],
+        "desc": "האיש מאחורי הקלעים",
+        "thumbnail": "https://img.youtube.com/vi/mzJotWYPVtg/hqdefault.jpg",
+        "videoUrl": "https://youtu.be/mzJotWYPVtg",
+        "client": "רון דרמר",
+        "year": "2026"
+    },
+    {
+        "id": 14,
+        "title": "מאפילה לאורה",
+        "categories": [
+            "documentary"
+        ],
+        "desc": "שורדי השבי סשה טרופנוב וספיר כהן | סרטון הרצאות",
+        "thumbnail": "https://img.youtube.com/vi/X_jTRMKeuKU/hqdefault.jpg",
+        "videoUrl": "https://youtu.be/X_jTRMKeuKU",
+        "client": "בית תפילה - אריזונה",
+        "year": "2026"
+    },
+    {
+        "id": 6,
+        "title": "אמונה מתחת לאדמה",
+        "categories": [
+            "documentary"
+        ],
+        "desc": "סיפורם של מתן אילנה ושגב",
+        "thumbnail": "https://img.youtube.com/vi/JpbWvSZQetQ/hqdefault.jpg",
+        "videoUrl": "https://youtu.be/JpbWvSZQetQ",
+        "client": "Cteen - טיים סקוור",
+        "year": "2026"
+    },
+    {
+        "id": 26,
+        "title": "כינוס השלוחות העולמי",
+        "categories": [
+            "music_summary"
+        ],
+        "desc": "הרגעים הגדולים",
+        "thumbnail": "https://img.youtube.com/vi/G7dch9-IW50/hqdefault.jpg",
+        "videoUrl": "https://youtu.be/G7dch9-IW50",
+        "client": "מרכז חב\"ד העולמי",
+        "year": "2026"
+    },
+    {
+        "id": 5,
+        "title": "מצטרפים לשרשרת הדורות",
+        "categories": [
+            "ai"
+        ],
+        "desc": "סרט מסיבות הסיום | Ckids 2026",
+        "thumbnail": "https://img.youtube.com/vi/a9ItNdulelw/hqdefault.jpg",
+        "videoUrl": "https://youtu.be/a9ItNdulelw",
+        "client": "Ckids",
+        "year": "2026"
+    },
+    {
+        "id": 1782784852037,
+        "title": "חבורת תריסר",
+        "categories": [
+            "narrative"
+        ],
+        "desc": "פרק הבכורה",
+        "thumbnail": "https://img.youtube.com/vi/FcdM8uwvaFE/hqdefault.jpg",
+        "videoUrl": "https://youtu.be/FcdM8uwvaFE",
+        "client": "ערוץ חב\"ד לילדים",
+        "year": "2026"
+    },
+    {
+        "id": 1782878320253,
+        "title": "שליחות בכל מצב",
+        "categories": [
+            "documentary"
+        ],
+        "desc": "סיפורה של חיה קוגו",
+        "thumbnail": "https://img.youtube.com/vi/dQOcX60wSIs/hqdefault.jpg",
+        "videoUrl": "https://youtu.be/dQOcX60wSIs",
+        "client": "צעירי אגודת חב\"ד",
+        "year": "2024"
+    },
+    {
+        "id": 1782800686794,
+        "title": "החלטה של דורות",
+        "categories": [
+            "documentary"
+        ],
+        "desc": "משפחת טריסטר | ג' תמוז הפנסאים",
+        "thumbnail": "https://img.youtube.com/vi/hMcE6F0RvBY/hqdefault.jpg",
+        "videoUrl": "https://youtu.be/hMcE6F0RvBY",
+        "client": "הפנסאים",
+        "year": "2026"
+    },
+    {
+        "id": 10,
+        "title": "החלאקה של לביא",
+        "categories": [
+            "music_summary"
+        ],
+        "desc": "קליפ מוזיקלי",
+        "thumbnail": "https://img.youtube.com/vi/PCQe2RqqoME/hqdefault.jpg",
+        "videoUrl": "https://youtu.be/PCQe2RqqoME",
+        "client": "משפחת לבייב",
         "year": "2026"
     },
     {
@@ -46,34 +166,70 @@ let videoProjects = [
         "categories": [
             "documentary"
         ],
-        "desc": "קווים לדמותו | צבי קוגן",
+        "desc": "צבי קוגן הי\"ד",
         "thumbnail": "https://img.youtube.com/vi/5LRWzQaZB7c/hqdefault.jpg",
         "videoUrl": "https://youtu.be/5LRWzQaZB7c",
-        "client": "צבי קוגן",
-        "year": "2026"
+        "client": "חב\"ד דובאי",
+        "year": "2025"
     },
     {
-        "id": 5,
-        "title": "סרט מסיבות סיום",
+        "id": 17,
+        "title": "דרך האבות",
         "categories": [
-            "ai"
+            "narrative"
         ],
-        "desc": "סרט מסיבות סיום | Ckids 2026",
-        "thumbnail": "https://img.youtube.com/vi/a9ItNdulelw/hqdefault.jpg",
-        "videoUrl": "https://youtu.be/a9ItNdulelw",
-        "client": "Ckids 2026",
-        "year": "2026"
+        "desc": "סרט בר מצווה יודי גולדברגר",
+        "thumbnail": "https://img.youtube.com/vi/8IeILr7ng1k/hqdefault.jpg",
+        "videoUrl": "https://youtu.be/8IeILr7ng1k",
+        "client": "יוסי גולדברגר",
+        "year": "2025"
     },
     {
-        "id": 6,
-        "title": "סרטון החטופים",
+        "id": 1782874956448,
+        "title": "אחדות תחת אש",
         "categories": [
-            "music_summary"
+            "documentary"
         ],
-        "desc": "סרטון החטופים | Cteen - טיים סקוור 2026",
-        "thumbnail": "https://img.youtube.com/vi/JpbWvSZQetQ/hqdefault.jpg",
-        "videoUrl": "https://youtu.be/JpbWvSZQetQ",
-        "client": "Cteen - טיים סקוור 2026",
+        "desc": "משה גרונברג | כינוס השלוחים",
+        "thumbnail": "https://img.youtube.com/vi/H7KqI6S1JOY/hqdefault.jpg",
+        "videoUrl": "https://youtu.be/H7KqI6S1JOY",
+        "client": "צעירי אגודת חב\"ד",
+        "year": "2024"
+    },
+    {
+        "id": 1782878869753,
+        "title": "במקום שבו נולד הנס",
+        "categories": [
+            "documentary"
+        ],
+        "desc": "סיפורה של בסי בן שחר",
+        "thumbnail": "https://img.youtube.com/vi/LH_qz_n00Vs/hqdefault.jpg",
+        "videoUrl": "https://youtu.be/LH_qz_n00Vs",
+        "client": "צעירי אגודת חב\"ד",
+        "year": "2024"
+    },
+    {
+        "id": 1782881879381,
+        "title": "מקטמנדו לכינוס השלוחים",
+        "categories": [
+            "documentary"
+        ],
+        "desc": "סיפורו של מיכאל מושונוב",
+        "thumbnail": "https://img.youtube.com/vi/zQzofGz-dLo/hqdefault.jpg",
+        "videoUrl": "https://youtu.be/zQzofGz-dLo",
+        "client": "צעירי אגודת חב\"ד",
+        "year": "2024"
+    },
+    {
+        "id": 9,
+        "title": "האם העולם שבור?",
+        "categories": [
+            "commercial"
+        ],
+        "desc": "החזון של הרבי",
+        "thumbnail": "https://img.youtube.com/vi/jkNliTqnlK8/hqdefault.jpg",
+        "videoUrl": "https://youtu.be/jkNliTqnlK8",
+        "client": "cyp international",
         "year": "2026"
     },
     {
@@ -82,46 +238,10 @@ let videoProjects = [
         "categories": [
             "music_summary"
         ],
-        "desc": "המנון בין העצים | 20 שנה | גן ישראל ארץ הקודש",
+        "desc": "20 שנה לגן ישראל ארץ הקודש",
         "thumbnail": "https://img.youtube.com/vi/bwGzjwyer7I/hqdefault.jpg",
         "videoUrl": "https://youtu.be/bwGzjwyer7I",
         "client": "גן ישראל ארץ הקודש",
-        "year": "2026"
-    },
-    {
-        "id": 8,
-        "title": "שוורד השבי אליה כהן",
-        "categories": [
-            "documentary"
-        ],
-        "desc": "שוורד השבי אליה כהן | סרטון הרצאות",
-        "thumbnail": "https://img.youtube.com/vi/GVkPM7iox8A/hqdefault.jpg",
-        "videoUrl": "https://youtu.be/GVkPM7iox8A",
-        "client": "סרטון הרצאות",
-        "year": "2026"
-    },
-    {
-        "id": 9,
-        "title": "הגן של הקב\"ה",
-        "categories": [
-            "commercial"
-        ],
-        "desc": "הגן של הקב\"ה | cyp international",
-        "thumbnail": "https://img.youtube.com/vi/jkNliTqnlK8/hqdefault.jpg",
-        "videoUrl": "https://youtu.be/jkNliTqnlK8",
-        "client": "cyp international",
-        "year": "2026"
-    },
-    {
-        "id": 10,
-        "title": "קליפ חלאקה",
-        "categories": [
-            "music_summary"
-        ],
-        "desc": "קליפ חלאקה | לביא לבייב",
-        "thumbnail": "https://img.youtube.com/vi/PCQe2RqqoME/hqdefault.jpg",
-        "videoUrl": "https://youtu.be/PCQe2RqqoME",
-        "client": "לביא לבייב",
         "year": "2026"
     },
     {
@@ -142,34 +262,10 @@ let videoProjects = [
         "categories": [
             "documentary"
         ],
-        "desc": "ניגון ניקולייב | הסיפור המלא",
+        "desc": "הסיפור המלא",
         "thumbnail": "https://img.youtube.com/vi/JGs5E3uHMBg/hqdefault.jpg",
         "videoUrl": "https://youtu.be/JGs5E3uHMBg",
-        "client": "הסיפור המלא",
-        "year": "2026"
-    },
-    {
-        "id": 13,
-        "title": "רון דרמר",
-        "categories": [
-            "commercial"
-        ],
-        "desc": "רון דרמר | סרטון פתיחה להרצאה",
-        "thumbnail": "https://img.youtube.com/vi/mzJotWYPVtg/hqdefault.jpg",
-        "videoUrl": "https://youtu.be/mzJotWYPVtg",
-        "client": "סרטון פתיחה להרצאה",
-        "year": "2026"
-    },
-    {
-        "id": 14,
-        "title": "שורדי השבי סשה טרופנוב וספיר כהן",
-        "categories": [
-            "documentary"
-        ],
-        "desc": "שורדי השבי סשה טרופנוב וספיר כהן | סרטון הרצאות",
-        "thumbnail": "https://img.youtube.com/vi/X_jTRMKeuKU/hqdefault.jpg",
-        "videoUrl": "https://youtu.be/X_jTRMKeuKU",
-        "client": "סרטון הרצאות",
+        "client": "פנסאים",
         "year": "2026"
     },
     {
@@ -178,43 +274,43 @@ let videoProjects = [
         "categories": [
             "narrative"
         ],
-        "desc": "מאחורי הפרגוד | סרט בר מצווה אביאל טל",
+        "desc": "סרט בר מצווה אביאל טל",
         "thumbnail": "https://img.youtube.com/vi/vb-GJahlBx0/hqdefault.jpg",
         "videoUrl": "https://youtu.be/vb-GJahlBx0",
-        "client": "סרט בר מצווה אביאל טל",
-        "year": "2026"
+        "client": "דני טל",
+        "year": "2025"
     },
     {
         "id": 16,
-        "title": "קליפ בר מצווה",
+        "title": "קרב הנפשות",
         "categories": [
             "narrative"
         ],
-        "desc": "קליפ בר מצווה | איצי אליאס",
+        "desc": "סרט בר מצווה איצי אליאס",
         "thumbnail": "https://img.youtube.com/vi/QNTh9OW4paE/hqdefault.jpg",
         "videoUrl": "https://youtu.be/QNTh9OW4paE",
-        "client": "איצי אליאס",
+        "client": "מנדי אליאס",
         "year": "2026"
     },
     {
-        "id": 17,
-        "title": "דרך האבות",
+        "id": 1782885226674,
+        "title": "נבחרת ישראל",
         "categories": [
             "narrative"
         ],
-        "desc": "דרך האבות | בר מצווה מענדי גולדבערגר",
-        "thumbnail": "https://img.youtube.com/vi/8IeILr7ng1k/hqdefault.jpg",
-        "videoUrl": "https://youtu.be/8IeILr7ng1k",
-        "client": "בר מצווה מענדי גולדבערגר",
-        "year": "2026"
+        "desc": "סרט בר מצווה יעקב מרגולין",
+        "thumbnail": "https://img.youtube.com/vi/PeQBGxj8kLI/hqdefault.jpg",
+        "videoUrl": "https://youtu.be/PeQBGxj8kLI",
+        "client": "משפחת מרגולין - בריסל",
+        "year": "2024"
     },
     {
         "id": 18,
-        "title": "סיפורה של קרן זהבי",
+        "title": "חוסן מתוך השבר",
         "categories": [
             "documentary"
         ],
-        "desc": "סיפורה של קרן זהבי | האקדמית חמדת",
+        "desc": "סיפורה של קרן זהבי",
         "thumbnail": "https://img.youtube.com/vi/FtnSvFi_IpY/hqdefault.jpg",
         "videoUrl": "https://youtu.be/FtnSvFi_IpY",
         "client": "האקדמית חמדת",
@@ -222,23 +318,23 @@ let videoProjects = [
     },
     {
         "id": 19,
-        "title": "ועד התמימים תשרי",
+        "title": "לוקחים אחריות",
         "categories": [
             "commercial"
         ],
-        "desc": "ועד התמימים תשרי | סרט תדמית",
+        "desc": "קמפיין שותפות ועד התמימים העולמי",
         "thumbnail": "https://img.youtube.com/vi/Z_rY-ZepJy8/hqdefault.jpg",
         "videoUrl": "https://youtu.be/Z_rY-ZepJy8",
-        "client": "סרט תדמית",
-        "year": "2026"
+        "client": "ועד התמימים העולמי",
+        "year": "2025"
     },
     {
         "id": 20,
-        "title": "זכרונות מהרב קרמר",
+        "title": "דמותו של שליח",
         "categories": [
             "documentary"
         ],
-        "desc": "זכרונות מהרב קרמר | חב\"ד טבריה",
+        "desc": "הרב יוסף קרמר ע\"ה",
         "thumbnail": "https://img.youtube.com/vi/KrxaDrxai_Q/hqdefault.jpg",
         "videoUrl": "https://youtu.be/KrxaDrxai_Q",
         "client": "חב\"ד טבריה",
@@ -246,26 +342,26 @@ let videoProjects = [
     },
     {
         "id": 21,
-        "title": "הקשר שלי עם הרבי",
+        "title": "שלושה סיפורים | רבי אחד",
         "categories": [
             "documentary"
         ],
-        "desc": "הקשר שלי עם הרבי | ג' תמוז חב\"ד אשדוד",
+        "desc": "ג' תמוז חב\"ד אשדוד",
         "thumbnail": "https://img.youtube.com/vi/TXm2JM15G2U/hqdefault.jpg",
         "videoUrl": "https://youtu.be/TXm2JM15G2U",
-        "client": "ג' תמוז חב\"ד אשדוד",
+        "client": "חב\"ד אשדוד",
         "year": "2026"
     },
     {
         "id": 22,
         "title": "חזון הרבי",
         "categories": [
-            "commercial"
+            "documentary"
         ],
-        "desc": "חזון הרבי | ג' תמוז חב\"ד אשדוד",
+        "desc": "ג' תמוז חב\"ד אשדוד",
         "thumbnail": "https://img.youtube.com/vi/Ez0QlfPdleg/hqdefault.jpg",
         "videoUrl": "https://youtu.be/Ez0QlfPdleg",
-        "client": "ג' תמוז חב\"ד אשדוד",
+        "client": "חב\"ד אשדוד",
         "year": "2026"
     },
     {
@@ -274,83 +370,58 @@ let videoProjects = [
         "categories": [
             "commercial"
         ],
-        "desc": "פרומו שבתון | Ckids 2025",
+        "desc": "Ckids העולמי",
         "thumbnail": "https://img.youtube.com/vi/vj--N-MkGlc/hqdefault.jpg",
         "videoUrl": "https://youtu.be/vj--N-MkGlc",
-        "client": "Ckids 2025",
-        "year": "2026"
+        "client": "Ckids",
+        "year": "2024"
     },
     {
         "id": 24,
-        "title": "סיום הרמב\"ם העולמי",
+        "title": "פרומו סיום הרמב\"ם העולמי",
         "categories": [
             "commercial"
         ],
-        "desc": "סיום הרמב\"ם העולמי | פרומו",
+        "desc": "סרטון פרומו",
         "thumbnail": "https://img.youtube.com/vi/ws8gRyvxfjc/hqdefault.jpg",
         "videoUrl": "https://youtu.be/ws8gRyvxfjc",
-        "client": "פרומו",
-        "year": "2026"
+        "client": "סיום הרמב\"ם העולמי",
+        "year": "2024"
     },
     {
         "id": 25,
-        "title": "את\"ה כפר חב\"ד",
+        "title": "איפה אתה בתמונה?",
         "categories": [
             "commercial"
         ],
-        "desc": "את\"ה כפר חב\"ד | סרטון קמפיין שותפות",
+        "desc": "קמפיין שותפות | את\"ה כפר חב\"ד",
         "thumbnail": "https://img.youtube.com/vi/7LjO6vPVYxI/hqdefault.jpg",
         "videoUrl": "https://youtu.be/7LjO6vPVYxI",
-        "client": "סרטון קמפיין שותפות",
-        "year": "2026"
-    },
-    {
-        "id": 26,
-        "title": "כינוס השלוחות העולמי תשפ\"ו",
-        "categories": [
-            "music_summary"
-        ],
-        "desc": "כינוס השלוחות העולמי תשפ\"ו | קליפ סיכום",
-        "thumbnail": "https://img.youtube.com/vi/G7dch9-IW50/hqdefault.jpg",
-        "videoUrl": "https://youtu.be/G7dch9-IW50",
-        "client": "קליפ סיכום",
+        "client": "את\"ה כפר חב\"ד",
         "year": "2026"
     },
     {
         "id": 27,
-        "title": "חבדניצע מבזק מלחמה",
+        "title": "חבדניצע | מבזק מלחמה",
         "categories": [
-            "narrative",
-            "commercial"
+            "narrative"
         ],
-        "desc": "חבדניצע מבזק מלחמה | טריילר",
+        "desc": "ערוץ חב\"ד לילדים",
         "thumbnail": "https://img.youtube.com/vi/eHM1SkmFp84/hqdefault.jpg",
         "videoUrl": "https://youtu.be/eHM1SkmFp84",
-        "client": "טריילר",
-        "year": "2026"
-    },
-    {
-        "id": 28,
-        "title": "גן ישראל מוסקבה תשפ\"ה",
-        "categories": [
-            "music_summary"
-        ],
-        "desc": "גן ישראל מוסקבה תשפ\"ה | קליפ סיכום",
-        "thumbnail": "https://img.youtube.com/vi/99bCspkjkx8/hqdefault.jpg",
-        "videoUrl": "https://youtu.be/99bCspkjkx8",
-        "client": "קליפ סיכום",
+        "client": "ערוץ חב\"ד לילדים",
         "year": "2026"
     },
     {
         "id": 29,
-        "title": "להיכנס בבריתו של אברהם אבינו",
+        "title": "ברית אברהם",
         "categories": [
             "music_summary"
         ],
-        "desc": "להיכנס בבריתו של אברהם אבינו | גן ישראל מוסקבה תשפ\"ה",
+        "desc": "גן ישראל מוסקבה תשפ\"ה",
         "thumbnail": "https://img.youtube.com/vi/Jj1TJFl9HNI/hqdefault.jpg",
         "videoUrl": "https://youtu.be/Jj1TJFl9HNI",
-        "client": "גן ישראל מוסקבה תשפ\"ה",
+        "client": "חב\"ד מוסקבה",
         "year": "2026"
     },
     {
@@ -359,35 +430,47 @@ let videoProjects = [
         "categories": [
             "commercial"
         ],
-        "desc": "פנסאים סמייל | קמפיין שותפות",
+        "desc": "קמפיין שותפות | הפנסאים",
         "thumbnail": "https://img.youtube.com/vi/UWe9Hx_kkIU/hqdefault.jpg",
         "videoUrl": "https://youtu.be/UWe9Hx_kkIU",
-        "client": "קמפיין שותפות",
-        "year": "2026"
+        "client": "פנסאים",
+        "year": "2025"
     },
     {
         "id": 31,
-        "title": "הרב אור זיו בסיפור אישי",
+        "title": "האור מרעננה",
         "categories": [
             "documentary"
         ],
-        "desc": "הרב אור זיו בסיפור אישי | 30 שנה חב\"ד במנורה",
+        "desc": "סיפורו של אור זיו | חב\"ד במנורה",
         "thumbnail": "https://img.youtube.com/vi/dUpZFF3lWNY/hqdefault.jpg",
         "videoUrl": "https://youtu.be/dUpZFF3lWNY",
-        "client": "30 שנה חב\"ד במנורה",
+        "client": "צעירי אגודת חב\"ד",
         "year": "2026"
     },
     {
         "id": 32,
-        "title": "הרב זעליג אלטוהיז בסיפור אישי מטלטל",
+        "title": "הסוד שהחזיק אותי ברגעים הקשים",
         "categories": [
             "documentary"
         ],
-        "desc": "הרב זעליג אלטוהיז בסיפור אישי מטלטל | 30 שנה חב\"ד במנורה",
+        "desc": "סיפורו המטלטל של הרב זעליג אלטהויז | חב\"ד במנורה",
         "thumbnail": "https://img.youtube.com/vi/kR16o7-IO7s/hqdefault.jpg",
         "videoUrl": "https://youtu.be/kR16o7-IO7s",
-        "client": "30 שנה חב\"ד במנורה",
-        "year": "2026"
+        "client": "צעירי אגודת חב\"ד",
+        "year": "2025"
+    },
+    {
+        "id": 28,
+        "title": "גן ישראל מוסקבה",
+        "categories": [
+            "music_summary"
+        ],
+        "desc": "קליפ סיכום",
+        "thumbnail": "https://img.youtube.com/vi/99bCspkjkx8/hqdefault.jpg",
+        "videoUrl": "https://youtu.be/99bCspkjkx8",
+        "client": "חב\"ד מוסקבה",
+        "year": "2025"
     },
     {
         "id": 33,
@@ -396,21 +479,21 @@ let videoProjects = [
             "commercial",
             "social"
         ],
-        "desc": "אפליקציית Met@Chabad | פרסומות שיווק",
+        "desc": "פרסומות שיווק",
         "thumbnail": "https://img.youtube.com/vi/ErSIebQi_RU/hqdefault.jpg",
         "videoUrl": "https://youtube.com/shorts/ErSIebQi_RU?feature=share",
         "client": "פרסומות שיווק",
         "year": "2026"
     },
     {
-        "id": 34,
-        "title": "חנוכה בהיכל הקרח",
+        "id": 36,
+        "title": "שיירת האור",
         "categories": [
             "social"
         ],
-        "desc": "חנוכה בהיכל הקרח | חב\"ד וירג'יניה ביץ'",
-        "thumbnail": "https://img.youtube.com/vi/KCwAS88ofO4/hqdefault.jpg",
-        "videoUrl": "https://youtube.com/shorts/KCwAS88ofO4?feature=share",
+        "desc": "חב\"ד וירג'יניה ביץ'",
+        "thumbnail": "https://img.youtube.com/vi/rqn5dGsqht0/hqdefault.jpg",
+        "videoUrl": "https://youtube.com/shorts/rqn5dGsqht0?feature=share",
         "client": "חב\"ד וירג'יניה ביץ'",
         "year": "2026"
     },
@@ -427,14 +510,14 @@ let videoProjects = [
         "year": "2026"
     },
     {
-        "id": 36,
-        "title": "שיירת האור",
+        "id": 34,
+        "title": "חנוכה בהיכל הקרח",
         "categories": [
             "social"
         ],
-        "desc": "שיירת האור | חב\"ד וירג'יניה ביץ'",
-        "thumbnail": "https://img.youtube.com/vi/rqn5dGsqht0/hqdefault.jpg",
-        "videoUrl": "https://youtube.com/shorts/rqn5dGsqht0?feature=share",
+        "desc": "חב\"ד וירג'יניה ביץ'",
+        "thumbnail": "https://img.youtube.com/vi/KCwAS88ofO4/hqdefault.jpg",
+        "videoUrl": "https://youtube.com/shorts/KCwAS88ofO4?feature=share",
         "client": "חב\"ד וירג'יניה ביץ'",
         "year": "2026"
     },
@@ -444,7 +527,7 @@ let videoProjects = [
         "categories": [
             "social"
         ],
-        "desc": "חגיגת ל\"ג בעומר | חב\"ד וירג'יניה ביץ'",
+        "desc": "חב\"ד וירג'יניה ביץ'",
         "thumbnail": "https://img.youtube.com/vi/cA6nHM-Ywec/hqdefault.jpg",
         "videoUrl": "https://youtube.com/shorts/cA6nHM-Ywec?feature=share",
         "client": "חב\"ד וירג'יניה ביץ'",
@@ -456,25 +539,49 @@ let clientLogos = [
     "C KIDS.png",
     "CYP.png",
     "JRNU.png",
-    "בית הכנסת הגדול חולון.png",
+    {
+        "name": "בית הכנסת הגדול חולון",
+        "scale": 1.7,
+        "src": "בית הכנסת הגדול חולון.png"
+    },
     "בית תפילה אריזונה.png",
+    {
+        "name": "גן ישראל ארץ הקודש",
+        "src": "גן ישראל ארץ הקודש.png",
+        "scale": 0.95
+    },
     "בני מנחם חבד חולון.png",
-    "גן ישראל ארץ הקודש.png",
-    "האקדמית חמדת.png",
+    {
+        "name": "האקדמית חמדת",
+        "src": "האקדמית חמדת.png",
+        "scale": 1.45
+    },
     "הידור מצווה.png",
-    "וואן מצווה.png",
+    {
+        "name": "וואן מצווה",
+        "scale": 1.05,
+        "src": "וואן מצווה.png"
+    },
     "ועד התמימים.png",
     "חב\"ד דובאי.png",
     "חב\"ד וירג'יניה ביץ'.png",
     "חב\"ד מוסקבה.png",
-    "חב\"ד-מסגרת.png",
+    {
+        "name": "חב\"ד-מסגרת",
+        "src": "חב\"ד-מסגרת.png",
+        "scale": 0.8
+    },
     "חרדים 10.png",
     "טענט.png",
     "כולל חב\"ד.png",
     "כינוס השלוחות.png",
     "כינוס השלוחים.png",
     "כינוס ילדי השלוחים.png",
-    "מט אט חב\"ד.png",
+    {
+        "src": "מט אט חב\"ד.png",
+        "scale": 0.95,
+        "name": "מט אט חב\"ד"
+    },
     "מי שליח.png",
     "מינט.png",
     "מרכז 302.png",
@@ -485,13 +592,29 @@ let clientLogos = [
     "סי טין.png",
     "סיום הרמבם העולמי.png",
     "פנסאים.png",
-    "צבאות השם.png",
-    "צבעים הפקות.png",
-    "צה\"ל.png",
+    {
+        "name": "צבאות השם",
+        "src": "צבאות השם.png",
+        "scale": 1
+    },
+    {
+        "scale": 0.95,
+        "src": "צבעים הפקות.png",
+        "name": "צבעים הפקות"
+    },
     "רשת אהלי יוסף יצחק.png",
+    "צה\"ל.png",
     "שפרה ופועה חולון.png",
-    "שניאור קורטס.png",
-    "תמים.png"
+    {
+        "src": "שניאור קורטס.png",
+        "scale": 0.85,
+        "name": "שניאור קורטס"
+    },
+    {
+        "name": "תמים",
+        "src": "תמים.png",
+        "scale": 0.95
+    }
 ];
 
 // ==========================================================================
@@ -1253,26 +1376,44 @@ function syncChanges() {
 
 // Initialize database by fetching from Firestore, and falling back to data.js/localStorage
 async function initializeDatabase() {
-    // 1. Try to load from Firestore cloud database
-    let loaded = await loadDatabaseFromFirestore();
-    
-    if (loaded) {
-        console.log("Successfully loaded dynamic database from Firestore!");
-    } else {
-        console.log("Firestore document not found or offline. Falling back to data.js defaults.");
-        
-        // Choose source of truth: use data.js if loaded, otherwise fall back to script.js defaults
-        const sourceVideos = (typeof defaultVideoProjects !== 'undefined') ? defaultVideoProjects : videoProjects;
-        const sourceLogos = (typeof defaultClientLogos !== 'undefined') ? defaultClientLogos : clientLogos;
-        const sourceCategories = (typeof defaultCategories !== 'undefined') ? defaultCategories : [
-            { id: "documentary", name: "תוכן דוקומנטרי" },
-            { id: "narrative", name: "תוכן עלילתי" },
-            { id: "commercial", name: "פרסומות וקמפיינים" },
-            { id: "music_summary", name: "קליפים וסיכומים" },
-            { id: "ai", name: "סרטוני AI" },
-            { id: "social", name: "סושיאל" }
-        ];
+    let documentExists = false;
+    let loadedFromFirestore = false;
 
+    // Choose source of truth: use data.js if loaded, otherwise fall back to script.js defaults
+    const sourceVideos = (typeof defaultVideoProjects !== 'undefined') ? defaultVideoProjects : videoProjects;
+    const sourceLogos = (typeof defaultClientLogos !== 'undefined') ? defaultClientLogos : clientLogos;
+    const sourceCategories = (typeof defaultCategories !== 'undefined') ? defaultCategories : [
+        { id: "documentary", name: "תוכן דוקומנטרי" },
+        { id: "narrative", name: "תוכן עלילתי" },
+        { id: "commercial", name: "פרסומות וקמפיינים" },
+        { id: "music_summary", name: "קליפים וסיכומים" },
+        { id: "ai", name: "סרטוני AI" },
+        { id: "social", name: "סושיאל" }
+    ];
+
+    if (db) {
+        try {
+            const doc = await db.collection("portfolio").doc("data").get();
+            if (doc.exists) {
+                documentExists = true;
+                const data = doc.data();
+                if (data.videoProjects) videoProjects = data.videoProjects;
+                if (data.clientLogos) clientLogos = data.clientLogos;
+                if (data.categoriesList) categoriesList = data.categoriesList;
+                loadedFromFirestore = true;
+                console.log("Successfully loaded dynamic database from Firestore!");
+            } else {
+                documentExists = false;
+                console.log("Firestore document not found. Auto-initializing with defaults...");
+            }
+        } catch (e) {
+            documentExists = true; // Avoid writing default values if read failed due to error
+            console.error("Error reading from Firestore (falling back to local/cached data without overwriting):", e);
+        }
+    }
+
+    if (!loadedFromFirestore) {
+        console.log("Falling back to local/cached data.");
         const isAdmin = localStorage.getItem('mendy_portfolio_admin_remembered') === 'true';
         
         if (!isAdmin) {
@@ -1292,46 +1433,48 @@ async function initializeDatabase() {
             categoriesList = storedCategories ? JSON.parse(storedCategories) : JSON.parse(JSON.stringify(sourceCategories));
         }
 
-        // Initialize Firestore with this default data if Firestore is online
-        if (db) {
-            console.log("Auto-initializing Firestore document with default data...");
+        // Initialize Firestore with this default data ONLY if it explicitly does not exist (not on read errors)
+        if (db && !documentExists) {
+            console.log("Initializing new Firestore document...");
             await saveDatabaseToFirestore();
         }
     }
 
-    // Run logo migrations to keep list clean
-    let modified = false;
-    clientLogos = clientLogos.map(logo => {
-        const details = getLogoDetails(logo);
-        if (details.name === 'חב"ד' || details.name === 'חבד' || details.name === 'חב"ד-מסגרת') {
-            const targetSrc = 'חב\"ד-מסגרת.png';
-            if (typeof logo === 'string') {
-                if (logo !== targetSrc) {
-                    modified = true;
-                    return targetSrc;
-                }
-            } else if (typeof logo === 'object' && logo !== null) {
-                if (logo.src !== targetSrc) {
-                    modified = true;
-                    logo.src = targetSrc;
-                    logo.name = 'חב\"ד-מסגרת';
+    // Run logo migrations only if we have a valid source of truth (Firestore loaded, or document didn't exist)
+    if (loadedFromFirestore || !documentExists) {
+        let modified = false;
+        clientLogos = clientLogos.map(logo => {
+            const details = getLogoDetails(logo);
+            if (details.name === 'חב"ד' || details.name === 'חבד' || details.name === 'חב"ד-מסגרת') {
+                const targetSrc = 'חב\"ד-מסגרת.png';
+                if (typeof logo === 'string') {
+                    if (logo !== targetSrc) {
+                        modified = true;
+                        return targetSrc;
+                    }
+                } else if (typeof logo === 'object' && logo !== null) {
+                    if (logo.src !== targetSrc) {
+                        modified = true;
+                        logo.src = targetSrc;
+                        logo.name = 'חב\"ד-מסגרת';
+                    }
                 }
             }
+            return logo;
+        });
+        
+        const hasCortes = clientLogos.some(logo => {
+            const details = getLogoDetails(logo);
+            return details.src === 'שניאור קורטס.png';
+        });
+        if (!hasCortes) {
+            clientLogos.push('שניאור קורטס.png');
+            modified = true;
         }
-        return logo;
-    });
-    
-    const hasCortes = clientLogos.some(logo => {
-        const details = getLogoDetails(logo);
-        return details.src === 'שניאור קורטס.png';
-    });
-    if (!hasCortes) {
-        clientLogos.push('שניאור קורטס.png');
-        modified = true;
-    }
 
-    if (modified) {
-        syncChanges();
+        if (modified) {
+            syncChanges();
+        }
     }
 }
 
@@ -1371,11 +1514,10 @@ function getYouTubeId(url) {
 
 // Initialize Admin Panel actions, tabs, validation, and event listeners
 function initAdminPanel() {
-    const triggerText = document.getElementById('admin-trigger-text');
     const authDialog = document.getElementById('adminAuthDialog');
     const panelDialog = document.getElementById('adminPanelDialog');
     
-    if (!triggerText || !authDialog || !panelDialog) return;
+    if (!authDialog || !panelDialog) return;
     
     const passcodeField = document.getElementById('admin-passcode');
     const btnSubmitAuth = document.getElementById('submitAdminAuth');
@@ -1414,18 +1556,29 @@ function initAdminPanel() {
     const allLogosContainer = document.getElementById('all-logos-list-container');
     
     // ----------------------------------------------------------------------
-    // Double click footer text -> Open Auth Dialog
+    // URL-based Admin Trigger (Stealth Access via /?mendy or /#mendy)
     // ----------------------------------------------------------------------
-    triggerText.addEventListener('dblclick', (e) => {
-        e.preventDefault();
-        if (localStorage.getItem('mendy_portfolio_admin_remembered') === 'true') {
-            openAdminPanel();
-        } else {
-            passcodeField.value = '';
-            authError.style.display = 'none';
-            authDialog.showModal();
+    const checkAdminTrigger = () => {
+        const searchStr = window.location.search.toLowerCase();
+        const hashStr = window.location.hash.toLowerCase();
+        const hasAdminParam = searchStr.includes('mendy') || hashStr.includes('mendy');
+        
+        if (hasAdminParam) {
+            if (localStorage.getItem('mendy_portfolio_admin_remembered') === 'true') {
+                openAdminPanel();
+            } else {
+                passcodeField.value = '';
+                authError.style.display = 'none';
+                authDialog.showModal();
+            }
         }
-    });
+    };
+    
+    // Run the check on load
+    checkAdminTrigger();
+    
+    // Also listen for hash changes so they can trigger it dynamically
+    window.addEventListener('hashchange', checkAdminTrigger);
     
     closeAuth.addEventListener('click', () => authDialog.close());
     closePanel.addEventListener('click', () => {

@@ -1785,12 +1785,7 @@ img {
     color: #ff4d4d;
 }
 
-/* Footer interaction helper */
-#admin-trigger-text {
-    cursor: pointer;
-    user-select: none;
-    display: inline-block;
-}
+
 
 /* Tab Buttons */
 .admin-tabs {
