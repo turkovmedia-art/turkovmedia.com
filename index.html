@@ -78,16 +78,17 @@
             
             <nav class="nav-menu" id="navMenu">
                 <ul>
-                    <li><a href="#hero" class="nav-link active">בית</a></li>
-                    <li><a href="#about" class="nav-link">אודות</a></li>
-                    <li><a href="#services" class="nav-link">שירותים</a></li>
-                    <li><a href="#portfolio" class="nav-link">תיק עבודות</a></li>
-                    <li><a href="#contact" class="nav-link">צרו קשר</a></li>
+                    <li><a href="#hero" class="nav-link active" data-i18n="nav_home">בית</a></li>
+                    <li><a href="#about" class="nav-link" data-i18n="nav_about">אודות</a></li>
+                    <li><a href="#services" class="nav-link" data-i18n="nav_services">שירותים</a></li>
+                    <li><a href="#portfolio" class="nav-link" data-i18n="nav_portfolio">תיק עבודות</a></li>
+                    <li><a href="#contact" class="nav-link" data-i18n="nav_contact">צרו קשר</a></li>
                 </ul>
             </nav>
             
             <div class="header-cta">
-                <a href="#contact" class="btn btn-primary btn-sm">בואו נדבר</a>
+                <button class="lang-switch-btn" id="langSwitch" aria-label="Switch Language">EN</button>
+                <a href="#contact" class="btn btn-primary btn-sm" data-i18n="btn_lets_talk">בואו נדבר</a>
             </div>
         </div>
     </header>
@@ -108,18 +109,18 @@
                 <h1 style="position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); border: 0;">
                     מנדי טורקוב | מענדי טורקוב - הפקות מולטימדיה, צילום ועריכת וידאו
                 </h1>
-                <span class="hero-tagline animate-fade-in">הדמיון שלכם. המציאות שלנו!</span>
+                <span class="hero-tagline animate-fade-in" data-i18n="hero_main_tagline">הדמיון שלכם. המציאות שלנו!</span>
                 <div class="hero-logo-container animate-slide-up">
                     <img src="assets/logo-dark-bg.png" alt="מנדי טורקוב הפקות מולטימדיה" class="hero-logo">
                 </div>
-                <p class="hero-subtitle animate-slide-up-delay">
+                <p class="hero-subtitle animate-slide-up-delay" data-i18n="hero_subtitle">
                     יוצר סרטים | צלם | עורך וידאו מתקדם
                 </p>
                 <div class="hero-actions animate-slide-up-delay-more">
-                    <a href="#portfolio" class="btn btn-primary btn-lg">
+                    <a href="#portfolio" class="btn btn-primary btn-lg" data-i18n="hero_btn_portfolio">
                         <i class="fa-solid fa-play"></i> צפו בעבודות
                     </a>
-                    <a href="#contact" class="btn btn-secondary btn-lg">בואו נדבר</a>
+                    <a href="#contact" class="btn btn-secondary btn-lg" data-i18n="hero_btn_talk">בואו נדבר</a>
                 </div>
             </div>
         </div>
@@ -145,7 +146,7 @@
                 
                 <!-- Client Logos Ticker Column (The Box) -->
                 <div class="about-visual scroll-reveal-left">
-                    <h3 class="clients-box-title">הגופים והמותגים שבחרו בנו:</h3>
+                    <h3 class="clients-box-title" data-i18n="about_clients_title">הגופים והמותגים שבחרו בנו:</h3>
                     <div class="logos-marquee-wrapper">
                         <!-- Row 1: moves right -->
                         <div class="marquee-row marquee-right">
@@ -172,10 +173,10 @@
                 
                 <!-- Text / Bio Column -->
                 <div class="about-text scroll-reveal-right">
-                    <span class="section-tag">מי אני</span>
-                    <h2 class="section-title">יוצרים מציאות דרך העדשה</h2>
-                    <p class="about-bio">שלום, אני מנדי טורקוב.</p>
-                    <p class="about-bio-detail">
+                    <span class="section-tag" data-i18n="about_tag">מי אני</span>
+                    <h2 class="section-title" data-i18n="about_title">יוצרים מציאות דרך העדשה</h2>
+                    <p class="about-bio" data-i18n="about_bio">שלום, אני מנדי טורקוב.</p>
+                    <p class="about-bio-detail" data-i18n="about_bio_detail">
                         יוצר סרטים, צלם שטח ואוויר, ועורך וידאו, המתמחה ביצירת תוכן קולנועי, פרסומות, קליפים וסרטוני רשת שמשאירים חותם. אני משלב צילום קרקעי ואווירי מתקדם (רחפן), עריכה קולנועית וטכנולוגיות AI כדי להפוך כל רעיון ליצירה ויזואלית סוחפת ויוצאת דופן. ברוכים הבאים לתיק העבודות שלי.
                     </p>
                     
@@ -183,15 +184,15 @@
                     <div class="stats-grid" id="stats-section">
                         <div class="stat-item">
                             <div class="stat-number" data-target="1000">0</div>
-                            <div class="stat-label">עבודות שהושלמו</div>
+                            <div class="stat-label" data-i18n="stat_completed_works">עבודות שהושלמו</div>
                         </div>
                         <div class="stat-item">
                             <div class="stat-number" data-target="7">0</div>
-                            <div class="stat-label">שנות ניסיון</div>
+                            <div class="stat-label" data-i18n="stat_years_exp">שנות ניסיון</div>
                         </div>
                         <div class="stat-item">
                             <div class="stat-number" data-target="100">0</div>
-                            <div class="stat-label">לקוחות מרוצים %</div>
+                            <div class="stat-label" data-i18n="stat_happy_clients">לקוחות מרוצים %</div>
                         </div>
                     </div>
                 </div>
@@ -204,9 +205,9 @@
     <section id="services" class="services-section">
         <div class="container">
             <div class="section-header">
-                <span class="section-tag">מה אני עושה</span>
-                <h2 class="section-title">תחומי התמחות</h2>
-                <p class="section-desc">פתרונות וידאו מקיפים משלב הרעיון ועד לתוצר המוגמר ברמה הקולנועית הגבוהה ביותר.</p>
+                <span class="section-tag" data-i18n="services_tag">מה אני עושה</span>
+                <h2 class="section-title" data-i18n="services_title">תחומי התמחות</h2>
+                <p class="section-desc" data-i18n="services_desc">פתרונות וידאו מקיפים משלב הרעיון ועד לתוצר המוגמר ברמה הקולנועית הגבוהה ביותר.</p>
             </div>
             
             <div class="services-grid">
@@ -216,8 +217,8 @@
                     <div class="service-icon-box">
                         <i class="fa-solid fa-camera-retro"></i>
                     </div>
-                    <h3 class="service-title">צילום קולנועי</h3>
-                    <p class="service-text">צילום שטח וסטודיו ברמה הגבוהה ביותר, שימוש בציוד מתקדם, עדשות קולנועיות ותאורה יצירתית לבניית קומפוזיציות עוצרות נשימה.</p>
+                    <h3 class="service-title" data-i18n="service1_title">צילום קולנועי</h3>
+                    <p class="service-text" data-i18n="service1_text">צילום שטח וסטודיו ברמה הגבוהה ביותר, שימוש בציוד מתקדם, עדשות קולנועיות ותאורה יצירתית לבניית קומפוזיציות עוצרות נשימה.</p>
                 </div>
                 
                 <!-- Service 2: Advanced Editing -->
@@ -225,8 +226,8 @@
                     <div class="service-icon-box">
                         <i class="fa-solid fa-sliders"></i>
                     </div>
-                    <h3 class="service-title">עריכת וידאו מתקדמת</h3>
-                    <p class="service-text">קאטים דינמיים, תיקוני צבע ועיבוד צבע קולנועי (Color Grading), עריכת סאונד קולנועית (Sound Design), קצב וסגנון המותאמים למותג.</p>
+                    <h3 class="service-title" data-i18n="service2_title">עריכת וידאו מתקדמת</h3>
+                    <p class="service-text" data-i18n="service2_text">קאטים דינמיים, תיקוני צבע ועיבוד צבע קולנועי (Color Grading), עריכת סאונד קולנועית (Sound Design), קצב וסגנון המותאמים למותג.</p>
                 </div>
                 
                 <!-- Service 3: Drone & Aerial Filming -->
@@ -253,8 +254,8 @@
                             <path d="M17 19h4" />
                         </svg>
                     </div>
-                    <h3 class="service-title">צילום רחפן ואווירי</h3>
-                    <p class="service-text">צילום אווירי מתקדם ברזולוציה גבוהה (4K/5K), יצירת שוטים מרהיבים ממעוף הציפור, תנועות מצלמה מורכבות ומדויקות התורמות למימד קולנועי ועוצר נשימה לכל פרויקט.</p>
+                    <h3 class="service-title" data-i18n="service3_title">צילום רחפן ואווירי</h3>
+                    <p class="service-text" data-i18n="service3_text">צילום אווירי מתקדם ברזולוציה גבוהה (4K/5K), יצירת שוטים מרהיבים ממעוף הציפור, תנועות מצלמה מורכבות ומדויקות התורמות למימד קולנועי ועוצר נשימה לכל פרויקט.</p>
                 </div>
                 
                 <!-- Service 4: AI & Future Tech -->
@@ -262,8 +263,8 @@
                     <div class="service-icon-box">
                         <i class="fa-solid fa-wand-magic-sparkles"></i>
                     </div>
-                    <h3 class="service-title">טכנולוגיות AI מתקדמות</h3>
-                    <p class="service-text">שילוב כלי בינה מלאכותית ליצירת אפקטים מורכבים, שיפור תמונה וסאונד, יצירת אלמנטים ויזואליים חדשניים ופתרונות עריכה מהדור הבא.</p>
+                    <h3 class="service-title" data-i18n="service4_title">טכנולוגיות AI מתקדמות</h3>
+                    <p class="service-text" data-i18n="service4_text">שילוב כלי בינה מלאכותית ליצירת אפקטים מורכבים, שיפור תמונה וסאונד, יצירת אלמנטים ויזואליים חדשניים ופתרונות עריכה מהדור הבא.</p>
                 </div>
                 
             </div>
@@ -275,9 +276,9 @@
         <div class="section-glow"></div>
         <div class="container">
             <div class="section-header">
-                <span class="section-tag">עבודות נבחרות</span>
-                <h2 class="section-title">תיק עבודות</h2>
-                <p class="section-desc">הצצה לכמה מהפרויקטים שהובלתי. לחיצה על כל פרויקט תפתח את הסרטון לצפייה מהירה.</p>
+                <span class="section-tag" data-i18n="portfolio_tag">עבודות נבחרות</span>
+                <h2 class="section-title" data-i18n="portfolio_title">תיק עבודות</h2>
+                <p class="section-desc" data-i18n="portfolio_desc">הצצה לכמה מהפרויקטים שהובלתי. לחיצה על כל פרויקט תפתח את הסרטון לצפייה מהירה.</p>
             </div>
             
             <!-- Category Filter Buttons -->
@@ -299,9 +300,9 @@
                 
                 <!-- Contact info -->
                 <div class="contact-info scroll-reveal-left">
-                    <span class="section-tag">בואו ניצור משהו מטורף</span>
-                    <h2 class="section-title">מוכנים להתחיל בפרויקט הבא?</h2>
-                    <p class="contact-desc">
+                    <span class="section-tag" data-i18n="contact_tag">בואו ניצור משהו מטורף</span>
+                    <h2 class="section-title" data-i18n="contact_title">מוכנים להתחיל בפרויקט הבא?</h2>
+                    <p class="contact-desc" data-i18n="contact_desc">
                         צרו איתי קשר לתיאום פגישה, הזמנת עבודה או סתם כדי להתייעץ על הרעיון הבא שלכם.
                     </p>
                     
@@ -311,8 +312,8 @@
                                 <i class="fa-brands fa-whatsapp"></i>
                             </div>
                             <div class="method-details">
-                                <span class="method-label">וואטסאפ מהיר</span>
-                                <span class="method-value">לחצו לשליחת הודעה</span>
+                                <span class="method-label" data-i18n="contact_whatsapp">וואטסאפ מהיר</span>
+                                <span class="method-value" data-i18n="contact_whatsapp_desc">לחצו לשליחת הודעה</span>
                             </div>
                         </a>
                         
@@ -321,7 +322,7 @@
                                 <i class="fa-solid fa-envelope"></i>
                             </div>
                             <div class="method-details">
-                                <span class="method-label">אימייל</span>
+                                <span class="method-label" data-i18n="contact_email">אימייל</span>
                                 <span class="method-value">turkovmedia@gmail.com</span>
                             </div>
                         </a>
@@ -331,7 +332,7 @@
                                 <i class="fa-solid fa-phone"></i>
                             </div>
                             <div class="method-details">
-                                <span class="method-label">טלפון</span>
+                                <span class="method-label" data-i18n="contact_phone">טלפון</span>
                                 <span class="method-value">054-801-0231</span>
                             </div>
                         </a>
@@ -341,30 +342,30 @@
                 <!-- Contact Form -->
                 <div class="contact-form-box scroll-reveal-right">
                     <form id="contact-form" class="contact-form">
-                        <h3 class="form-title">שלחו לי הודעה</h3>
+                        <h3 class="form-title" data-i18n="contact_form_title">שלחו לי הודעה</h3>
                         
                         <div class="form-group">
-                            <label for="name">שם מלא</label>
+                            <label for="name" data-i18n="contact_form_name">שם מלא</label>
                             <input type="text" id="name" required placeholder="ישראל ישראלי">
                         </div>
                         
                         <div class="form-group">
-                            <label for="phone">טלפון ליצירת קשר</label>
+                            <label for="phone" data-i18n="contact_form_phone">טלפון ליצירת קשר</label>
                             <input type="tel" id="phone" placeholder="050-1234567">
                         </div>
                         
                         <div class="form-group">
-                            <label for="email">כתובת אימייל</label>
+                            <label for="email" data-i18n="contact_form_email">כתובת אימייל</label>
                             <input type="email" id="email" placeholder="name@example.com">
                         </div>
                         
                         <div class="form-group">
-                            <label for="message">פרטים על הפרויקט</label>
+                            <label for="message" data-i18n="contact_form_desc">פרטים על הפרויקט</label>
                             <textarea id="message" rows="4" required placeholder="ספרו לי על הפרויקט שלכם... (סוג הסרטון, אורך משוער, לוח זמנים וכדומה)"></textarea>
                         </div>
                         
                         <button type="submit" class="btn btn-primary btn-block">
-                            שליחת הודעה <i class="fa-solid fa-paper-plane"></i>
+                            <span data-i18n="contact_form_submit">שליחת הודעה</span> <i class="fa-solid fa-paper-plane"></i>
                         </button>
                     </form>
                 </div>
@@ -377,7 +378,7 @@
     <footer class="main-footer">
         <div class="container">
             <div class="footer-bottom">
-                <p>&copy; 2026 מנדי טורקוב הפקות מולטימדיה. כל הזכויות שמורות.</p>
+                <p>&copy; 2026 <span data-i18n="footer_copyright">מנדי טורקוב הפקות מולטימדיה. כל הזכויות שמורות.</span></p>
                 <div class="footer-socials">
                     <a href="tel:+972548010231" aria-label="טלפון"><i class="fa-solid fa-phone"></i></a>
                     <a href="https://wa.me/972548010231" target="_blank" aria-label="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>

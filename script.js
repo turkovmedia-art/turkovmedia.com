@@ -622,10 +622,9 @@ let clientLogos = [
 // ==========================================================================
 document.addEventListener('DOMContentLoaded', async () => {
     await initializeDatabase();
-    renderCategoryFilters();
+    initLanguageSwitcher(); // Setup language translations
     initHeaderScroll();
     initMobileMenu();
-    renderPortfolioGrid('all');
     initVideoModal();
     initScrollReveal();
     initStatsAnimator();
@@ -741,7 +740,21 @@ function renderPortfolioGrid(filter = 'all') {
 
 function getCategoryHebrew(cat) {
     const found = categoriesList.find(c => c.id === cat);
-    return found ? found.name : cat;
+    if (!found) return cat;
+    
+    const currentLang = localStorage.getItem('mendy_portfolio_lang') || 'he';
+    if (currentLang === 'en') {
+        const enMap = {
+            documentary: "Documentaries",
+            narrative: "Narrative Films",
+            commercial: "Commercials & Campaigns",
+            music_summary: "Music Videos & Recaps",
+            ai: "AI Videos",
+            social: "Social Media"
+        };
+        return enMap[found.id] || found.name;
+    }
+    return found.name;
 }
 
 function initPortfolioFilters() {
@@ -804,8 +817,11 @@ function openVideoPlayer(project) {
     if (!dialog || !container || !title || !desc) return;
     
     title.textContent = project.title;
+    const currentLang = localStorage.getItem('mendy_portfolio_lang') || 'he';
+    const clientLabel = currentLang === 'en' ? 'Client' : 'לקוח';
+    const yearLabel = currentLang === 'en' ? 'Year' : 'שנה';
     desc.innerHTML = `
-        <strong>לקוח:</strong> ${project.client} | <strong>שנה:</strong> ${project.year} <br>
+        <strong>${clientLabel}:</strong> ${project.client} | <strong>${yearLabel}:</strong> ${project.year} <br>
         ${project.desc}
     `;
     
@@ -1489,9 +1505,11 @@ function renderCategoryFilters() {
         activeFilter = activeBtn.getAttribute('data-filter');
     }
 
-    container.innerHTML = `<button class="filter-btn ${activeFilter === 'all' ? 'active' : ''}" data-filter="all">הכל</button>` + 
+    const currentLang = localStorage.getItem('mendy_portfolio_lang') || 'he';
+    const allText = currentLang === 'en' ? 'All' : 'הכל';
+    container.innerHTML = `<button class="filter-btn ${activeFilter === 'all' ? 'active' : ''}" data-filter="all">${allText}</button>` + 
         categoriesList.map(cat => `
-            <button class="filter-btn ${activeFilter === cat.id ? 'active' : ''}" data-filter="${cat.id}">${cat.name}</button>
+            <button class="filter-btn ${activeFilter === cat.id ? 'active' : ''}" data-filter="${cat.id}">${getCategoryHebrew(cat.id)}</button>
         `).join('');
 
     initPortfolioFilters();
@@ -2652,4 +2670,233 @@ if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initHeroVideosAutoplay);
 } else {
     initHeroVideosAutoplay();
+}
+
+// ==========================================================================
+// Language Switcher & i18n System
+// ==========================================================================
+
+const translationDictionary = {
+    he: {
+        // Nav Menu
+        nav_home: "בית",
+        nav_about: "אודות",
+        nav_services: "שירותים",
+        nav_portfolio: "תיק עבודות",
+        nav_contact: "צרו קשר",
+        btn_lets_talk: "בואו נדבר",
+        
+        // Hero Section
+        hero_main_tagline: "הדמיון שלכם. המציאות שלנו!",
+        hero_subtitle: "יוצר סרטים | צלם | עורך וידאו מתקדם",
+        hero_btn_portfolio: "צפו בעבודות",
+        hero_btn_talk: "בואו נדבר",
+        
+        // About Section
+        about_tag: "מי אני",
+        about_title: "יוצרים מציאות דרך העדשה",
+        about_bio: "שלום, אני מנדי טורקוב.",
+        about_bio_detail: "יוצר סרטים, צלם שטח ואוויר, ועורך וידאו, המתמחה ביצירת תוכן קולנועי, פרסומות, קליפים וסרטוני רשת שמשאירים חותם. אני משלב צילום קרקעי ואווירי מתקדם (רחפן), עריכה קולנועית וטכנולוגיות AI כדי להפוך כל רעיון ליצירה ויזואלית סוחפת ויוצאת דופן. ברוכים הבאים לתיק העבודות שלי.",
+        about_clients_title: "הגופים והמותגים שבחרו בנו:",
+        stat_completed_works: "עבודות שהושלמו",
+        stat_years_exp: "שנות ניסיון",
+        stat_happy_clients: "לקוחות מרוצים %",
+        
+        // Services Section
+        services_tag: "מה אני עושה",
+        services_title: "תחומי התמחות",
+        services_desc: "פתרונות וידאו מקיפים משלב הרעיון ועד לתוצר המוגמר ברמה הקולנועית הגבוהה ביותר.",
+        
+        service1_title: "צילום קולנועי",
+        service1_text: "צילום שטח וסטודיו ברמה הגבוהה ביותר, שימוש בציוד מתקדם, עדשות קולנועיות ותאורה יצירתית לבניית קומפוזיציות עוצרות נשימה.",
+        
+        service2_title: "עריכת וידאו מתקדמת",
+        service2_text: "קאטים דינמיים, תיקוני צבע ועיבוד צבע קולנועי (Color Grading), עריכת סאונד קולנועית (Sound Design), קצב וסגנון המותאמים למותג.",
+        
+        service3_title: "צילום רחפן ואווירי",
+        service3_text: "צילום אווירי מתקדם ברזולוציה גבוהה (4K/5K), יצירת שוטים מרהיבים ממעוף הציפור, תנועות מצלמה מורכבות ומדויקות התורמות למימד קולנועי ועוצר נשימה לכל פרויקט.",
+        
+        service4_title: "טכנולוגיות AI מתקדמות",
+        service4_text: "שילוב כלי בינה מלאכותית ליצירת אפקטים מורכבים, שיפור תמונה וסאונד, יצירת אלמנטים ויזואליים חדשניים ופתרונות עריכה מהדור הבא.",
+        
+        // Portfolio Section
+        portfolio_tag: "עבודות נבחרות",
+        portfolio_title: "תיק עבודות",
+        portfolio_desc: "הצצה לכמה מהפרויקטים שהובלתי. לחיצה על כל פרויקט תפתח את הסרטון לצפייה מהירה.",
+        
+        // Contact Section
+        contact_tag: "בואו ניצור משהו מטורף",
+        contact_title: "מוכנים להתחיל בפרויקט הבא?",
+        contact_desc: "צרו איתי קשר לתיאום פגישה, הזמנת עבודה או סתם כדי להתייעץ על הרעיון הבא שלכם.",
+        
+        contact_whatsapp: "וואטסאפ מהיר",
+        contact_whatsapp_desc: "לחצו לשליחת הודעה",
+        contact_email: "אימייל",
+        contact_phone: "טלפון",
+        
+        contact_form_title: "שלחו לי הודעה",
+        contact_form_name: "שם מלא",
+        contact_form_phone: "טלפון ליצירת קשר",
+        contact_form_email: "כתובת אימייל",
+        contact_form_desc: "פרטים על הפרויקט",
+        contact_form_submit: "שליחת הודעה",
+        
+        // Placeholders
+        contact_form_name_ph: "ישראל ישראלי",
+        contact_form_phone_ph: "050-1234567",
+        contact_form_email_ph: "name@example.com",
+        contact_form_desc_ph: "ספרו לי על הפרויקט שלכם... (סוג הסרטון, אורך משוער, לוח זמנים וכדומה)",
+        
+        // Footer
+        footer_copyright: "מנדי טורקוב הפקות מולטימדיה. כל הזכויות שמורות."
+    },
+    en: {
+        // Nav Menu
+        nav_home: "Home",
+        nav_about: "About",
+        nav_services: "Services",
+        nav_portfolio: "Portfolio",
+        nav_contact: "Contact",
+        btn_lets_talk: "Let's Talk",
+        
+        // Hero Section
+        hero_main_tagline: "Your imagination. Our reality!",
+        hero_subtitle: "Filmmaker | Photographer | Advanced Video Editor",
+        hero_btn_portfolio: "View Portfolio",
+        hero_btn_talk: "Let's Talk",
+        
+        // About Section
+        about_tag: "Who Am I",
+        about_title: "Creating Reality Through the Lens",
+        about_bio: "Hello, I'm Mendy Turkov.",
+        about_bio_detail: "Filmmaker, field and aerial videographer, and video editor specializing in cinematic content, commercials, music videos, and social media videos that leave a mark. I combine advanced ground and aerial drone shooting, cinematic editing, and AI technologies to turn every idea into an immersive and extraordinary visual piece. Welcome to my portfolio.",
+        about_clients_title: "Clients and brands who chose us:",
+        stat_completed_works: "Completed Projects",
+        stat_years_exp: "Years Experience",
+        stat_happy_clients: "Happy Clients %",
+        
+        // Services Section
+        services_tag: "What I Do",
+        services_title: "Areas of Expertise",
+        services_desc: "Comprehensive video solutions from the concept stage to the final product at the highest cinematic level.",
+        
+        service1_title: "Cinematic Videography",
+        service1_text: "Top-level field and studio shooting, utilizing advanced equipment, cinema lenses, and creative lighting to craft breathtaking compositions.",
+        
+        service2_title: "Advanced Video Editing",
+        service2_text: "Dynamic cuts, professional color grading, cinematic sound design, pacing, and style tailored precisely to the brand.",
+        
+        service3_title: "Drone & Aerial Shooting",
+        service3_text: "Advanced aerial shooting in high resolution (4K/5K), capturing spectacular bird's-eye views and precise camera movements.",
+        
+        service4_title: "Cutting-Edge AI Tech",
+        service4_text: "Integrating artificial intelligence tools for complex visual effects, image and sound enhancement, and next-generation editing solutions.",
+        
+        // Portfolio Section
+        portfolio_tag: "Selected Works",
+        portfolio_title: "Portfolio",
+        portfolio_desc: "A glimpse of some of the projects I've led. Click on any project to watch the video.",
+        
+        // Contact Section
+        contact_tag: "Let's Build Something Crazy",
+        contact_title: "Ready to start your next project?",
+        contact_desc: "Contact me to schedule a meeting, order a video, or just consult on your next big idea.",
+        
+        contact_whatsapp: "Quick WhatsApp",
+        contact_whatsapp_desc: "Click to send a message",
+        contact_email: "Email",
+        contact_phone: "Phone",
+        
+        contact_form_title: "Send Me a Message",
+        contact_form_name: "Full Name",
+        contact_form_phone: "Phone Number",
+        contact_form_email: "Email Address",
+        contact_form_desc: "Project details",
+        contact_form_submit: "Send Message",
+        
+        // Placeholders
+        contact_form_name_ph: "John Doe",
+        contact_form_phone_ph: "050-1234567",
+        contact_form_email_ph: "name@example.com",
+        contact_form_desc_ph: "Tell me about your project... (video type, estimated duration, timeline, etc.)",
+        
+        // Footer
+        footer_copyright: "Mendy Turkov Multimedia Productions. All rights reserved."
+    }
+};
+
+function updateLanguageUI() {
+    const currentLang = localStorage.getItem('mendy_portfolio_lang') || 'he';
+    
+    // Set html attributes for language and layout direction
+    document.documentElement.lang = currentLang;
+    document.documentElement.dir = currentLang === 'en' ? 'ltr' : 'rtl';
+    
+    // Translate text of all marked elements
+    const elements = document.querySelectorAll('[data-i18n]');
+    elements.forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        const translation = translationDictionary[currentLang][key];
+        if (translation) {
+            // Keep icons inside the buttons if there are any
+            const icon = el.querySelector('i');
+            if (icon) {
+                el.innerHTML = translation + ' ' + icon.outerHTML;
+            } else {
+                el.textContent = translation;
+            }
+        }
+    });
+    
+    // Translate form input placeholders
+    const nameInput = document.getElementById('name');
+    const phoneInput = document.getElementById('phone');
+    const emailInput = document.getElementById('email');
+    const descInput = document.getElementById('message');
+    
+    if (nameInput) nameInput.placeholder = translationDictionary[currentLang].contact_form_name_ph;
+    if (phoneInput) phoneInput.placeholder = translationDictionary[currentLang].contact_form_phone_ph;
+    if (emailInput) emailInput.placeholder = translationDictionary[currentLang].contact_form_email_ph;
+    if (descInput) descInput.placeholder = translationDictionary[currentLang].contact_form_desc_ph;
+    
+    // Update language switcher button text
+    const langBtn = document.getElementById('langSwitch');
+    if (langBtn) {
+        langBtn.textContent = currentLang === 'en' ? 'עב' : 'EN';
+    }
+    
+    // Rerender category filters in the newly selected language
+    renderCategoryFilters();
+    
+    // Keep active portfolio filter active, then refresh grid to reflect translations
+    const filtersContainer = document.getElementById('portfolio-filters');
+    let activeFilter = 'all';
+    if (filtersContainer) {
+        const activeBtn = filtersContainer.querySelector('.filter-btn.active');
+        if (activeBtn) {
+            activeFilter = activeBtn.getAttribute('data-filter');
+        }
+    }
+    renderPortfolioGrid(activeFilter);
+}
+
+function initLanguageSwitcher() {
+    const langBtn = document.getElementById('langSwitch');
+    if (!langBtn) return;
+    
+    // Set initial state from localStorage or default to Hebrew
+    if (!localStorage.getItem('mendy_portfolio_lang')) {
+        localStorage.setItem('mendy_portfolio_lang', 'he');
+    }
+    
+    // Update the UI to match the current selection
+    updateLanguageUI();
+    
+    // Add click listener to switch language
+    langBtn.addEventListener('click', () => {
+        const currentLang = localStorage.getItem('mendy_portfolio_lang') || 'he';
+        const newLang = currentLang === 'en' ? 'he' : 'en';
+        localStorage.setItem('mendy_portfolio_lang', newLang);
+        updateLanguageUI();
+    });
 }

@@ -1371,7 +1371,13 @@ img {
     }
     
     .header-cta {
-        display: none; /* Hide top CTA on mobile to save space */
+        display: flex;
+        align-items: center;
+        margin-left: 12px;
+        margin-right: 12px;
+    }
+    .header-cta .btn {
+        display: none !important;
     }
     
     /* Layout structure change */
@@ -2707,3 +2713,41 @@ dialog {
     }
 }
 
+/* Language Switcher Button Styles */
+.lang-switch-btn {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: var(--text-light);
+    padding: 6px 14px;
+    border-radius: 30px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    font-family: 'Outfit', sans-serif;
+    letter-spacing: 1px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 15px;
+    margin-right: 15px;
+    height: 34px;
+    min-width: 50px;
+}
+
+.lang-switch-btn:hover {
+    background: rgba(0, 242, 254, 0.1);
+    border-color: var(--accent-cyan);
+    color: #ffffff;
+    box-shadow: 0 0 15px rgba(0, 242, 254, 0.35);
+    transform: translateY(-1px);
+}
+
+.lang-switch-btn:active {
+    transform: translateY(0);
+}
+
+/* Adjust RTL/LTR switch layout alignment */
+html[dir="ltr"] .lang-switch-btn {
+    font-family: 'Assistant', sans-serif;
+}
