@@ -379,6 +379,13 @@
         <div class="container">
             <div class="footer-bottom">
                 <p>&copy; 2026 <span data-i18n="footer_copyright">מנדי טורקוב הפקות מולטימדיה. כל הזכויות שמורות.</span></p>
+                <div class="footer-links-row">
+                    <button class="footer-link-btn" id="btn-open-terms" data-i18n="link_terms">תנאי שימוש</button>
+                    <span class="footer-links-divider">|</span>
+                    <button class="footer-link-btn" id="btn-open-privacy" data-i18n="link_privacy">מדיניות פרטיות</button>
+                    <span class="footer-links-divider">|</span>
+                    <button class="footer-link-btn" id="btn-open-a11y" data-i18n="link_a11y_statement">הצהרת נגישות</button>
+                </div>
                 <div class="footer-socials">
                     <a href="tel:+972548010231" aria-label="טלפון"><i class="fa-solid fa-phone"></i></a>
                     <a href="https://wa.me/972548010231" target="_blank" aria-label="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
@@ -591,6 +598,130 @@
                 </div>
             </div>
             
+        </div>
+    </dialog>
+
+    <!-- Floating Accessibility Button -->
+    <button id="accessibility-btn" class="accessibility-btn-floater" aria-label="פתיחת תפריט נגישות" aria-haspopup="true" aria-expanded="false">
+        <i class="fa-solid fa-universal-access"></i>
+    </button>
+
+    <!-- Accessibility Widget Box -->
+    <div id="accessibility-widget" class="accessibility-widget-card" role="dialog" aria-modal="true" aria-labelledby="accessibility-widget-title" style="display: none;">
+        <div class="a11y-header">
+            <div class="a11y-header-title">
+                <i class="fa-solid fa-universal-access"></i>
+                <span id="accessibility-widget-title" data-i18n="a11y_title">התאמות נגישות</span>
+            </div>
+            <button class="a11y-close-btn" id="close-a11y" aria-label="סגור תפריט נגישות">&times;</button>
+        </div>
+        
+        <div class="a11y-body">
+            <!-- Text Size Controller -->
+            <div class="a11y-control-group">
+                <span class="a11y-group-label" data-i18n="a11y_text_size">גודל טקסט</span>
+                <div class="a11y-size-buttons">
+                    <button id="a11y-text-dec" class="a11y-btn" aria-label="הקטן טקסט">-</button>
+                    <span id="a11y-text-percent" class="a11y-percent-display">100%</span>
+                    <button id="a11y-text-inc" class="a11y-btn" aria-label="הגדל טקסט">+</button>
+                </div>
+            </div>
+            
+            <!-- Toggle Options -->
+            <div class="a11y-toggles-grid">
+                <button class="a11y-toggle-btn" id="toggle-contrast" data-a11y="contrast">
+                    <span class="a11y-toggle-icon"><i class="fa-solid fa-circle-half-stroke"></i></span>
+                    <span class="a11y-toggle-label" data-i18n="a11y_contrast">ניגודיות גבוהה</span>
+                </button>
+                
+                <button class="a11y-toggle-btn" id="toggle-invert" data-a11y="invert">
+                    <span class="a11y-toggle-icon"><i class="fa-solid fa-eye-dropper"></i></span>
+                    <span class="a11y-toggle-label" data-i18n="a11y_invert">היפוך צבעים</span>
+                </button>
+                
+                <button class="a11y-toggle-btn" id="toggle-grayscale" data-a11y="grayscale">
+                    <span class="a11y-toggle-icon"><i class="fa-solid fa-palette"></i></span>
+                    <span class="a11y-toggle-label" data-i18n="a11y_grayscale">גווני אפור</span>
+                </button>
+                
+                <button class="a11y-toggle-btn" id="toggle-links" data-a11y="links">
+                    <span class="a11y-toggle-icon"><i class="fa-solid fa-underline"></i></span>
+                    <span class="a11y-toggle-label" data-i18n="a11y_links">הדגשת קישורים</span>
+                </button>
+                
+                <button class="a11y-toggle-btn" id="toggle-font" data-a11y="font">
+                    <span class="a11y-toggle-icon"><i class="fa-solid fa-font"></i></span>
+                    <span class="a11y-toggle-label" data-i18n="a11y_font">גופן קריא</span>
+                </button>
+                
+                <button class="a11y-toggle-btn" id="toggle-spacing" data-a11y="spacing">
+                    <span class="a11y-toggle-icon"><i class="fa-solid fa-arrows-left-right-to-line"></i></span>
+                    <span class="a11y-toggle-label" data-i18n="a11y_spacing">ריווח טקסט מוגדל</span>
+                </button>
+                
+                <button class="a11y-toggle-btn" id="toggle-animations" data-a11y="animations">
+                    <span class="a11y-toggle-icon"><i class="fa-solid fa-ban"></i></span>
+                    <span class="a11y-toggle-label" data-i18n="a11y_animations">עצירת אנימציות</span>
+                </button>
+                
+                <button class="a11y-toggle-btn" id="toggle-cursor" data-a11y="cursor">
+                    <span class="a11y-toggle-icon"><i class="fa-solid fa-arrow-pointer"></i></span>
+                    <span class="a11y-toggle-label" data-i18n="a11y_cursor">סמן עכבר גדול</span>
+                </button>
+                
+                <button class="a11y-toggle-btn" id="toggle-focus" data-a11y="focus">
+                    <span class="a11y-toggle-icon"><i class="fa-solid fa-keyboard"></i></span>
+                    <span class="a11y-toggle-label" data-i18n="a11y_focus">הדגשת מיקוד מקלדת</span>
+                </button>
+            </div>
+            
+            <!-- Reset Button -->
+            <button id="a11y-reset-btn" class="a11y-reset-btn" data-i18n="a11y_reset">
+                <i class="fa-solid fa-rotate-left"></i> איפוס הכל
+            </button>
+        </div>
+        
+        <div class="a11y-footer">
+            <button class="a11y-footer-link" id="a11y-statement-btn" data-i18n="a11y_statement_link">הצהרת הנגישות שלנו</button>
+        </div>
+    </div>
+
+    <!-- Legal Dialog: Terms of Use -->
+    <dialog id="termsDialog" class="legal-dialog">
+        <div class="legal-dialog-card">
+            <button class="legal-dialog-close" id="closeTerms" aria-label="סגור תנאי שימוש">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <h3 class="legal-dialog-title" data-i18n="terms_title">תנאי שימוש</h3>
+            <div class="legal-dialog-body" id="termsBody">
+                <!-- Injected via translation -->
+            </div>
+        </div>
+    </dialog>
+
+    <!-- Legal Dialog: Privacy Policy -->
+    <dialog id="privacyDialog" class="legal-dialog">
+        <div class="legal-dialog-card">
+            <button class="legal-dialog-close" id="closePrivacy" aria-label="סגור מדיניות פרטיות">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <h3 class="legal-dialog-title" data-i18n="privacy_title">מדיניות פרטיות</h3>
+            <div class="legal-dialog-body" id="privacyBody">
+                <!-- Injected via translation -->
+            </div>
+        </div>
+    </dialog>
+
+    <!-- Legal Dialog: Accessibility Statement -->
+    <dialog id="accessibilityStatementDialog" class="legal-dialog">
+        <div class="legal-dialog-card">
+            <button class="legal-dialog-close" id="closeAccessibilityStatement" aria-label="סגור הצהרת נגישות">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <h3 class="legal-dialog-title" data-i18n="accessibility_statement_title">הצהרת נגישות</h3>
+            <div class="legal-dialog-body" id="accessibilityStatementBody">
+                <!-- Injected via translation -->
+            </div>
         </div>
     </dialog>
 

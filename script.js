@@ -633,6 +633,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     initLogosMarquee();
     initMarqueeDragAndScroll(); // Start smooth auto-scroll with mouse/touch drag support
     initAdminPanel();
+    initAccessibilityWidget(); // Accessibility adjustments
+    initLegalDialogs(); // Legal policies dialog triggers
     initVisitorAlert();
 });
 
@@ -2748,7 +2750,32 @@ const translationDictionary = {
         contact_form_desc_ph: "ספרו לי על הפרויקט שלכם... (סוג הסרטון, אורך משוער, לוח זמנים וכדומה)",
         
         // Footer
-        footer_copyright: "מנדי טורקוב הפקות מולטימדיה. כל הזכויות שמורות."
+        footer_copyright: "מנדי טורקוב הפקות מולטימדיה. כל הזכויות שמורות.",
+
+        // Accessibility Widget
+        a11y_title: "התאמות נגישות",
+        a11y_text_size: "גודל טקסט",
+        a11y_contrast: "ניגודיות גבוהה",
+        a11y_invert: "היפוך צבעים",
+        a11y_grayscale: "גווני אפור",
+        a11y_links: "הדגשת קישורים",
+        a11y_font: "גופן קריא",
+        a11y_spacing: "ריווח טקסט מוגדל",
+        a11y_animations: "עצירת אנימציות",
+        a11y_cursor: "סמן עכבר גדול",
+        a11y_focus: "הדגשת מיקוד מקלדת",
+        a11y_reset: "איפוס הכל",
+        a11y_statement_link: "הצהרת הנגישות שלנו",
+
+        // Footer links
+        link_terms: "תנאי שימוש",
+        link_privacy: "מדיניות פרטיות",
+        link_a11y_statement: "הצהרת נגישות",
+
+        // Dialog titles
+        terms_title: "תנאי שימוש",
+        privacy_title: "מדיניות פרטיות",
+        accessibility_statement_title: "הצהרת נגישות"
     },
     en: {
         // Nav Menu
@@ -2821,7 +2848,32 @@ const translationDictionary = {
         contact_form_desc_ph: "Tell me about your project... (video type, estimated duration, timeline, etc.)",
         
         // Footer
-        footer_copyright: "Mendy Turkov Multimedia Productions. All rights reserved."
+        footer_copyright: "Mendy Turkov Multimedia Productions. All rights reserved.",
+
+        // Accessibility Widget
+        a11y_title: "Accessibility Adjustments",
+        a11y_text_size: "Text Size",
+        a11y_contrast: "High Contrast",
+        a11y_invert: "Invert Colors",
+        a11y_grayscale: "Grayscale / Monochrome",
+        a11y_links: "Underline Links",
+        a11y_font: "Readable Font",
+        a11y_spacing: "Increased Spacing",
+        a11y_animations: "Stop Animations",
+        a11y_cursor: "Large Cursor",
+        a11y_focus: "Keyboard Focus Highlight",
+        a11y_reset: "Reset All",
+        a11y_statement_link: "Accessibility Statement",
+
+        // Footer links
+        link_terms: "Terms of Use",
+        link_privacy: "Privacy Policy",
+        link_a11y_statement: "Accessibility Statement",
+
+        // Dialog titles
+        terms_title: "Terms of Use",
+        privacy_title: "Privacy Policy",
+        accessibility_statement_title: "Accessibility Statement"
     }
 };
 
@@ -2878,6 +2930,11 @@ function updateLanguageUI() {
         }
     }
     renderPortfolioGrid(activeFilter);
+    
+    // Update legal policies content in dialogs
+    if (typeof updateLegalTextsContent === 'function') {
+        updateLegalTextsContent(currentLang);
+    }
 }
 
 function initLanguageSwitcher() {
@@ -2899,4 +2956,465 @@ function initLanguageSwitcher() {
         localStorage.setItem('mendy_portfolio_lang', newLang);
         updateLanguageUI();
     });
+}
+
+// ==========================================================================
+// Accessibility & Legal Documents Logic
+// ==========================================================================
+
+const legalTexts = {
+    he: {
+        terms: `
+            <p>ברוכים הבאים לאתר תיק העבודות של מנדי טורקוב הפקות מולטימדיה. השימוש באתר זה כפוף לתנאי השימוש המפורטים להלן. גלישה או שימוש כלשהו באתר מהווים הסכמה מלאה לתנאים אלו.</p>
+            
+            <h4>1. מטרת האתר והשימוש בו</h4>
+            <p>האתר הינו אתר תדמיתי ותיק עבודות המציג סרטונים, צילומים, עבודות עריכה ויצירות ויזואליות שהופקו על ידי מנדי טורקוב. האתר מיועד לשימוש אישי והתרשמות בלבד של לקוחות פוטנציאליים ומבקרים.</p>
+            
+            <h4>2. קניין רוחני וזכויות יוצרים</h4>
+            <p>כל התכנים באתר, לרבות סרטוני וידאו, מוזיקה, שירים, תמונות, גרפיקה, לוגו, עיצובים, קוד מקור וטקסטים, מוגנים על ידי חוקי זכויות יוצרים של מדינת ישראל ואמנות בינלאומיות. כל הזכויות שמורות למנדי טורקוב ו/או ליוצרים ושותפים בהתאמה.</p>
+            <p>חל איסור מוחלט להעתיק, לשכפל, להפיץ, להציג בפומבי, לשדר, למכור או לעשות כל שימוש מסחרי או אחר בתכני האתר ללא קבלת אישור מפורש בכתב ומראש ממנדי טורקוב.</p>
+            
+            <h4>3. הגבלת אחריות</h4>
+            <p>האתר ותכניו מוצעים למשתמשים כפי שהם ("AS IS"). מנדי טורקוב אינו נושא באחריות כלשהי, מפורשת או משתמעת, לגבי תפקוד האתר, זמינותו או התאמתו למטרה מסוימת. כמו כן, בעל האתר לא יהיה אחראי לכל נזק ישיר או עקיף שייגרם כתוצאה מהשימוש באתר או מתקלות טכניות.</p>
+            
+            <h4>4. שינויים באתר ובתנאים</h4>
+            <p>בעל האתר שומר לעצמו את הזכות לעדכן, לשנות או להסיר תכנים מהאתר, או לעדכן את תנאי שימוש אלו בכל עת וללא הודעה מוקדמת.</p>
+            
+            <h4>5. סמכות שיפוט</h4>
+            <p>על תנאים אלו יחולו אך ורק דיני מדינת ישראל. כל מחלוקת או הליך משפטי הנוגע לאתר או לתנאי שימוש אלו יתבררו אך ורק בבתי המשפט המוסמכים במחוז תל אביב-יפו.</p>
+        `,
+        privacy: `
+            <p>מנדי טורקוב הפקות מולטימדיה מייחס חשיבות עליונה להגנה על פרטיות המשתמשים באתר. מדיניות פרטיות זו מפרטת איזה מידע נאסף וכיצד נעשה בו שימוש, בהתאם לחוק הגנת הפרטיות הישראלי (התשמ"א-1981) ולתקנות הגנת המידע הכלליות של האיחוד האירופי (GDPR).</p>
+            
+            <h4>1. איזה מידע אנו אוספים?</h4>
+            <p>אנו אוספים מידע אישי מזהה רק כאשר אתה בוחר למלא את טופס יצירת הקשר באתר. המידע כולל:</p>
+            <ul>
+                <li>שם מלא</li>
+                <li>מספר טלפון ליצירת קשר</li>
+                <li>כתובת אימייל</li>
+                <li>פרטים והסברים על הפרויקט שאתה מעוניין בו</li>
+            </ul>
+            <p>בנוסף, האתר עושה שימוש בקבצי זיכרון מקומיים (LocalStorage) כדי לשמור את העדפות השפה והגדרות הנגישות שבחרת, לשיפור חווית הגלישה שלך.</p>
+            
+            <h4>2. מה אנו עושים עם המידע?</h4>
+            <p>המידע האישי שנמסר על ידך משמש אך ורק למטרות הבאות:</p>
+            <ul>
+                <li>מתן מענה לפנייתך ויצירת קשר חוזר לגבי הזמנת עבודות הפקה וצילום.</li>
+                <li>תיאום פרויקטים ומתן שירות איכותי ומותאם אישית.</li>
+            </ul>
+            <p>אנו מתחייבים שלא למכור, להשכיר, להפיץ או לשתף את המידע האישי שלך עם שום גורם שלישי ללא הסכמתך המפורשת, למעט במקרים בהם נידרש לעשות כן על פי חוק.</p>
+            
+            <h4>3. שמירה ואבטחת מידע</h4>
+            <p>אנו מיישמים אמצעי אבטחה טכנולוגיים וארגוניים מתאימים כדי להגן על המידע האישי שלך מפני גישה לא מורשית, אובדן, שינוי או חשיפה.</p>
+            
+            <h4>4. זכויותיך על המידע (GDPR וחוקי הגנת הפרטיות)</h4>
+            <p>בהתאם לחוק, אתה זכאי בכל עת לממש את הזכויות הבאות לגבי המידע האישי שלך שנשמר אצלנו:</p>
+            <ul>
+                <li>לעיין במידע האישי שלך המוחזק על ידינו.</li>
+                <li>לבקש לתקן מידע שאינו מדויק או אינו מעודכן.</li>
+                <li>לבקש למחוק לצמיתות את המידע האישי שלך ממערכותינו ("הזכות להישכח").</li>
+            </ul>
+            <p>למימוש זכויות אלו, ניתן לפנות אלינו ישירות בדוא"ל: <a href="mailto:turkovmedia@gmail.com" style="color:var(--accent-cyan);text-decoration:underline;">turkovmedia@gmail.com</a>.</p>
+        `,
+        accessibility: `
+            <p>אנו במנדי טורקוב הפקות מולטימדיה מאמינים בשוויון הזדמנויות ובמתן גישה מלאה לתכנים דיגיטליים עבור כלל הגולשים. האתר נבנה והונגש מתוך כוונה לספק חווית גלישה שוויונית, נוחה ועצמאית עבור אנשים עם מוגבלויות, תוך עמידה בדרישות החוק הישראלי והתקנים הבינלאומיים.</p>
+            
+            <h4>1. עמידה בתקן ורמת הנגישות</h4>
+            <p>אתר זה עומד בדרישות תקנות שוויון זכויות לאנשים עם מוגבלות (התאמות נגישות לשירות), התשע"ג-2013. התאמות הנגישות בוצעו על פי המלצות התקן הישראלי (ת"י 5568) לנגישות תכנים באינטרנט ברמת **AA** ובהתאם למסמך ההנחיות הבינלאומי WCAG 2.1.</p>
+            
+            <h4>2. התאמות עיקריות שבוצעו באתר</h4>
+            <ul>
+                <li><strong>ניווט מקלדת:</strong> תמיכה מלאה בניווט והפעלת קישורים וכפתורים באמצעות מקשי המקלדת בלבד (Tab, Enter, Space).</li>
+                <li><strong>הדגשת פוקוס:</strong> הוספת מסגרת בולטת ומוארת לכל אלמנט שמקבל פוקוס מקלדת.</li>
+                <li><strong>נגן וידאו נגיש:</strong> תמיכה בנגנים נגישים (YouTube ו-HTML5) המאפשרים שליטה מלאה מהמקלדת.</li>
+                <li><strong>כלי נגישות צף:</strong> הוספת תפריט נגישות ייעודי המאפשר שליטה דינמית על:
+                    <ul>
+                        <li>הגדלת והקטנת גופנים ללא פגיעה במבנה האתר.</li>
+                        <li>ניגודיות צבעים גבוהה (ערכת נושא שחור-צהוב).</li>
+                        <li>היפוך צבעים מלא.</li>
+                        <li>המרת צבעי האתר לגווני אפור (עבור עיוורי צבעים).</li>
+                        <li>הדגשה קו תחתון בולט לכל הקישורים.</li>
+                        <li>שינוי גופן הגלילה לגופן קריא וברור (Sans-Serif).</li>
+                        <li>ריווח טקסט מוגדל (מרווחי שורות ואותיות).</li>
+                        <li>עצירת אנימציות וסרטוני רקע.</li>
+                        <li>סמן עכבר שחור וגדול במיוחד.</li>
+                    </ul>
+                </li>
+            </ul>
+            
+            <h4>3. פרטי רכז הנגישות ויצירת קשר</h4>
+            <p>אם במהלך הגלישה באתר נתקלתם בקושי, תקלה או בעיית נגישות, אנו מתנצלים על כך ונשמח אם תפנו אלינו כדי שנוכל לתקן ולשפר את הנושא בהקדם האפשרי.</p>
+            <p>פרטי רכז הנגישות באתר:</p>
+            <ul>
+                <li><strong>שם:</strong> מנדי טורקוב</li>
+                <li><strong>טלפון ליצירת קשר:</strong> <a href="tel:+972548010231" style="color:var(--accent-cyan);text-decoration:underline;">054-801-0231</a></li>
+                <li><strong>כתובת אימייל לפניות:</strong> <a href="mailto:turkovmedia@gmail.com" style="color:var(--accent-cyan);text-decoration:underline;">turkovmedia@gmail.com</a></li>
+            </ul>
+            <p>תאריך עדכון הצהרת הנגישות: 1 ביולי 2026.</p>
+        `
+    },
+    en: {
+        terms: `
+            <p>Welcome to the portfolio website of Mendy Turkov Multimedia Productions. Your access to and use of this website is conditioned on your acceptance of and compliance with these Terms of Use. By browsing or using this site, you agree to these terms in full.</p>
+            
+            <h4>1. Purpose of the Website and Usage</h4>
+            <p>This website is a promotional showcase and portfolio exhibiting videos, photography, and multimedia productions created by Mendy Turkov. The site is intended for personal review and informational purposes of potential clients and visitors only.</p>
+            
+            <h4>2. Intellectual Property and Copyrights</h4>
+            <p>All content on this website, including but not limited to video clips, music, audio, photos, graphics, logos, layouts, source code, and text, is protected by copyright laws of the State of Israel and international treaties. All rights are reserved to Mendy Turkov and/or respective creators or partners.</p>
+            <p>Any reproduction, copying, distribution, public display, broadcasting, selling, or commercial usage of any content from this site is strictly prohibited without prior explicit written authorization from Mendy Turkov.</p>
+            
+            <h4>3. Limitation of Liability</h4>
+            <p>The website and its contents are provided to users "AS IS". Mendy Turkov makes no warranties, express or implied, regarding the website's functionality, availability, or suitability for any specific purpose. Furthermore, the owner of this website shall not be liable for any direct, indirect, incidental, or consequential damages resulting from your use of this site or from technical errors.</p>
+            
+            <h4>4. Amendments to Site and Terms</h4>
+            <p>We reserve the right to update, modify, or remove content from the website, or update these Terms of Use at any time without prior notice.</p>
+            
+            <h4>5. Governing Law and Jurisdiction</h4>
+            <p>These terms shall be governed solely by the laws of the State of Israel. Any dispute or legal proceeding relating to this website or these terms shall be resolved exclusively in the competent courts of the Tel Aviv-Yafo district.</p>
+        `,
+        privacy: `
+            <p>Mendy Turkov Multimedia Productions values your privacy. This Privacy Policy details what information is collected, how it is processed and protected, in accordance with the Israeli Privacy Protection Law (5741-1981) and the European Union General Data Protection Regulation (GDPR).</p>
+            
+            <h4>1. What Information Do We Collect?</h4>
+            <p>We collect personally identifiable information only when you choose to fill out the contact form on our website. This information includes:</p>
+            <ul>
+                <li>Full Name</li>
+                <li>Contact Phone Number</li>
+                <li>Email Address</li>
+                <li>Project Description and details</li>
+            </ul>
+            <p>In addition, the website uses browser local storage (LocalStorage) to store your language preferences and accessibility adjustments in order to improve your browsing experience.</p>
+            
+            <h4>2. How Do We Use the Information?</h4>
+            <p>Personal information provided by you is used exclusively for the following purposes:</p>
+            <ul>
+                <li>Answering your inquiries and getting in touch regarding production, editing, or filming services.</li>
+                <li>Coordinating projects and providing customized, high-quality production services.</li>
+            </ul>
+            <p>We guarantee that we do not sell, rent, distribute, or share your personal data with any third party without your explicit consent, unless required to do so by law.</p>
+            
+            <h4>3. Security and Storage</h4>
+            <p>We implement appropriate technical and organizational security measures to protect your personal data against unauthorized access, loss, alteration, or disclosure.</p>
+            
+            <h4>4. Your Data Rights (GDPR & Privacy Laws)</h4>
+            <p>Under privacy regulations, you have the right at any time to exercise the following rights regarding your personal data:</p>
+            <ul>
+                <li>Access your personal data held by us.</li>
+                <li>Request correction of inaccurate or outdated information.</li>
+                <li>Request permanent deletion of your personal data from our systems ("Right to be Forgotten").</li>
+            </ul>
+            <p>To exercise these rights, please contact us directly via email at: <a href="mailto:turkovmedia@gmail.com" style="color:var(--accent-cyan);text-decoration:underline;">turkovmedia@gmail.com</a>.</p>
+        `,
+        accessibility: `
+            <p>We at Mendy Turkov Multimedia Productions believe in equal opportunities and providing full digital access to our content for all visitors. The website has been designed and accessible with the intention of providing a comfortable, equal, and independent browsing experience for people with disabilities, complying with Israeli regulations and international accessibility standards.</p>
+            
+            <h4>1. Standard Compliance and Level</h4>
+            <p>This website complies with the Equal Rights for Persons with Disabilities Regulations (Accessibility Adjustments for Services), 5773-2013. Adjustments have been carried out in accordance with Israeli Standard IS 5568 Level **AA** and Web Content Accessibility Guidelines (WCAG) 2.1.</p>
+            
+            <h4>2. Key Accessibility Features Implemented</h4>
+            <ul>
+                <li><strong>Keyboard Navigation:</strong> Full support for navigating and activating links/buttons using only the keyboard (Tab, Enter, Space).</li>
+                <li><strong>Focus Indicator:</strong> Added a high-contrast glowing outline to all elements receiving keyboard focus.</li>
+                <li><strong>Accessible Video Player:</strong> Supports keyboard control for embedded video frames (YouTube & HTML5).</li>
+                <li><strong>Floating Accessibility Widget:</strong> Allows dynamic adjustments including:
+                    <ul>
+                        <li>Increasing or decreasing text size without breaking layout.</li>
+                        <li>High contrast display (yellow text on black background).</li>
+                        <li>Full color inversion.</li>
+                        <li>Monochrome/grayscale display (for colorblind users).</li>
+                        <li>Underlining all active links.</li>
+                        <li>Changing typography to a highly readable Sans-Serif font (Arial/Assistant).</li>
+                        <li>Increased text spacing (letters, words, line spacing).</li>
+                        <li>Pausing animations, transition delays, and hero video loops.</li>
+                        <li>Enabling an extra-large dark mouse cursor.</li>
+                    </ul>
+                </li>
+            </ul>
+            
+            <h4>3. Accessibility Coordinator & Feedback</h4>
+            <p>If you encounter any difficulty, bug, or accessibility barrier while browsing our site, we apologize and encourage you to contact us directly so we can resolve it as soon as possible.</p>
+            <p>Accessibility Coordinator contact details:</p>
+            <ul>
+                <li><strong>Name:</strong> Mendy Turkov</li>
+                <li><strong>Phone Number:</strong> <a href="tel:+972548010231" style="color:var(--accent-cyan);text-decoration:underline;">+972-54-801-0231</a></li>
+                <li><strong>Email Address:</strong> <a href="mailto:turkovmedia@gmail.com" style="color:var(--accent-cyan);text-decoration:underline;">turkovmedia@gmail.com</a></li>
+            </ul>
+            <p>Accessibility Statement Last Updated: July 1, 2026.</p>
+        `
+    }
+};
+
+function updateLegalTextsContent(lang) {
+    const termsBody = document.getElementById('termsBody');
+    const privacyBody = document.getElementById('privacyBody');
+    const accessibilityStatementBody = document.getElementById('accessibilityStatementBody');
+    
+    if (termsBody) termsBody.innerHTML = legalTexts[lang].terms;
+    if (privacyBody) privacyBody.innerHTML = legalTexts[lang].privacy;
+    if (accessibilityStatementBody) accessibilityStatementBody.innerHTML = legalTexts[lang].accessibility;
+}
+
+// ==========================================================================
+// Accessibility Settings State & Logic
+// ==========================================================================
+
+let a11yState = {
+    textSize: 100, // 100% to 150% in steps of 10
+    contrast: false,
+    invert: false,
+    grayscale: false,
+    links: false,
+    font: false,
+    spacing: false,
+    animations: false,
+    cursor: false,
+    focus: false
+};
+
+function loadAccessibilitySettings() {
+    const saved = localStorage.getItem('mendy_portfolio_a11y');
+    if (saved) {
+        try {
+            a11yState = { ...a11yState, ...JSON.parse(saved) };
+        } catch (e) {
+            console.error("Error parsing saved accessibility settings", e);
+        }
+    }
+    applyAccessibilitySettings();
+    updateAccessibilityWidgetUI();
+}
+
+function saveAccessibilitySettings() {
+    localStorage.setItem('mendy_portfolio_a11y', JSON.stringify(a11yState));
+}
+
+function applyAccessibilitySettings() {
+    // 1. Text Size (adjust html base font size)
+    const sizePercent = a11yState.textSize;
+    document.documentElement.style.fontSize = sizePercent === 100 ? '' : `${sizePercent}%`;
+    const percentDisplay = document.getElementById('a11y-text-percent');
+    if (percentDisplay) percentDisplay.textContent = `${sizePercent}%`;
+
+    // 2. Class-based toggles on body
+    const body = document.body;
+    
+    const classMappings = {
+        contrast: 'a11y-contrast',
+        invert: 'a11y-invert',
+        grayscale: 'a11y-grayscale',
+        links: 'a11y-links',
+        font: 'a11y-font',
+        spacing: 'a11y-spacing',
+        animations: 'a11y-animations',
+        cursor: 'a11y-cursor',
+        focus: 'a11y-focus'
+    };
+
+    for (const [key, className] of Object.entries(classMappings)) {
+        if (a11yState[key]) {
+            body.classList.add(className);
+        } else {
+            body.classList.remove(className);
+        }
+    }
+
+    // 3. Stop animations extra: pause background video playback if animations are disabled
+    const desktopVideo = document.getElementById('heroVideoBgDesktop');
+    const mobileVideo = document.getElementById('heroVideoBgMobile');
+    
+    if (a11yState.animations) {
+        if (desktopVideo) desktopVideo.pause();
+        if (mobileVideo) mobileVideo.pause();
+    } else {
+        // Only play if they were playing before
+        if (desktopVideo && desktopVideo.paused) desktopVideo.play().catch(() => {});
+        if (mobileVideo && mobileVideo.paused) mobileVideo.play().catch(() => {});
+    }
+}
+
+function updateAccessibilityWidgetUI() {
+    // Update active class on toggle buttons inside panel
+    const toggles = ['contrast', 'invert', 'grayscale', 'links', 'font', 'spacing', 'animations', 'cursor', 'focus'];
+    toggles.forEach(key => {
+        const btn = document.getElementById(`toggle-${key}`);
+        if (btn) {
+            if (a11yState[key]) {
+                btn.classList.add('active');
+                btn.setAttribute('aria-pressed', 'true');
+            } else {
+                btn.classList.remove('active');
+                btn.setAttribute('aria-pressed', 'false');
+            }
+        }
+    });
+}
+
+function resetAccessibilitySettings() {
+    a11yState = {
+        textSize: 100,
+        contrast: false,
+        invert: false,
+        grayscale: false,
+        links: false,
+        font: false,
+        spacing: false,
+        animations: false,
+        cursor: false,
+        focus: false
+    };
+    applyAccessibilitySettings();
+    updateAccessibilityWidgetUI();
+    saveAccessibilitySettings();
+}
+
+// ==========================================================================
+// Accessibility Panel & Legal Dialogs Event Listeners
+// ==========================================================================
+
+function initAccessibilityWidget() {
+    const floaterBtn = document.getElementById('accessibility-btn');
+    const widgetPanel = document.getElementById('accessibility-widget');
+    const closeBtn = document.getElementById('close-a11y');
+    const resetBtn = document.getElementById('a11y-reset-btn');
+    
+    const textDecBtn = document.getElementById('a11y-text-dec');
+    const textIncBtn = document.getElementById('a11y-text-inc');
+    
+    if (!floaterBtn || !widgetPanel) return;
+
+    // Load initial settings
+    loadAccessibilitySettings();
+
+    // Toggle panel visibility
+    floaterBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const isOpen = widgetPanel.style.display !== 'none';
+        widgetPanel.style.display = isOpen ? 'none' : 'flex';
+        floaterBtn.setAttribute('aria-expanded', isOpen ? 'false' : 'true');
+    });
+
+    // Close panel
+    if (closeBtn) {
+        closeBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            widgetPanel.style.display = 'none';
+            floaterBtn.setAttribute('aria-expanded', 'false');
+        });
+    }
+
+    // Close on click outside panel
+    document.addEventListener('click', (e) => {
+        if (widgetPanel.style.display !== 'none' && !widgetPanel.contains(e.target) && e.target !== floaterBtn && !floaterBtn.contains(e.target)) {
+            widgetPanel.style.display = 'none';
+            floaterBtn.setAttribute('aria-expanded', 'false');
+        }
+    });
+
+    // Prevent clicks inside panel from closing it
+    widgetPanel.addEventListener('click', (e) => {
+        e.stopPropagation();
+    });
+
+    // Text size controllers
+    if (textDecBtn) {
+        textDecBtn.addEventListener('click', () => {
+            if (a11yState.textSize > 100) {
+                a11yState.textSize -= 10;
+                applyAccessibilitySettings();
+                saveAccessibilitySettings();
+            }
+        });
+    }
+
+    if (textIncBtn) {
+        textIncBtn.addEventListener('click', () => {
+            if (a11yState.textSize < 150) {
+                a11yState.textSize += 10;
+                applyAccessibilitySettings();
+                saveAccessibilitySettings();
+            }
+        });
+    }
+
+    // Toggle buttons
+    const toggles = ['contrast', 'invert', 'grayscale', 'links', 'font', 'spacing', 'animations', 'cursor', 'focus'];
+    toggles.forEach(key => {
+        const btn = document.getElementById(`toggle-${key}`);
+        if (btn) {
+            btn.addEventListener('click', () => {
+                a11yState[key] = !a11yState[key];
+                
+                // Exclusivity: Contrast and Invert shouldn't work together nicely
+                if (key === 'contrast' && a11yState.contrast) {
+                    a11yState.invert = false;
+                } else if (key === 'invert' && a11yState.invert) {
+                    a11yState.contrast = false;
+                }
+
+                applyAccessibilitySettings();
+                updateAccessibilityWidgetUI();
+                saveAccessibilitySettings();
+            });
+        }
+    });
+
+    // Reset button
+    if (resetBtn) {
+        resetBtn.addEventListener('click', () => {
+            resetAccessibilitySettings();
+        });
+    }
+
+    // Accessibility statement button inside widget
+    const statementBtn = document.getElementById('a11y-statement-btn');
+    const a11yDialog = document.getElementById('accessibilityStatementDialog');
+    if (statementBtn && a11yDialog) {
+        statementBtn.addEventListener('click', () => {
+            widgetPanel.style.display = 'none';
+            floaterBtn.setAttribute('aria-expanded', 'false');
+            a11yDialog.showModal();
+        });
+    }
+}
+
+function initLegalDialogs() {
+    const termsDialog = document.getElementById('termsDialog');
+    const privacyDialog = document.getElementById('privacyDialog');
+    const a11yDialog = document.getElementById('accessibilityStatementDialog');
+
+    const openTermsBtn = document.getElementById('btn-open-terms');
+    const openPrivacyBtn = document.getElementById('btn-open-privacy');
+    const openA11yBtn = document.getElementById('btn-open-a11y');
+
+    const closeTermsBtn = document.getElementById('closeTerms');
+    const closePrivacyBtn = document.getElementById('closePrivacy');
+    const closeA11yBtn = document.getElementById('closeAccessibilityStatement');
+
+    // Open listeners
+    if (openTermsBtn && termsDialog) openTermsBtn.addEventListener('click', () => termsDialog.showModal());
+    if (openPrivacyBtn && privacyDialog) openPrivacyBtn.addEventListener('click', () => privacyDialog.showModal());
+    if (openA11yBtn && a11yDialog) openA11yBtn.addEventListener('click', () => a11yDialog.showModal());
+
+    // Close listeners
+    if (closeTermsBtn && termsDialog) closeTermsBtn.addEventListener('click', () => termsDialog.close());
+    if (closePrivacyBtn && privacyDialog) closePrivacyBtn.addEventListener('click', () => privacyDialog.close());
+    if (closeA11yBtn && a11yDialog) closeA11yBtn.addEventListener('click', () => a11yDialog.close());
+
+    // Close on overlay backdrop clicks
+    const setupBackdropClose = (dialog) => {
+        if (!dialog) return;
+        dialog.addEventListener('click', (e) => {
+            const rect = dialog.getBoundingClientRect();
+            const isInDialog = (rect.top <= e.clientY && e.clientY <= rect.top + rect.height &&
+                                rect.left <= e.clientX && e.clientX <= rect.left + rect.width);
+            if (!isInDialog) {
+                dialog.close();
+            }
+        });
+    };
+
+    setupBackdropClose(termsDialog);
+    setupBackdropClose(privacyDialog);
+    setupBackdropClose(a11yDialog);
 }

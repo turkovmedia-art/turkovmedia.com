@@ -2751,3 +2751,564 @@ dialog {
 html[dir="ltr"] .lang-switch-btn {
     font-family: 'Assistant', sans-serif;
 }
+
+/* ==========================================================================
+   Accessibility & Legal Policy Styles
+   ========================================================================== */
+
+/* Floating Accessibility Button */
+.accessibility-btn-floater {
+    position: fixed;
+    bottom: 25px;
+    left: 25px;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: #0b1025;
+    border: 1px solid rgba(0, 242, 254, 0.3);
+    color: var(--accent-cyan);
+    font-size: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5), 0 0 10px rgba(0, 242, 254, 0.2);
+    z-index: 999;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.accessibility-btn-floater:hover {
+    background: var(--accent-cyan);
+    color: #0b1025;
+    box-shadow: 0 0 20px rgba(0, 242, 254, 0.6);
+    transform: scale(1.08);
+}
+
+.accessibility-btn-floater:active {
+    transform: scale(0.95);
+}
+
+/* Accessibility Panel Container */
+.accessibility-widget-card {
+    position: fixed;
+    bottom: 85px;
+    left: 25px;
+    width: 350px;
+    max-width: calc(100vw - 50px);
+    background: rgba(11, 16, 37, 0.95);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8), 0 0 20px rgba(0, 242, 254, 0.1);
+    z-index: 1000;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    animation: a11yFadeIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes a11yFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(15px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Header styling */
+.a11y-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.a11y-header-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #ffffff;
+    font-weight: 700;
+    font-size: 1.1rem;
+}
+
+.a11y-header-title i {
+    color: var(--accent-cyan);
+    font-size: 1.2rem;
+}
+
+.a11y-close-btn {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-size: 1.5rem;
+    cursor: pointer;
+    line-height: 1;
+    transition: color 0.2s;
+}
+
+.a11y-close-btn:hover {
+    color: #ffffff;
+}
+
+/* Panel Body & Grid */
+.a11y-body {
+    padding: 20px;
+    max-height: 380px;
+    overflow-y: auto;
+}
+
+/* Custom Scrollbar for Accessibility panel */
+.a11y-body::-webkit-scrollbar {
+    width: 6px;
+}
+.a11y-body::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.02);
+}
+.a11y-body::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 4px;
+}
+
+/* Control Group (Text Size) */
+.a11y-control-group {
+    margin-bottom: 20px;
+    background: rgba(255, 255, 255, 0.03);
+    padding: 12px 15px;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.a11y-group-label {
+    color: #ffffff;
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+.a11y-size-buttons {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.a11y-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.05);
+    color: #ffffff;
+    font-weight: 700;
+    font-size: 1.2rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.a11y-btn:hover {
+    border-color: var(--accent-cyan);
+    color: var(--accent-cyan);
+    background: rgba(0, 242, 254, 0.05);
+}
+
+.a11y-percent-display {
+    color: #ffffff;
+    font-weight: 700;
+    font-size: 0.95rem;
+    min-width: 45px;
+    text-align: center;
+}
+
+/* Grid layout for buttons */
+.a11y-toggles-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.a11y-toggle-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 10px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 10px;
+    color: var(--text-light);
+    cursor: pointer;
+    transition: all 0.25s ease;
+    text-align: center;
+}
+
+.a11y-toggle-btn:hover {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.a11y-toggle-icon {
+    font-size: 1.25rem;
+    color: var(--text-muted);
+    transition: color 0.2s;
+}
+
+.a11y-toggle-label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    line-height: 1.3;
+}
+
+/* Active State of Widget Options */
+.a11y-toggle-btn.active {
+    background: rgba(0, 242, 254, 0.06);
+    border-color: var(--accent-cyan);
+    box-shadow: 0 0 10px rgba(0, 242, 254, 0.15);
+}
+
+.a11y-toggle-btn.active .a11y-toggle-icon {
+    color: var(--accent-cyan);
+}
+
+.a11y-toggle-btn.active .a11y-toggle-label {
+    color: #ffffff;
+}
+
+/* Reset Button */
+.a11y-reset-btn {
+    width: 100%;
+    padding: 12px;
+    background: rgba(239, 68, 68, 0.08);
+    border: 1px solid rgba(239, 68, 68, 0.2);
+    border-radius: 8px;
+    color: #f87171;
+    font-weight: 700;
+    font-size: 0.9rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.25s;
+}
+
+.a11y-reset-btn:hover {
+    background: rgba(239, 68, 68, 0.18);
+    border-color: #ef4444;
+    color: #ffffff;
+    box-shadow: 0 0 12px rgba(239, 68, 68, 0.2);
+}
+
+/* Footer Section of Panel */
+.a11y-footer {
+    padding: 12px;
+    background: rgba(255, 255, 255, 0.02);
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    text-align: center;
+}
+
+.a11y-footer-link {
+    background: none;
+    border: none;
+    color: var(--accent-cyan);
+    font-weight: 600;
+    font-size: 0.82rem;
+    cursor: pointer;
+    transition: color 0.2s;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+.a11y-footer-link:hover {
+    color: #ffffff;
+}
+
+/* Responsive details for mobile layout */
+@media (max-width: 480px) {
+    .accessibility-btn-floater {
+        bottom: 15px;
+        left: 15px;
+        width: 45px;
+        height: 45px;
+        font-size: 1.35rem;
+    }
+    
+    .accessibility-widget-card {
+        bottom: 75px;
+        left: 15px;
+        width: calc(100vw - 30px);
+        max-width: none;
+    }
+}
+
+/* ==========================================================================
+   Accessibility Modifications Classes (Applied to body)
+   ========================================================================== */
+
+/* 1. Contrast: Black/Yellow/White theme */
+body.a11y-contrast {
+    background-color: #000000 !important;
+    background-image: none !important;
+    color: #ffff00 !important;
+}
+
+body.a11y-contrast *:not(.accessibility-widget-card):not(.accessibility-widget-card *):not(.accessibility-btn-floater) {
+    background-color: #000000 !important;
+    color: #ffff00 !important;
+    border-color: #ffff00 !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+}
+
+body.a11y-contrast a:not(.accessibility-widget-card *) {
+    color: #00ffff !important;
+    text-decoration: underline !important;
+}
+
+body.a11y-contrast button:not(.accessibility-widget-card *),
+body.a11y-contrast input,
+body.a11y-contrast textarea {
+    border: 2px solid #ffff00 !important;
+    background: #000000 !important;
+}
+
+/* 2. Color Inversion (exempting media to avoid weird distortions) */
+body.a11y-invert {
+    filter: invert(1) hue-rotate(180deg) !important;
+    background-color: #ffffff !important;
+}
+
+body.a11y-invert img,
+body.a11y-invert video,
+body.a11y-invert iframe,
+body.a11y-invert .logo,
+body.a11y-invert .hero-logo,
+body.a11y-invert .marquee-row,
+body.a11y-invert .service-icon-box,
+body.a11y-invert .method-icon,
+body.a11y-invert .contact-method-item {
+    filter: invert(1) hue-rotate(180deg) !important;
+}
+
+/* 3. Monochrome / Grayscale theme */
+body.a11y-grayscale {
+    filter: grayscale(1) !important;
+}
+
+/* 4. Underline Links */
+body.a11y-links a {
+    text-decoration: underline !important;
+    text-decoration-thickness: 1.5px !important;
+    text-underline-offset: 3px !important;
+}
+
+/* 5. Readable Font (Force plain Sans-Serif font) */
+body.a11y-font * {
+    font-family: Arial, Helvetica, sans-serif !important;
+}
+
+/* 6. Spacing */
+body.a11y-spacing * {
+    letter-spacing: 0.12em !important;
+    word-spacing: 0.16em !important;
+    line-height: 1.8 !important;
+}
+
+/* 7. Stop animations and transitions */
+body.a11y-animations *,
+body.a11y-animations *::before,
+body.a11y-animations *::after {
+    animation-duration: 0.001s !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001s !important;
+    scroll-behavior: auto !important;
+}
+
+/* 8. Keyboard Focus Indicator */
+body.a11y-focus *:focus {
+    outline: 4px solid var(--accent-cyan) !important;
+    outline-offset: 4px !important;
+    box-shadow: 0 0 15px rgba(0, 242, 254, 0.8) !important;
+}
+
+/* 9. Large Cursor */
+body.a11y-cursor,
+body.a11y-cursor * {
+    cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='36' height='36' viewBox='0 0 32 32'%3E%3Cpath fill='black' stroke='white' stroke-width='2' d='M0,0 L0,22 L6,16 L12,27 L15,25 L9,14 L16,14 Z'/%3E%3C/svg%3E"), auto !important;
+}
+
+
+/* ==========================================================================
+   Footer Links & Legal dialog container styling
+   ========================================================================== */
+
+/* Footer links divider and row */
+.footer-links-row {
+    margin: 15px 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.footer-link-btn {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    padding: 2px 5px;
+    border-radius: 4px;
+}
+
+.footer-link-btn:hover {
+    color: var(--accent-cyan);
+    text-shadow: 0 0 8px rgba(0, 242, 254, 0.4);
+}
+
+.footer-links-divider {
+    color: rgba(255, 255, 255, 0.15);
+    font-size: 0.85rem;
+    user-select: none;
+}
+
+/* Modal Dialog standard overrides for Legal Policies */
+.legal-dialog {
+    border: none;
+    border-radius: 20px;
+    padding: 0;
+    background: transparent;
+    max-width: 850px;
+    width: 90%;
+    max-height: 85vh;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.9);
+}
+
+.legal-dialog::backdrop {
+    background: rgba(3, 5, 12, 0.85);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+.legal-dialog-card {
+    background: #050814;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-top: 3px solid var(--accent-cyan);
+    border-radius: 20px;
+    padding: 30px 40px;
+    position: relative;
+    max-height: 85vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.legal-dialog-close {
+    position: absolute;
+    top: 25px;
+    right: 25px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    color: var(--text-muted);
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    transition: all 0.2s ease;
+    z-index: 10;
+}
+
+.legal-dialog-close:hover {
+    background: rgba(239, 68, 68, 0.1);
+    border-color: rgba(239, 68, 68, 0.3);
+    color: #f87171;
+}
+
+.legal-dialog-title {
+    color: #ffffff;
+    font-size: 1.6rem;
+    font-weight: 800;
+    margin-bottom: 20px;
+    padding-left: 20px;
+    border-left: 4px solid var(--accent-cyan);
+}
+
+html[dir="rtl"] .legal-dialog-title {
+    padding-left: 0;
+    padding-right: 20px;
+    border-left: none;
+    border-right: 4px solid var(--accent-cyan);
+}
+
+.legal-dialog-body {
+    overflow-y: auto;
+    color: var(--text-light);
+    font-size: 0.95rem;
+    line-height: 1.7;
+    padding-right: 10px;
+    max-height: 60vh;
+}
+
+.legal-dialog-body::-webkit-scrollbar {
+    width: 6px;
+}
+.legal-dialog-body::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.01);
+}
+.legal-dialog-body::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+}
+
+/* Legal text typography styles */
+.legal-dialog-body h4 {
+    color: #ffffff;
+    font-size: 1.15rem;
+    font-weight: 700;
+    margin: 25px 0 10px 0;
+}
+
+.legal-dialog-body p {
+    margin-bottom: 15px;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.legal-dialog-body ul {
+    margin: 10px 20px 20px 20px;
+    list-style-type: disc;
+}
+
+.legal-dialog-body li {
+    margin-bottom: 8px;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+/* Adjust layout on smaller viewports */
+@media (max-width: 768px) {
+    .legal-dialog-card {
+        padding: 25px 20px;
+    }
+    
+    .legal-dialog-title {
+        font-size: 1.3rem;
+        margin-bottom: 15px;
+    }
+}
+
