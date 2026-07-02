@@ -540,6 +540,11 @@ let clientLogos = [
     "CYP.png",
     "JRNU.png",
     {
+        "name": "ברדק",
+        "src": "ברדק.png",
+        "scale": 1.15
+    },
+    {
         "name": "בית הכנסת הגדול חולון",
         "scale": 1.7,
         "src": "בית הכנסת הגדול חולון.png"
@@ -1461,6 +1466,22 @@ async function initializeDatabase() {
     // Run logo migrations only if we have a valid source of truth (Firestore loaded, or document didn't exist)
     if (loadedFromFirestore || !documentExists) {
         let modified = false;
+
+        // Auto-merge missing codebase default logos (e.g. ברדק) to active database
+        if (typeof sourceLogos !== 'undefined' && Array.isArray(sourceLogos)) {
+            sourceLogos.forEach(srcLogo => {
+                const srcDetails = getLogoDetails(srcLogo);
+                const exists = clientLogos.some(l => {
+                    const details = getLogoDetails(l);
+                    return details.src === srcDetails.src;
+                });
+                if (!exists) {
+                    console.log(`Auto-merging missing codebase logo to active database: ${srcDetails.src}`);
+                    clientLogos.push(srcLogo);
+                    modified = true;
+                }
+            });
+        }
         clientLogos = clientLogos.map(logo => {
             const details = getLogoDetails(logo);
             if (details.name === 'חב"ד' || details.name === 'חבד' || details.name === 'חב"ד-מסגרת') {

@@ -538,6 +538,11 @@ const defaultClientLogos = [
     "CYP.png",
     "JRNU.png",
     {
+        "name": "ברדק",
+        "src": "ברדק.png",
+        "scale": 1.15
+    },
+    {
         "name": "בית הכנסת הגדול חולון",
         "scale": 1.7,
         "src": "בית הכנסת הגדול חולון.png"
