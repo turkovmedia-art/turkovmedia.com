@@ -1579,7 +1579,6 @@ async function revalidateDatabaseFromFirestore() {
         console.error("Firestore background revalidation error:", e);
     }
 }
-}
 
 // Render dynamic filter buttons based on categoriesList
 function renderCategoryFilters() {
@@ -3661,7 +3660,7 @@ const videoTranslations = {
         desc: "International CKids Shabbaton Promotional Video",
         client: "International CKids"
     },
-    "פרומו סיום הרמב"ם העולמי": {
+    "פרומו סיום הרמב\"ם העולמי": {
         title: "International Siyum HaRambam Promo",
         desc: "Promotional campaign video for the global celebration",
         client: "Siyum HaRambam Committee"
@@ -3721,7 +3720,7 @@ const videoTranslations = {
         desc: "Grand Ice Arena Event | Chabad of Virginia Beach",
         client: "Chabad of Virginia Beach"
     },
-    "חגיגת ל"ג בעומר": {
+    "חגיגת ל\"ג בעומר": {
         title: "Lag BaOmer Celebration",
         desc: "Lag BaOmer Festival | Chabad of Virginia Beach",
         client: "Chabad of Virginia Beach"
