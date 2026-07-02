@@ -701,13 +701,16 @@ function renderPortfolioGrid(filter = 'all') {
         : videoProjects.filter(p => p.categories.includes(filter));
         
     filteredProjects.forEach(project => {
+        // Translate project metadata for display
+        const displayProj = getTranslatedProject(project);
+
         const card = document.createElement('div');
         card.className = `portfolio-item scroll-reveal`;
         card.setAttribute('data-id', project.id);
         
         card.innerHTML = `
             <div class="portfolio-thumb-box">
-                <img src="${project.thumbnail}" alt="${project.title}" class="portfolio-thumb" loading="lazy">
+                <img src="${displayProj.thumbnail}" alt="${displayProj.title}" class="portfolio-thumb" loading="lazy">
                 <div class="portfolio-overlay">
                     <div class="play-trigger">
                         <i class="fa-solid fa-play"></i>
@@ -715,9 +718,9 @@ function renderPortfolioGrid(filter = 'all') {
                 </div>
             </div>
             <div class="portfolio-meta">
-                <div class="portfolio-category">${project.categories ? project.categories.map(c => getCategoryHebrew(c)).join(' | ') : getCategoryHebrew(project.category)}</div>
-                <h3 class="portfolio-item-title">${project.title}</h3>
-                <p class="portfolio-item-desc">${project.desc}</p>
+                <div class="portfolio-category">${displayProj.categories ? displayProj.categories.map(c => getCategoryHebrew(c)).join(' | ') : getCategoryHebrew(displayProj.category)}</div>
+                <h3 class="portfolio-item-title">${displayProj.title}</h3>
+                <p class="portfolio-item-desc">${displayProj.desc}</p>
             </div>
         `;
         
@@ -825,6 +828,9 @@ function openVideoPlayer(project) {
     
     if (!dialog || !container || !title || !desc) return;
     
+    // Translate project metadata for display
+    const displayProj = getTranslatedProject(project);
+    
     // Save the current scroll position before opening the modal
     lastVideoScrollY = window.scrollY;
     
@@ -835,16 +841,16 @@ function openVideoPlayer(project) {
     document.documentElement.classList.add('modal-open');
     document.body.classList.add('modal-open');
     
-    title.textContent = project.title;
+    title.textContent = displayProj.title;
     const currentLang = localStorage.getItem('mendy_portfolio_lang') || 'he';
     const clientLabel = currentLang === 'en' ? 'Client' : 'לקוח';
     const yearLabel = currentLang === 'en' ? 'Year' : 'שנה';
     desc.innerHTML = `
-        <strong>${clientLabel}:</strong> ${project.client} | <strong>${yearLabel}:</strong> ${project.year} <br>
-        ${project.desc}
+        <strong>${clientLabel}:</strong> ${displayProj.client} | <strong>${yearLabel}:</strong> ${displayProj.year} <br>
+        ${displayProj.desc}
     `;
     
-    const embedUrl = resolveEmbedUrl(project.videoUrl);
+    const embedUrl = resolveEmbedUrl(displayProj.videoUrl);
     
     if (embedUrl.isDirectVideo) {
         container.innerHTML = `
@@ -857,7 +863,7 @@ function openVideoPlayer(project) {
         container.innerHTML = `
             <iframe 
                 src="${embedUrl.url}" 
-                title="${project.title}" 
+                title="${displayProj.title}" 
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
                 allowfullscreen>
             </iframe>
@@ -3472,4 +3478,248 @@ function initLegalDialogs() {
     setupBackdropClose(termsDialog);
     setupBackdropClose(privacyDialog);
     setupBackdropClose(a11yDialog);
+}
+
+// Video Projects Translation Dictionary
+const videoTranslations = {
+    "معזה לטיימס סקוור": {
+        title: "From Gaza to Times Square",
+        desc: "Hostage Survivor Segev Khalfian | Lecture Video",
+        client: "Segev Khalfian"
+    },
+    "המסע שלי עם אינשטיין": {
+        title: "My Journey with Einstein",
+        desc: "Chabad World Center Special Documentary",
+        client: "Chabad World Center"
+    },
+    "כינוס השלוחים העולמי": {
+        title: "International Conference of Chabad Shluchim",
+        desc: "The Greatest Highlights and Moments",
+        client: "Chabad World Center"
+    },
+    "505 ימים במנהרות עזה": {
+        title: "505 Days in Gaza Tunnels",
+        desc: "The Story of Hostage Eliya Cohen",
+        client: "Eliya Cohen"
+    },
+    "רון דרמר": {
+        title: "Ron Dermer",
+        desc: "The Man Behind the Scenes of Israel's Diplomacy",
+        client: "Ron Dermer"
+    },
+    "מאפילה לאורה": {
+        title: "From Darkness to Light",
+        desc: "Hostage Survivors Sasha Trupanov & Sapir Cohen | Lecture Film",
+        client: "Chabad AZ Temple"
+    },
+    "אמונה מתחת לאדמה": {
+        title: "Faith Underground",
+        desc: "The Story of Matan, Ilana, and Segev in times of crisis",
+        client: "Cteen - Times Square"
+    },
+    "כינוס השלוחות העולמי": {
+        title: "International Conference of Chabad Shluchot",
+        desc: "The Greatest Highlights and Moments of the Shluchot",
+        client: "Chabad World Center"
+    },
+    "מצטרפים לשרשרת הדורות": {
+        title: "Joining the Chain of Generations",
+        desc: "Graduation Gala Video | CKids 2026",
+        client: "CKids"
+    },
+    "חבורת תריסר": {
+        title: "The Dozen Gang",
+        desc: "The Premiere Launch Episode",
+        client: "Chabad Kids Channel"
+    },
+    "שליחות בכל מצב": {
+        title: "Shlichus in Every Situation",
+        desc: "The Inspiring Story of Chaya Kogo",
+        client: "Chaya Kogo"
+    },
+    "החלטה של דורות": {
+        title: "A Generational Decision",
+        desc: "The Trister Family Story | Gimmel Tammuz HaPansaim",
+        client: "HaPansaim"
+    },
+    "החלאקה של לביא": {
+        title: "Lavi's Upsherin",
+        desc: "Celebrating Lavi's first haircut | Music Video",
+        client: "Lavi's Family"
+    },
+    "קווים לדמותו": {
+        title: "In Memory Of Zvi Kogan",
+        desc: "Rabbi Zvi Kogan HY\"D | Memorial Highlights",
+        client: "Zvi Kogan Memorial"
+    },
+    "דרך האבות": {
+        title: "The Path of the Fathers",
+        desc: "Yudi Goldberger Bar Mitzvah Film",
+        client: "Goldberger Family"
+    },
+    "אחדות תחת אש": {
+        title: "Unity Under Fire",
+        desc: "Moshe Grunberg | Conference of Shluchim Keynote",
+        client: "Conference of Shluchim"
+    },
+    "במקום שבו נולד הנס": {
+        title: "Where the Miracle Was Born",
+        desc: "The Story of Bessie Ben Shachar",
+        client: "Bessie Ben Shachar"
+    },
+    "מקטמנדו לכינוס השלוחים": {
+        title: "From Kathmandu to the Shluchim Conference",
+        desc: "The Story of Michael Moshonov in Nepal",
+        client: "Chabad of Nepal"
+    },
+    "האם העולם שבור?": {
+        title: "Is the World Broken?",
+        desc: "The Rebbe's Vision on Global Challenges",
+        client: "The Rebbe's Vision"
+    },
+    "המנון בין העצים": {
+        title: "Anthem Among the Trees",
+        desc: "Celebrating 20 Years of Gan Israel Holy Land",
+        client: "Gan Israel Holy Land"
+    },
+    "חבדניצע - ספיישל אמריקה": {
+        title: "Chabadnitza - America Special",
+        desc: "Chabadnitza America Road Trip Special | Kids Channel",
+        client: "Chabad Kids Channel"
+    },
+    "ניגון ניקולייב": {
+        title: "Niggun Nikolayev",
+        desc: "The Full Historical Story of the Famous Melody",
+        client: "Niggun Project"
+    },
+    "מאחורי הפרגוד": {
+        title: "Behind the Scenes",
+        desc: "Aviel Tal Bar Mitzvah Celebration Film",
+        client: "Aviel Tal Family"
+    },
+    "קרב הנפשות": {
+        title: "Battle of Souls",
+        desc: "Itzi Elias Bar Mitzvah Celebration Film",
+        client: "Itzi Elias Family"
+    },
+    "נבחרת ישראל": {
+        title: "Team Israel",
+        desc: "Yaakov Margolin Bar Mitzvah Celebration Film",
+        client: "Margolin Family"
+    },
+    "חוסן מתוך השבר": {
+        title: "Resilience From the Crisis",
+        desc: "The Heartbreaking yet Inspiring Story of Keren Zehavi",
+        client: "Keren Zehavi"
+    },
+    "לוקחים אחריות": {
+        title: "Taking Responsibility",
+        desc: "Vaad Talmidei Hatmimim International Partnership Campaign",
+        client: "Vaad Hatmimim"
+    },
+    "דמותו של שליח": {
+        title: "The Image of a Shliach",
+        desc: "In Memory of Rabbi Yosef Kramer OB\"M",
+        client: "Rabbi Yosef Kramer OB\"M"
+    },
+    "שלושה סיפורים | רבי אחד": {
+        title: "Three Stories | One Rebbe",
+        desc: "Gimmel Tammuz Special | Chabad Ashdod",
+        client: "Chabad Ashdod"
+    },
+    "חזון הרבי": {
+        title: "The Rebbe's Vision",
+        desc: "Gimmel Tammuz Special Presentation | Chabad Ashdod",
+        client: "Chabad Ashdod"
+    },
+    "פרומו שבתון": {
+        title: "CKids Shabbaton Promo",
+        desc: "International CKids Shabbaton Promotional Video",
+        client: "International CKids"
+    },
+    "פרומו סיום הרמב"ם העולמי": {
+        title: "International Siyum HaRambam Promo",
+        desc: "Promotional campaign video for the global celebration",
+        client: "Siyum HaRambam Committee"
+    },
+    "איפה אתה בתמונה?": {
+        title: "Where Are You in the Picture?",
+        desc: "Partnership Campaign | Ateh Kfar Chabad",
+        client: "Ateh Kfar Chabad"
+    },
+    "חבדניצע | מבזק מלחמה": {
+        title: "Chabadnitza | Special War Report for Children",
+        desc: "Chabad Kids Channel wartime broadcast",
+        client: "Chabad Kids Channel"
+    },
+    "ברית אברהם": {
+        title: "Covenant of Abraham",
+        desc: "Gan Israel Moscow Summer Summary Video",
+        client: "Gan Israel Moscow"
+    },
+    "פנסאים סמייל": {
+        title: "Pansaim Smile",
+        desc: "Annual Partnership Campaign | HaPansaim Network",
+        client: "HaPansaim Network"
+    },
+    "האור מרעננה": {
+        title: "The Light from Raanana",
+        desc: "The Story of Or Ziv | Chabad Menorah",
+        client: "Chabad Menorah"
+    },
+    "הסוד שהחזיק אותי ברגעים הקשים": {
+        title: "The Secret That Kept Me in Hard Times",
+        desc: "The Powerful Story of Rabbi Zelig Althaus | Chabad Menorah",
+        client: "Chabad Menorah"
+    },
+    "גן ישראל מוסקבה": {
+        title: "Gan Israel Moscow Camp",
+        desc: "Summer Camp Summary Video Clip",
+        client: "Gan Israel Moscow"
+    },
+    "אפליקציית Met@Chabad": {
+        title: "Met@Chabad Mobile App",
+        desc: "Marketing & Promotional Commercial video",
+        client: "Met@Chabad"
+    },
+    "שיירת האור": {
+        title: "Parade of Light",
+        desc: "Hanukkah Parade | Chabad of Virginia Beach",
+        client: "Chabad of Virginia Beach"
+    },
+    "אירוע חנוכה המרכזי": {
+        title: "Grand Chanukah Event",
+        desc: "Grand Chanukah Event | Chabad of Virginia Beach",
+        client: "Chabad of Virginia Beach"
+    },
+    "חנוכה בהיכל הקרח": {
+        title: "Chanukah on Ice",
+        desc: "Grand Ice Arena Event | Chabad of Virginia Beach",
+        client: "Chabad of Virginia Beach"
+    },
+    "חגיגת ל"ג בעומר": {
+        title: "Lag BaOmer Celebration",
+        desc: "Lag BaOmer Festival | Chabad of Virginia Beach",
+        client: "Chabad of Virginia Beach"
+    },
+};
+
+function getTranslatedProject(project) {
+    const currentLang = localStorage.getItem('mendy_portfolio_lang') || 'he';
+    if (currentLang === 'he') return project;
+
+    const key = project.title;
+    const trans = videoTranslations[key];
+    
+    if (trans) {
+        return {
+            ...project,
+            title: trans.title,
+            desc: trans.desc,
+            client: trans.client || project.client
+        };
+    }
+    
+    // Auto-translation fallback for custom titles/descriptions
+    return project;
 }
