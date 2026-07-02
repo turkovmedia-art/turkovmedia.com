@@ -3505,7 +3505,17 @@ function initLegalDialogs() {
 
 // Video Projects Translation Dictionary
 const videoTranslations = {
-    "معזה לטיימס סקוור": {
+    "ברדק": {
+        title: "Bardak",
+        desc: "Internet Room | Comedy Sketch",
+        client: "Bardak"
+    },
+    "שניאור קורטס": {
+        title: "Shneor Cortes",
+        desc: "Special Summary Film",
+        client: "Shneor Cortes"
+    },
+    "מעזה לטיימס סקוור": {
         title: "From Gaza to Times Square",
         desc: "Hostage Survivor Segev Khalfian | Lecture Video",
         client: "Segev Khalfian"
@@ -3731,10 +3741,21 @@ function getTranslatedProject(project) {
     const currentLang = localStorage.getItem('mendy_portfolio_lang') || 'he';
     if (currentLang === 'he') return project;
 
-    const key = project.title;
-    const trans = videoTranslations[key];
+    const title = project.title || '';
+    const desc = project.desc || '';
+    const client = project.client || '';
+
+    // 1. Direct match with key normalization (spaces, quotes and case insensitivity)
+    const normKey = title.trim().toLowerCase().replace(/["'״״`]/g, '').replace(/[\s\-_|]/g, '');
     
-    if (trans) {
+    const normTranslations = {};
+    for (const [hebrewKey, trans] of Object.entries(videoTranslations)) {
+        const nKey = hebrewKey.trim().toLowerCase().replace(/["'״״`]/g, '').replace(/[\s\-_|]/g, '');
+        normTranslations[nKey] = trans;
+    }
+    
+    if (normTranslations[normKey]) {
+        const trans = normTranslations[normKey];
         return {
             ...project,
             title: trans.title,
@@ -3742,7 +3763,48 @@ function getTranslatedProject(project) {
             client: trans.client || project.client
         };
     }
-    
-    // Auto-translation fallback for custom titles/descriptions
+
+    // 2. Keyword/Substring fallback matching for high resilience on minor variations or admin edits
+    if (title.includes('ברדק')) {
+        return {
+            ...project,
+            title: "Bardak",
+            desc: "Internet Room | Comedy Sketch",
+            client: "Bardak"
+        };
+    }
+    if (title.includes('דרמר') || title.includes('Dermer')) {
+        return {
+            ...project,
+            title: "Ron Dermer",
+            desc: "The Man Behind the Scenes of Israel's Diplomacy",
+            client: "Ron Dermer"
+        };
+    }
+    if (title.includes('שלוחים') && title.includes('כינוס')) {
+        return {
+            ...project,
+            title: "International Conference of Chabad Shluchim",
+            desc: "The Greatest Highlights and Moments",
+            client: "Chabad World Center"
+        };
+    }
+    if (title.includes('505') && title.includes('מנהרות')) {
+        return {
+            ...project,
+            title: "505 Days in Gaza Tunnels",
+            desc: "The Story of Hostage Eliya Cohen",
+            client: "Eliya Cohen"
+        };
+    }
+    if (title.includes('טיימס סקוור') || title.includes('עזה לטיימס')) {
+        return {
+            ...project,
+            title: "From Gaza to Times Square",
+            desc: "Hostage Survivor Segev Khalfian | Lecture Video",
+            client: "Segev Khalfian"
+        };
+    }
+
     return project;
 }
