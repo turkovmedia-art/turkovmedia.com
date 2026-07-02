@@ -699,6 +699,8 @@ img {
    7. Services / Expertise Section
    ========================================================================== */
 .services-section {
+    position: relative;
+    z-index: 5;
     padding: 140px 0;
     background: var(--bg-primary);
 }
@@ -746,6 +748,25 @@ img {
     box-shadow: 0 25px 50px rgba(0,0,0,0.6), 0 0 30px rgba(255, 255, 255, 0.02);
 }
 
+/* Background video loop styled to hide player bars */
+.slice-video-bg {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 100%;
+    height: 100%;
+    transform: translate(-50%, -50%) scale(1.6);
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0;
+    transition: opacity 0.8s ease;
+}
+
+.service-slice:hover .slice-video-bg,
+.service-slice.active .slice-video-bg {
+    opacity: 0.3;
+}
+
 /* Siri-style Apple morphing color glow */
 .siri-glow {
     position: absolute;
@@ -753,21 +774,21 @@ img {
     left: -50%;
     width: 200%;
     height: 200%;
-    background: radial-gradient(circle at 30% 30%, rgba(0, 240, 255, 0.3) 0%, transparent 45%),
-                radial-gradient(circle at 70% 30%, rgba(139, 92, 246, 0.25) 0%, transparent 45%),
-                radial-gradient(circle at 30% 70%, rgba(236, 72, 153, 0.25) 0%, transparent 45%),
-                radial-gradient(circle at 70% 70%, rgba(245, 158, 11, 0.2) 0%, transparent 45%);
+    background: radial-gradient(circle at 30% 30%, rgba(0, 240, 255, 0.35) 0%, transparent 45%),
+                radial-gradient(circle at 70% 30%, rgba(139, 92, 246, 0.3) 0%, transparent 45%),
+                radial-gradient(circle at 30% 70%, rgba(236, 72, 153, 0.3) 0%, transparent 45%),
+                radial-gradient(circle at 70% 70%, rgba(245, 158, 11, 0.25) 0%, transparent 45%);
     filter: blur(70px);
     opacity: 0.15;
     mix-blend-mode: screen;
     pointer-events: none;
-    z-index: 0;
+    z-index: 2; /* Sits on top of overlay and video, behind text */
     transition: opacity 0.8s ease, transform 0.8s ease;
 }
 
 .service-slice:hover .siri-glow,
 .service-slice.active .siri-glow {
-    opacity: 0.65;
+    opacity: 0.75;
     animation: siri-rotate 10s infinite linear;
 }
 
@@ -791,7 +812,7 @@ img {
     right: 0;
     bottom: 0;
     transition: all 0.7s cubic-bezier(0.165, 0.84, 0.44, 1);
-    z-index: 1;
+    z-index: 1; /* Sits behind siri-glow */
     opacity: 0.85;
 }
 
@@ -821,7 +842,7 @@ img {
     left: 0;
     right: 0;
     bottom: 0;
-    z-index: 1;
+    z-index: 2; /* Same layer as siri-glow, above video */
     overflow: hidden;
     opacity: 0.15;
     transition: opacity 0.7s ease;
@@ -830,7 +851,7 @@ img {
 
 .service-slice:hover .slice-animation-container,
 .service-slice.active .slice-animation-container {
-    opacity: 0.4;
+    opacity: 0.45;
 }
 
 /* 1. Cinematic Filming: Rotating Aperture & Flares */
@@ -1000,7 +1021,7 @@ img {
 /* Slice Contents centering and layouts */
 .slice-content {
     position: relative;
-    z-index: 2;
+    z-index: 3; /* Sits cleanly on top of Siri glow */
     width: 100%;
     height: 100%;
     display: flex;
@@ -1008,19 +1029,12 @@ img {
     justify-content: center; /* Centered vertically */
     align-items: center; /* Centered horizontally */
     text-align: center; /* Centered text alignment */
-    transform: translateY(135px); /* Hide descriptions initially */
     transition: all 0.7s cubic-bezier(0.165, 0.84, 0.44, 1);
 }
 
 html[lang="en"] .slice-content {
     text-align: center;
     align-items: center;
-}
-
-/* Reveal content on hover/active */
-.service-slice:hover .slice-content,
-.service-slice.active .slice-content {
-    transform: translateY(0);
 }
 
 .slice-num {
@@ -1044,8 +1058,7 @@ html[lang="en"] .slice-content {
     font-size: 1.8rem;
     font-weight: 800;
     color: #fff;
-    margin-bottom: 15px;
-    width: 100%;
+    margin: 0;
     transition: all 0.7s cubic-bezier(0.165, 0.84, 0.44, 1);
     text-shadow: 0 4px 15px rgba(0,0,0,0.6);
 }
@@ -1063,14 +1076,20 @@ html[lang="en"] .slice-content {
     text-align: center;
 }
 
+.service-slice:hover .slice-title,
+.service-slice.active .slice-title {
+    transform: scale(1.08);
+    margin-bottom: 15px;
+}
+
 .slice-text {
     font-size: 0.95rem;
     line-height: 1.6;
-    color: rgba(255, 255, 255, 0.75);
-    margin-bottom: 25px;
+    color: rgba(255, 255, 255, 0.8);
+    margin-bottom: 20px;
     opacity: 0;
-    transition: all 0.5s ease;
-    transition-delay: 0.1s;
+    transform: translateY(20px);
+    transition: all 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
     max-width: 480px;
     text-shadow: 0 2px 10px rgba(0,0,0,0.4);
 }
@@ -1078,6 +1097,7 @@ html[lang="en"] .slice-content {
 .service-slice:hover .slice-text,
 .service-slice.active .slice-text {
     opacity: 1;
+    transform: translateY(0);
 }
 
 .slice-btn {
@@ -1093,9 +1113,8 @@ html[lang="en"] .slice-content {
     gap: 8px;
     cursor: pointer;
     opacity: 0;
-    transform: translateY(15px);
-    transition: all 0.5s ease;
-    transition-delay: 0.2s;
+    transform: translateY(20px);
+    transition: all 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
     box-shadow: 0 8px 16px rgba(0,0,0,0.3);
 }
 
