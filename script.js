@@ -1,5 +1,13 @@
 /* script.js - Dynamic videographer portfolio functionality */
 
+// Dynamically load the YouTube Iframe Player API (needed for custom player controls overlay)
+if (!window.YT) {
+    const ytScript = document.createElement('script');
+    ytScript.src = "https://www.youtube.com/iframe_api";
+    const firstScript = document.getElementsByTagName('script')[0];
+    firstScript.parentNode.insertBefore(ytScript, firstScript);
+}
+
 // ==========================================================================
 // 1. Video Projects Database (Easy to edit and update!)
 // ==========================================================================
@@ -14,7 +22,8 @@ let videoProjects = [
         "thumbnail": "https://img.youtube.com/vi/e_MrJiBTwIo/hqdefault.jpg",
         "videoUrl": "https://youtu.be/e_MrJiBTwIo",
         "client": "שגב כלפון",
-        "year": "2026"
+        "year": "2026",
+        "aspectRatio": "21 / 9"
     },
     {
         "id": 1,
@@ -820,6 +829,31 @@ function initVideoModal() {
 }
 
 let lastVideoScrollY = 0;
+let ytPlayer = null;
+let ytProgressInterval = null;
+
+// Helper to extract YouTube video ID from various URL formats
+function getYouTubeId(url) {
+    if (!url) return '';
+    let id = '';
+    if (url.includes('youtube.com/shorts/')) {
+        id = url.split('youtube.com/shorts/')[1].split('?')[0].split('/')[0];
+    } else if (url.includes('youtu.be/')) {
+        id = url.split('youtu.be/')[1].split('?')[0].split('/')[0];
+    } else if (url.includes('youtube.com/watch')) {
+        try {
+            const urlParams = new URLSearchParams(new URL(url).search);
+            id = urlParams.get('v');
+        } catch(e) {
+            // fallback
+            const parts = url.split('v=');
+            if (parts.length > 1) id = parts[1].split('&')[0];
+        }
+    } else if (url.includes('youtube.com/embed/')) {
+        id = url.split('youtube.com/embed/')[1].split('?')[0].split('/')[0];
+    }
+    return id;
+}
 
 function openVideoPlayer(project) {
     const dialog = document.getElementById('videoDialog');
@@ -829,45 +863,82 @@ function openVideoPlayer(project) {
     
     if (!dialog || !container || !title || !desc) return;
     
-    // Translate project metadata for display
     const displayProj = getTranslatedProject(project);
-    
-    // Save the current scroll position before opening the modal
     lastVideoScrollY = window.scrollY;
     
     // Disable smooth scroll temporarily to prevent visual slide/jump animations
     document.documentElement.style.scrollBehavior = 'auto';
-    
-    // Add freeze body scrolling class
     document.documentElement.classList.add('modal-open');
     document.body.classList.add('modal-open');
     
     title.textContent = displayProj.title;
-    const currentLang = localStorage.getItem('mendy_portfolio_lang') || 'he';
-    const clientLabel = currentLang === 'en' ? 'Client' : 'לקוח';
-    const yearLabel = currentLang === 'en' ? 'Year' : 'שנה';
-    desc.innerHTML = `
-        <strong>${clientLabel}:</strong> ${displayProj.client} | <strong>${yearLabel}:</strong> ${displayProj.year} <br>
-        ${displayProj.desc}
-    `;
     
-    const embedUrl = resolveEmbedUrl(displayProj.videoUrl);
+    // Clear previous tracking loop
+    if (ytProgressInterval) {
+        clearInterval(ytProgressInterval);
+    }
     
-    if (embedUrl.isDirectVideo) {
+    const ytId = getYouTubeId(project.videoUrl);
+    
+    if (ytId) {
+        // Set dynamic container aspect ratio based on whether video is cinematic widescreen or standard
+        container.style.aspectRatio = project.aspectRatio || '16 / 9';
+        
+        // Render YouTube API target frame and custom control bar layout
         container.innerHTML = `
-            <video controls autoplay class="modal-video-element">
-                <source src="${embedUrl.url}" type="video/mp4">
-                הדפדפן שלך אינו תומך בנגן הוידאו.
-            </video>
+            <div id="youtube-player-target" style="width: 100%; height: 100%;"></div>
+            <div class="custom-video-controls">
+                <button class="control-btn play-pause-btn" id="customPlayPauseBtn">
+                    <i class="fa-solid fa-play"></i>
+                </button>
+                <div class="progress-wrapper" id="customProgressWrapper">
+                    <div class="progress-timeline" id="customTimeline">
+                        <div class="progress-playhead" id="customPlayhead"></div>
+                    </div>
+                </div>
+                <span class="time-label" id="customTimeLabel">0:00 / 0:00</span>
+                <button class="control-btn volume-btn" id="customVolumeBtn">
+                    <i class="fa-solid fa-volume-high"></i>
+                </button>
+                <button class="control-btn fullscreen-btn" id="customFullscreenBtn">
+                    <i class="fa-solid fa-expand"></i>
+                </button>
+            </div>
         `;
+        
+        // Initialize player via YouTube SDK
+        function initPlayer() {
+            ytPlayer = new YT.Player('youtube-player-target', {
+                videoId: ytId,
+                playerVars: {
+                    autoplay: 1,
+                    controls: 0,         // Hides default YouTube progress bar & controls
+                    rel: 0,              // Disables showing related videos
+                    modestbranding: 1,   // Disables YouTube logo
+                    showinfo: 0,
+                    iv_load_policy: 3,
+                    fs: 0                // Disables default fullscreen option
+                },
+                events: {
+                    'onReady': onPlayerReady,
+                    'onStateChange': onPlayerStateChange
+                }
+            });
+        }
+        
+        if (window.YT && window.YT.Player) {
+            initPlayer();
+        } else {
+            window.onYouTubeIframeAPIReady = initPlayer;
+        }
     } else {
+        // Fallback for non-YouTube video files (standard native HTML5 controls)
+        container.style.aspectRatio = '16 / 9';
+        const embedUrl = resolveEmbedUrl(displayProj.videoUrl);
         container.innerHTML = `
-            <iframe 
-                src="${embedUrl.url}" 
-                title="${displayProj.title}" 
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-                allowfullscreen>
-            </iframe>
+            <video controls autoplay class="modal-video-element" style="width:100%; height:100%; border:none;">
+                <source src="${embedUrl.url}" type="video/mp4">
+            </video>
         `;
     }
     
@@ -879,11 +950,112 @@ function openVideoPlayer(project) {
     }, 50);
 }
 
+function onPlayerReady(event) {
+    const playPauseBtn = document.getElementById('customPlayPauseBtn');
+    const volumeBtn = document.getElementById('customVolumeBtn');
+    const fullscreenBtn = document.getElementById('customFullscreenBtn');
+    const progressWrapper = document.getElementById('customProgressWrapper');
+    const timeline = document.getElementById('customTimeline');
+    const playhead = document.getElementById('customPlayhead');
+    const timeLabel = document.getElementById('customTimeLabel');
+    
+    if (!playPauseBtn || !ytPlayer) return;
+    
+    // Play/Pause Action
+    playPauseBtn.addEventListener('click', () => {
+        if (!ytPlayer || !ytPlayer.getPlayerState) return;
+        const state = ytPlayer.getPlayerState();
+        if (state === YT.PlayerState.PLAYING) {
+            ytPlayer.pauseVideo();
+        } else {
+            ytPlayer.playVideo();
+        }
+    });
+    
+    // Format Seconds to time label (M:SS)
+    function formatTime(secs) {
+        const min = Math.floor(secs / 60);
+        const sec = Math.floor(secs % 60);
+        return `${min}:${sec < 10 ? '0' : ''}${sec}`;
+    }
+    
+    // Update timeline position and time display
+    function updateTimeline() {
+        if (!ytPlayer || !ytPlayer.getCurrentTime) return;
+        try {
+            const current = ytPlayer.getCurrentTime();
+            const duration = ytPlayer.getDuration() || 0;
+            
+            if (duration > 0) {
+                const pct = (current / duration) * 100;
+                playhead.style.width = `${pct}%`;
+                timeLabel.textContent = `${formatTime(current)} / ${formatTime(duration)}`;
+            }
+        } catch(e) {}
+    }
+    
+    // Click on progress bar to seek video
+    progressWrapper.addEventListener('click', (e) => {
+        if (!ytPlayer || !ytPlayer.getDuration) return;
+        const rect = timeline.getBoundingClientRect();
+        const clickX = e.clientX - rect.left;
+        const percentage = Math.max(0, Math.min(1, clickX / rect.width));
+        const duration = ytPlayer.getDuration() || 0;
+        
+        if (duration > 0) {
+            ytPlayer.seekTo(duration * percentage, true);
+            playhead.style.width = `${percentage * 100}%`;
+        }
+    });
+    
+    // Mute / Unmute click handler
+    volumeBtn.addEventListener('click', () => {
+        if (!ytPlayer || !ytPlayer.isMuted) return;
+        if (ytPlayer.isMuted()) {
+            ytPlayer.unMute();
+            volumeBtn.querySelector('i').className = 'fa-solid fa-volume-high';
+        } else {
+            ytPlayer.mute();
+            volumeBtn.querySelector('i').className = 'fa-solid fa-volume-xmark';
+        }
+    });
+    
+    // Custom container element Fullscreen toggle
+    fullscreenBtn.addEventListener('click', () => {
+        const videoContainer = document.getElementById('dialogVideoContainer');
+        if (!document.fullscreenElement) {
+            videoContainer.requestFullscreen().catch(err => console.log(err));
+        } else {
+            document.exitFullscreen();
+        }
+    });
+    
+    // Poll progress every 250ms
+    ytProgressInterval = setInterval(updateTimeline, 250);
+}
+
+function onPlayerStateChange(event) {
+    const playPauseBtn = document.getElementById('customPlayPauseBtn');
+    if (!playPauseBtn) return;
+    
+    if (event.data === YT.PlayerState.PLAYING) {
+        playPauseBtn.innerHTML = '<i class="fa-solid fa-pause"></i>';
+    } else {
+        playPauseBtn.innerHTML = '<i class="fa-solid fa-play"></i>';
+    }
+}
+
 function closeVideoPlayer() {
     const dialog = document.getElementById('videoDialog');
     const container = document.getElementById('dialogVideoContainer');
     
     if (!dialog || !container) return;
+    
+    // Clear tracking interval
+    if (ytProgressInterval) {
+        clearInterval(ytProgressInterval);
+    }
+    ytPlayer = null;
     
     // Disable smooth scroll temporarily so snap-back is instant and invisible
     document.documentElement.style.scrollBehavior = 'auto';

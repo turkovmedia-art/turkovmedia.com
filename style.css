@@ -3816,3 +3816,102 @@ html.modal-open, body.modal-open {
     overflow: hidden !important;
 }
 
+/* Custom Premium HTML5-like video player controls overlay (Apple style) */
+.custom-video-controls {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(to top, rgba(5, 8, 20, 0.95) 0%, rgba(5, 8, 20, 0.4) 65%, transparent 100%);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 12px 20px;
+    z-index: 100;
+    opacity: 0;
+    transition: opacity 0.35s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+.video-container:hover .custom-video-controls {
+    opacity: 1; /* Show controls dynamically on hover */
+}
+
+.control-btn {
+    background: transparent;
+    border: none;
+    color: #fff;
+    font-size: 1.05rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    transition: background-color 0.25s ease, transform 0.2s ease;
+}
+
+.control-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: scale(1.08);
+}
+
+.progress-wrapper {
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    height: 12px;
+}
+
+.progress-timeline {
+    width: 100%;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.18);
+    border-radius: 2px;
+    position: relative;
+    transition: height 0.2s ease;
+}
+
+.progress-wrapper:hover .progress-timeline {
+    height: 6px;
+}
+
+.progress-playhead {
+    height: 100%;
+    width: 0%;
+    background: var(--accent-cyan);
+    border-radius: 2px;
+    position: relative;
+}
+
+.progress-playhead::after {
+    content: "";
+    position: absolute;
+    right: -6px;
+    top: 50%;
+    transform: translateY(-50%) scale(0);
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: 0 0 8px rgba(0, 240, 255, 0.5);
+    transition: transform 0.2s ease;
+}
+
+.progress-wrapper:hover .progress-playhead::after {
+    transform: translateY(-50%) scale(1);
+}
+
+.time-label {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 0.85rem;
+    font-family: var(--font-hebrew);
+    font-weight: 500;
+    min-width: 80px;
+    text-align: center;
+    direction: ltr;
+}
+
+
