@@ -1624,11 +1624,12 @@ html[lang="en"] .slice-btn:hover i {
 }
 
 .dialog-content {
-    background: #0a0f24;
-    border: 1px solid rgba(255, 255, 255, 0.08); /* Frosted glass-like thin Apple border */
+    background: #050814;
+    border: 2.5px solid rgba(255, 255, 255, 0.16); /* Prominent, thicker frosted glass Apple bezel */
     border-radius: 24px !important;
     overflow: hidden;
     position: relative;
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.05), 0 25px 60px rgba(0, 0, 0, 0.85); /* Premium double glass light refraction */
 }
 
 .dialog-close {
@@ -3830,7 +3831,7 @@ html.modal-open, body.modal-open {
 }
 
 .plyr__video-embed iframe {
-    transform: scale(1.35) !important; /* Scales video slightly to push YouTube controls & title out of bounds */
+    transform: scale(var(--video-scale, 1.15)) !important; /* Dynamic scale factor per video type to prevent clipping subtitles */
     transform-origin: center center !important;
 }
 

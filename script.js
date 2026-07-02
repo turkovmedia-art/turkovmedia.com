@@ -59,7 +59,8 @@ let videoProjects = [
         "thumbnail": "https://img.youtube.com/vi/GVkPM7iox8A/hqdefault.jpg",
         "videoUrl": "https://youtu.be/GVkPM7iox8A",
         "client": "אליה כהן",
-        "year": "2026"
+        "year": "2026",
+        "aspectRatio": "21 / 9"
     },
     {
         "id": 13,
@@ -71,7 +72,8 @@ let videoProjects = [
         "thumbnail": "https://img.youtube.com/vi/mzJotWYPVtg/hqdefault.jpg",
         "videoUrl": "https://youtu.be/mzJotWYPVtg",
         "client": "רון דרמר",
-        "year": "2026"
+        "year": "2026",
+        "aspectRatio": "21 / 9"
     },
     {
         "id": 14,
@@ -83,7 +85,8 @@ let videoProjects = [
         "thumbnail": "https://img.youtube.com/vi/X_jTRMKeuKU/hqdefault.jpg",
         "videoUrl": "https://youtu.be/X_jTRMKeuKU",
         "client": "בית תפילה - אריזונה",
-        "year": "2026"
+        "year": "2026",
+        "aspectRatio": "21 / 9"
     },
     {
         "id": 6,
@@ -95,7 +98,8 @@ let videoProjects = [
         "thumbnail": "https://img.youtube.com/vi/JpbWvSZQetQ/hqdefault.jpg",
         "videoUrl": "https://youtu.be/JpbWvSZQetQ",
         "client": "Cteen - טיים סקוור",
-        "year": "2026"
+        "year": "2026",
+        "aspectRatio": "21 / 9"
     },
     {
         "id": 26,
@@ -880,8 +884,24 @@ function openVideoPlayer(project) {
     const ytId = getYouTubeId(project.videoUrl);
     
     if (ytId) {
-        // Reset container aspect ratio to standard 16:9 for Plyr video frame
-        container.style.aspectRatio = '16 / 9';
+        // Determine dynamic aspect ratio and crop scale factor based on video dimensions
+        let aspectRatio = project.aspectRatio || '16 / 9';
+        let scale = 1.08; // Safe default scale for 16:9 (hides YouTube title & logo overlays with zero subtitle clipping)
+        
+        if (project.videoUrl && project.videoUrl.includes('/shorts/')) {
+            aspectRatio = '9 / 16';
+            scale = 1.0; // Vertical shorts are displayed 100% full frame
+        } else if (aspectRatio.includes('21') || aspectRatio.includes('2.3')) {
+            scale = 1.35; // Cinematic widescreen needs a higher scale factor to crop out letterbox black bars
+        }
+        
+        // Support explicit database overrides
+        if (project.scale !== undefined) {
+            scale = project.scale;
+        }
+        
+        container.style.aspectRatio = aspectRatio;
+        container.style.setProperty('--video-scale', scale);
         
         // Render Plyr video embed wrapper
         container.innerHTML = `
@@ -916,6 +936,7 @@ function openVideoPlayer(project) {
     } else {
         // Fallback for non-YouTube files (HTML5 video player via Plyr)
         container.style.aspectRatio = '16 / 9';
+        container.style.setProperty('--video-scale', '1.0');
         const embedUrl = resolveEmbedUrl(displayProj.videoUrl);
         container.innerHTML = `
             <video id="custom-native-player" playsinline controls style="width: 100%; height: 100%; border: none;">
