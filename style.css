@@ -751,56 +751,7 @@ img {
 
 
 
-/* Siri-style Apple morphing backdrop color glow behind accordion */
-.services-backdrop-glow {
-    position: absolute;
-    top: 55%;
-    left: 50%;
-    width: 85%;
-    height: 75%;
-    transform: translate(-50%, -50%);
-    z-index: 0;
-    pointer-events: none;
-    opacity: 0.15;
-    transition: opacity 1s cubic-bezier(0.165, 0.84, 0.44, 1);
-    overflow: hidden;
-}
 
-.services-backdrop-glow::before {
-    content: '';
-    position: absolute;
-    top: -25%;
-    left: -25%;
-    width: 150%;
-    height: 150%;
-    background: radial-gradient(circle at 15% 15%, rgba(0, 240, 255, 0.3) 0%, transparent 55%),
-                radial-gradient(circle at 85% 15%, rgba(139, 92, 246, 0.25) 0%, transparent 55%),
-                radial-gradient(circle at 15% 85%, rgba(236, 72, 153, 0.25) 0%, transparent 55%),
-                radial-gradient(circle at 85% 85%, rgba(245, 158, 11, 0.2) 0%, transparent 55%),
-                radial-gradient(circle at 50% 50%, rgba(59, 130, 246, 0.22) 0%, transparent 60%);
-    filter: blur(100px); /* Extremely soft, calm Siri-style color blending around cards */
-    transition: all 0.8s ease;
-}
-
-.services-section:hover .services-backdrop-glow {
-    opacity: 0.7; /* Wakes up and glows when user hovers or interacts with the section */
-}
-
-.services-section:hover .services-backdrop-glow::before {
-    animation: siri-backdrop-liquid 15s infinite alternate ease-in-out;
-}
-
-@keyframes siri-backdrop-liquid {
-    0% {
-        transform: translate(0, 0) scale(1) rotate(0deg);
-    }
-    50% {
-        transform: translate(-3%, 3%) scale(1.05) rotate(180deg);
-    }
-    100% {
-        transform: translate(3%, -3%) scale(0.97) rotate(360deg);
-    }
-}
 
 /* Overlay color styles */
 .slice-overlay {
@@ -1215,10 +1166,10 @@ html[lang="en"] .slice-btn:hover i {
     width: 160px;
     height: 160px;
     border-radius: 50%;
-    background: radial-gradient(circle, rgba(0, 240, 255, 0.6) 0%, rgba(139, 92, 246, 0.35) 40%, rgba(0, 180, 219, 0.15) 70%, transparent 100%);
+    background: radial-gradient(circle, rgba(0, 240, 255, 0.22) 0%, rgba(139, 92, 246, 0.14) 40%, rgba(0, 180, 219, 0.05) 70%, transparent 100%);
     filter: blur(40px);
     transform: translate(-50%, -50%) scale(0.1);
-    opacity: 0.95;
+    opacity: 0.35; /* Soft, subtle look */
     pointer-events: none;
     animation: apple-glow-burst 1.8s cubic-bezier(0.1, 0.8, 0.25, 1) forwards;
     z-index: 1; /* Renders behind the accordion card elements */
@@ -1227,10 +1178,10 @@ html[lang="en"] .slice-btn:hover i {
 @keyframes apple-glow-burst {
     0% {
         transform: translate(-50%, -50%) scale(0.1);
-        opacity: 0.95;
+        opacity: 0.35;
     }
     30% {
-        background: radial-gradient(circle, rgba(0, 240, 255, 0.5) 0%, rgba(236, 72, 153, 0.4) 45%, rgba(245, 158, 11, 0.25) 70%, transparent 100%);
+        background: radial-gradient(circle, rgba(0, 240, 255, 0.2) 0%, rgba(236, 72, 153, 0.15) 45%, rgba(245, 158, 11, 0.08) 70%, transparent 100%);
     }
     100% {
         transform: translate(-50%, -50%) scale(4.8);
