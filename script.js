@@ -3864,6 +3864,9 @@ function initServicesAccordion() {
         const spawnDelay = 75; // ms between each blob spawn (prevents performance lag)
         
         servicesSection.addEventListener('mousemove', (e) => {
+            // Do not spawn glow blobs when hovering over the service cards
+            if (e.target.closest('.service-slice')) return;
+
             const now = Date.now();
             if (now - lastSpawnTime < spawnDelay) return;
             lastSpawnTime = now;
