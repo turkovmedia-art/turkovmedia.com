@@ -625,8 +625,8 @@ let clientLogos = [
 // ==========================================================================
 // 2. DOM Elements & Initialization
 // ==========================================================================
-document.addEventListener('DOMContentLoaded', async () => {
-    await initializeDatabase();
+document.addEventListener('DOMContentLoaded', () => {
+    initializeDatabase();
     initLanguageSwitcher(); // Setup language translations
     initHeaderScroll();
     initMobileMenu();
@@ -1437,12 +1437,8 @@ function syncChanges() {
     saveDatabaseToFirestore();
 }
 
-// Initialize database by fetching from Firestore, and falling back to data.js/localStorage
-async function initializeDatabase() {
-    let documentExists = false;
-    let loadedFromFirestore = false;
-
-    // Choose source of truth: use data.js if loaded, otherwise fall back to script.js defaults
+// Synchronously load default/cached data so that rendering can happen instantly (0ms delay)
+function initializeDatabase() {
     const sourceVideos = (typeof defaultVideoProjects !== 'undefined') ? defaultVideoProjects : videoProjects;
     const sourceLogos = (typeof defaultClientLogos !== 'undefined') ? defaultClientLogos : clientLogos;
     const sourceCategories = (typeof defaultCategories !== 'undefined') ? defaultCategories : [
@@ -1454,107 +1450,135 @@ async function initializeDatabase() {
         { id: "social", name: "סושיאל" }
     ];
 
+    const isAdmin = localStorage.getItem('mendy_portfolio_admin_remembered') === 'true';
+    if (!isAdmin) {
+        // Normal visitors load from data.js
+        videoProjects = JSON.parse(JSON.stringify(sourceVideos));
+        clientLogos = JSON.parse(JSON.stringify(sourceLogos));
+        categoriesList = JSON.parse(JSON.stringify(sourceCategories));
+    } else {
+        // Admins load their pending modifications from localStorage
+        const storedVideos = localStorage.getItem(DB_VIDEOS_KEY);
+        videoProjects = storedVideos ? JSON.parse(storedVideos) : JSON.parse(JSON.stringify(sourceVideos));
+
+        const storedLogos = localStorage.getItem(DB_LOGOS_KEY);
+        clientLogos = storedLogos ? JSON.parse(storedLogos) : JSON.parse(JSON.stringify(sourceLogos));
+
+        const storedCategories = localStorage.getItem(DB_CATEGORIES_KEY);
+        categoriesList = storedCategories ? JSON.parse(storedCategories) : JSON.parse(JSON.stringify(sourceCategories));
+    }
+
+    // Run migrations on clientLogos immediately to ensure consistency
+    let modified = false;
+    if (Array.isArray(sourceLogos)) {
+        sourceLogos.forEach(srcLogo => {
+            const srcDetails = getLogoDetails(srcLogo);
+            const exists = clientLogos.some(l => {
+                const details = getLogoDetails(l);
+                return details.src === srcDetails.src;
+            });
+            if (!exists) {
+                clientLogos.push(srcLogo);
+                modified = true;
+            }
+        });
+    }
+
+    clientLogos = clientLogos.map(logo => {
+        const details = getLogoDetails(logo);
+        if (details.name === 'חב"ד' || details.name === 'חבד' || details.name === 'חב"ד-מסגרת') {
+            const targetSrc = 'חב\"ד-מסגרת.png';
+            if (typeof logo === 'string') {
+                if (logo !== targetSrc) {
+                    modified = true;
+                    return targetSrc;
+                }
+            } else if (typeof logo === 'object' && logo !== null) {
+                if (logo.src !== targetSrc) {
+                    modified = true;
+                    logo.src = targetSrc;
+                    logo.name = 'חב\"ד-מסגרת';
+                }
+            }
+        }
+        return logo;
+    });
+    
+    const hasCortes = clientLogos.some(logo => {
+        const details = getLogoDetails(logo);
+        return details.src === 'שניאור קורטס.png';
+    });
+    if (!hasCortes) {
+        clientLogos.push('שניאור קורטס.png');
+        modified = true;
+    }
+
+    if (modified) {
+        localStorage.setItem(DB_LOGOS_KEY, JSON.stringify(clientLogos));
+    }
+
+    // Start background revalidation from Firestore (async, non-blocking)
     if (db) {
-        try {
-            const doc = await db.collection("portfolio").doc("data").get();
-            if (doc.exists) {
-                documentExists = true;
-                const data = doc.data();
+        revalidateDatabaseFromFirestore();
+    }
+}
+
+// Revalidate cached state against Firestore in the background
+async function revalidateDatabaseFromFirestore() {
+    try {
+        const doc = await db.collection("portfolio").doc("data").get();
+        if (doc.exists) {
+            const data = doc.data();
+            
+            // Compare stringified versions to check for changes
+            const videosChanged = JSON.stringify(videoProjects) !== JSON.stringify(data.videoProjects);
+            const logosChanged = JSON.stringify(clientLogos) !== JSON.stringify(data.clientLogos);
+            const categoriesChanged = JSON.stringify(categoriesList) !== JSON.stringify(data.categoriesList);
+            
+            if (videosChanged || logosChanged || categoriesChanged) {
+                console.log("Firestore revalidation: updating local state with cloud database updates.");
+                
                 if (data.videoProjects) videoProjects = data.videoProjects;
                 if (data.clientLogos) clientLogos = data.clientLogos;
                 if (data.categoriesList) categoriesList = data.categoriesList;
-                loadedFromFirestore = true;
-                console.log("Successfully loaded dynamic database from Firestore!");
-            } else {
-                documentExists = false;
-                console.log("Firestore document not found. Auto-initializing with defaults...");
+                
+                // Re-run migration/merges to ensure consistency
+                const sourceLogos = (typeof defaultClientLogos !== 'undefined') ? defaultClientLogos : clientLogos;
+                if (Array.isArray(sourceLogos)) {
+                    sourceLogos.forEach(srcLogo => {
+                        const srcDetails = getLogoDetails(srcLogo);
+                        const exists = clientLogos.some(l => {
+                            const details = getLogoDetails(l);
+                            return details.src === srcDetails.src;
+                        });
+                        if (!exists) {
+                            clientLogos.push(srcLogo);
+                        }
+                    });
+                }
+                
+                // Save locally to cache it
+                localStorage.setItem(DB_VIDEOS_KEY, JSON.stringify(videoProjects));
+                localStorage.setItem(DB_LOGOS_KEY, JSON.stringify(clientLogos));
+                localStorage.setItem(DB_CATEGORIES_KEY, JSON.stringify(categoriesList));
+                
+                // Re-render the portfolio grid
+                const activeFilterBtn = document.querySelector('.filter-btn.active');
+                const activeFilter = activeFilterBtn ? activeFilterBtn.getAttribute('data-filter') : 'all';
+                renderCategoryFilters();
+                renderPortfolioGrid(activeFilter);
+                
+                // Re-initialize dynamic elements
+                initLogosMarquee();
             }
-        } catch (e) {
-            documentExists = true; // Avoid writing default values if read failed due to error
-            console.error("Error reading from Firestore (falling back to local/cached data without overwriting):", e);
-        }
-    }
-
-    if (!loadedFromFirestore) {
-        console.log("Falling back to local/cached data.");
-        const isAdmin = localStorage.getItem('mendy_portfolio_admin_remembered') === 'true';
-        
-        if (!isAdmin) {
-            // Normal visitors load from data.js
-            videoProjects = JSON.parse(JSON.stringify(sourceVideos));
-            clientLogos = JSON.parse(JSON.stringify(sourceLogos));
-            categoriesList = JSON.parse(JSON.stringify(sourceCategories));
         } else {
-            // Admins load their pending modifications from localStorage
-            const storedVideos = localStorage.getItem(DB_VIDEOS_KEY);
-            videoProjects = storedVideos ? JSON.parse(storedVideos) : JSON.parse(JSON.stringify(sourceVideos));
-
-            const storedLogos = localStorage.getItem(DB_LOGOS_KEY);
-            clientLogos = storedLogos ? JSON.parse(storedLogos) : JSON.parse(JSON.stringify(sourceLogos));
-
-            const storedCategories = localStorage.getItem(DB_CATEGORIES_KEY);
-            categoriesList = storedCategories ? JSON.parse(storedCategories) : JSON.parse(JSON.stringify(sourceCategories));
-        }
-
-        // Initialize Firestore with this default data ONLY if it explicitly does not exist (not on read errors)
-        if (db && !documentExists) {
-            console.log("Initializing new Firestore document...");
+            console.log("Firestore empty. Initializing with local/default data...");
             await saveDatabaseToFirestore();
         }
+    } catch (e) {
+        console.error("Firestore background revalidation error:", e);
     }
-
-    // Run logo migrations only if we have a valid source of truth (Firestore loaded, or document didn't exist)
-    if (loadedFromFirestore || !documentExists) {
-        let modified = false;
-
-        // Auto-merge missing codebase default logos (e.g. ברדק) to active database
-        if (typeof sourceLogos !== 'undefined' && Array.isArray(sourceLogos)) {
-            sourceLogos.forEach(srcLogo => {
-                const srcDetails = getLogoDetails(srcLogo);
-                const exists = clientLogos.some(l => {
-                    const details = getLogoDetails(l);
-                    return details.src === srcDetails.src;
-                });
-                if (!exists) {
-                    console.log(`Auto-merging missing codebase logo to active database: ${srcDetails.src}`);
-                    clientLogos.push(srcLogo);
-                    modified = true;
-                }
-            });
-        }
-        clientLogos = clientLogos.map(logo => {
-            const details = getLogoDetails(logo);
-            if (details.name === 'חב"ד' || details.name === 'חבד' || details.name === 'חב"ד-מסגרת') {
-                const targetSrc = 'חב\"ד-מסגרת.png';
-                if (typeof logo === 'string') {
-                    if (logo !== targetSrc) {
-                        modified = true;
-                        return targetSrc;
-                    }
-                } else if (typeof logo === 'object' && logo !== null) {
-                    if (logo.src !== targetSrc) {
-                        modified = true;
-                        logo.src = targetSrc;
-                        logo.name = 'חב\"ד-מסגרת';
-                    }
-                }
-            }
-            return logo;
-        });
-        
-        const hasCortes = clientLogos.some(logo => {
-            const details = getLogoDetails(logo);
-            return details.src === 'שניאור קורטס.png';
-        });
-        if (!hasCortes) {
-            clientLogos.push('שניאור קורטס.png');
-            modified = true;
-        }
-
-        if (modified) {
-            syncChanges();
-        }
-    }
+}
 }
 
 // Render dynamic filter buttons based on categoriesList
