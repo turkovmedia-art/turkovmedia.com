@@ -210,53 +210,57 @@
                 <p class="section-desc" data-i18n="services_desc">פתרונות וידאו מקיפים משלב הרעיון ועד לתוצר המוגמר ברמה הקולנועית הגבוהה ביותר.</p>
             </div>
             
-            <div class="services-list-container">
+            <div class="services-accordion-container">
                 
-                <!-- Service 1 -->
-                <div class="service-list-item scroll-reveal">
-                    <div class="service-list-num">01</div>
-                    <div class="service-list-content">
-                        <h3 class="service-list-title" data-i18n="service1_title">צילום קולנועי</h3>
-                        <p class="service-list-text" data-i18n="service1_text">צילום שטח וסטודיו ברמה הגבוהה ביותר, שימוש בציוד מתקדם, עדשות קולנועיות ותאורה יצירתית לבניית קומפוזיציות עוצרות נשימה.</p>
-                    </div>
-                    <div class="service-list-arrow">
-                        <i class="fa-solid fa-arrow-left"></i>
+                <!-- Slice 1: Cinematic Filming -->
+                <div class="service-slice active" style="background-image: url('https://img.youtube.com/vi/e_MrJiBTwIo/hqdefault.jpg');" data-filter="narrative">
+                    <div class="slice-overlay slice-teal"></div>
+                    <div class="slice-content">
+                        <span class="slice-num">01</span>
+                        <h3 class="slice-title" data-i18n="service1_title">צילום קולנועי</h3>
+                        <p class="slice-text" data-i18n="service1_text">צילום שטח וסטודיו ברמה הגבוהה ביותר, שימוש בציוד מתקדם, עדשות קולנועיות ותאורה יצירתית לבניית קומפוזיציות עוצרות נשימה.</p>
+                        <button class="slice-btn" onclick="scrollToPortfolioAndFilter('narrative')">
+                            <span data-i18n="btn_view_works">לצפייה בעבודות</span> <i class="fa-solid fa-arrow-left"></i>
+                        </button>
                     </div>
                 </div>
                 
-                <!-- Service 2 -->
-                <div class="service-list-item scroll-reveal">
-                    <div class="service-list-num">02</div>
-                    <div class="service-list-content">
-                        <h3 class="service-list-title" data-i18n="service2_title">עריכת וידאו מתקדמת</h3>
-                        <p class="service-list-text" data-i18n="service2_text">קאטים דינמיים, תיקוני צבע ועיבוד צבע קולנועי (Color Grading), עריכת סאונד קולנועית (Sound Design), קצב וסגנון המותאמים למותג.</p>
-                    </div>
-                    <div class="service-list-arrow">
-                        <i class="fa-solid fa-arrow-left"></i>
-                    </div>
-                </div>
-                
-                <!-- Service 3 -->
-                <div class="service-list-item scroll-reveal">
-                    <div class="service-list-num">03</div>
-                    <div class="service-list-content">
-                        <h3 class="service-list-title" data-i18n="service3_title">צילום רחפן ואווירי</h3>
-                        <p class="service-list-text" data-i18n="service3_text">צילום אווירי מתקדם ברזולוציה גבוהה (4K/5K), יצירת שוטים מרהיבים ממעוף הציפור, תנועות מצלמה מורכבות ומדויקות התורמות למימד קולנועי ועוצר נשימה לכל פרויקט.</p>
-                    </div>
-                    <div class="service-list-arrow">
-                        <i class="fa-solid fa-arrow-left"></i>
+                <!-- Slice 2: Advanced Editing -->
+                <div class="service-slice" style="background-image: url('https://img.youtube.com/vi/ws8gRyvxfjc/hqdefault.jpg');" data-filter="commercial">
+                    <div class="slice-overlay slice-purple"></div>
+                    <div class="slice-content">
+                        <span class="slice-num">02</span>
+                        <h3 class="slice-title" data-i18n="service2_title">עריכת וידאו מתקדמת</h3>
+                        <p class="slice-text" data-i18n="service2_text">קאטים דינמיים, תיקוני צבע ועיבוד צבע קולנועי (Color Grading), עריכת סאונד קולנועית (Sound Design), קצב וסגנון המותאמים למותג.</p>
+                        <button class="slice-btn" onclick="scrollToPortfolioAndFilter('commercial')">
+                            <span data-i18n="btn_view_works">לצפייה בעבודות</span> <i class="fa-solid fa-arrow-left"></i>
+                        </button>
                     </div>
                 </div>
                 
-                <!-- Service 4 -->
-                <div class="service-list-item scroll-reveal">
-                    <div class="service-list-num">04</div>
-                    <div class="service-list-content">
-                        <h3 class="service-list-title" data-i18n="service4_title">טכנולוגיות AI מתקדמות</h3>
-                        <p class="service-list-text" data-i18n="service4_text">שילוב כלי בינה מלאכותית ליצירת אפקטים מורכבים, שיפור תמונה וסאונד, יצירת אלמנטים ויזואליים חדשניים ופתרונות עריכה מהדור הבא.</p>
+                <!-- Slice 3: Drone & Aerial Filming -->
+                <div class="service-slice" style="background-image: url('https://img.youtube.com/vi/4_v3eYj-X24/hqdefault.jpg');" data-filter="music_summary">
+                    <div class="slice-overlay slice-pink"></div>
+                    <div class="slice-content">
+                        <span class="slice-num">03</span>
+                        <h3 class="slice-title" data-i18n="service3_title">צילום רחפן ואווירי</h3>
+                        <p class="slice-text" data-i18n="service3_text">צילום אווירי מתקדם ברזולוציה גבוהה (4K/5K), יצירת שוטים מרהיבים ממעוף הציפור, תנועות מצלמה מורכבות ומדויקות התורמות למימד קולנועי ועוצר נשימה לכל פרויקט.</p>
+                        <button class="slice-btn" onclick="scrollToPortfolioAndFilter('music_summary')">
+                            <span data-i18n="btn_view_works">לצפייה בעבודות</span> <i class="fa-solid fa-arrow-left"></i>
+                        </button>
                     </div>
-                    <div class="service-list-arrow">
-                        <i class="fa-solid fa-arrow-left"></i>
+                </div>
+                
+                <!-- Slice 4: AI & Future Tech -->
+                <div class="service-slice" style="background-image: url('https://img.youtube.com/vi/GI5NtGSD8lo/hqdefault.jpg');" data-filter="ai">
+                    <div class="slice-overlay slice-orange"></div>
+                    <div class="slice-content">
+                        <span class="slice-num">04</span>
+                        <h3 class="slice-title" data-i18n="service4_title">טכנולוגיות AI מתקדמות</h3>
+                        <p class="slice-text" data-i18n="service4_text">שילוב כלי בינה מלאכותית ליצירת אפקטים מורכבים, שיפור תמונה וסאונד, יצירת אלמנטים ויזואליים חדשניים ופתרונות עריכה מהדור הבא.</p>
+                        <button class="slice-btn" onclick="scrollToPortfolioAndFilter('ai')">
+                            <span data-i18n="btn_view_works">לצפייה בעבודות</span> <i class="fa-solid fa-arrow-left"></i>
+                        </button>
                     </div>
                 </div>
                 
