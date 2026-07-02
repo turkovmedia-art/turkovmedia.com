@@ -1197,34 +1197,39 @@ html[lang="en"] .slice-btn:hover i {
     display: flex;
     justify-content: center;
     flex-wrap: wrap;
-    gap: 12px;
+    gap: 15px;
     margin-bottom: 50px;
+    padding: 5px;
+    border-radius: 16px;
+    width: fit-content;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .filter-btn {
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.06);
-    color: var(--text-muted);
-    padding: 10px 24px;
-    border-radius: 50px;
+    background: transparent;
+    border: none;
+    color: rgba(255, 255, 255, 0.6);
+    padding: 8px 20px;
+    border-radius: 12px; /* Less rounded, more modern and editorial */
     cursor: pointer;
     font-size: 0.95rem;
     font-weight: 600;
     font-family: var(--font-hebrew);
-    transition: var(--transition-smooth);
+    transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+    position: relative;
 }
 
 .filter-btn:hover {
-    color: var(--text-light);
-    border-color: rgba(255, 255, 255, 0.2);
-    background: rgba(255, 255, 255, 0.08);
+    color: #fff;
+    background: rgba(255, 255, 255, 0.05);
 }
 
 .filter-btn.active {
-    background: linear-gradient(135deg, var(--accent-cyan), var(--accent-blue));
-    color: var(--text-dark);
-    border-color: var(--accent-cyan);
-    box-shadow: 0 4px 15px rgba(0, 240, 255, 0.2);
+    background: #fff; /* Clean white active background */
+    color: #000;      /* Contrast text */
+    font-weight: 700;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.25);
 }
 
 .portfolio-grid {
@@ -1336,7 +1341,13 @@ html[lang="en"] .slice-btn:hover i {
 }
 
 .portfolio-item-desc {
-    display: none; /* Hide description on card face like the ref image */
+    display: block;
+    color: var(--text-muted);
+    font-size: 0.88rem;
+    line-height: 1.4;
+    margin-top: 6px;
+    font-weight: 300;
+    text-align: center;
 }
 
 /* ==========================================================================
@@ -1815,9 +1826,55 @@ html[lang="en"] .slice-btn:hover i {
         text-align: center;
     }
     
-    .services-grid, .portfolio-grid {
+    .services-grid {
         grid-template-columns: 1fr;
         gap: 20px;
+    }
+    
+    .portfolio-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 12px !important;
+    }
+    
+    .portfolio-filters {
+        display: flex;
+        flex-wrap: nowrap !important;
+        overflow-x: auto !important;
+        justify-content: flex-start !important;
+        width: 100% !important;
+        padding: 10px 15px !important;
+        gap: 10px !important;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none !important;
+    }
+    
+    .portfolio-filters::-webkit-scrollbar {
+        display: none !important;
+    }
+    
+    .filter-btn {
+        flex-shrink: 0 !important;
+        padding: 6px 14px !important;
+        font-size: 0.88rem !important;
+        border-radius: 8px !important;
+    }
+    
+    .portfolio-item-title {
+        font-size: 0.95rem !important;
+        margin-top: 10px !important;
+    }
+    
+    .portfolio-item-desc {
+        font-size: 0.78rem !important;
+        margin-top: 4px !important;
+        display: -webkit-box !important;
+        -webkit-line-clamp: 2 !important;
+        -webkit-box-orient: vertical !important;
+        overflow: hidden !important;
+    }
+    
+    .portfolio-meta {
+        padding: 10px 4px 0 4px !important;
     }
     
     .about-section, .services-section, .portfolio-section, .contact-section {
