@@ -628,6 +628,7 @@ let clientLogos = [
 document.addEventListener('DOMContentLoaded', () => {
     initializeDatabase();
     initLanguageSwitcher(); // Setup language translations
+    initServicesAccordion(); // Setup expanding services slices
     initHeaderScroll();
     initMobileMenu();
     initVideoModal();
@@ -2822,6 +2823,7 @@ const translationDictionary = {
         
         service4_title: "בימוי וקריאייטיב",
         service4_text: "סרט טוב מתחיל ברעיון מנצח. פיצוח קונספט, כתיבת תסריט, סטוריבורד ובימוי שמוודא שכל שוט משרת את הרגש והמטרה של הפרויקט.",
+        btn_view_works: "לצפייה בעבודות",
         
         // Portfolio Section
         portfolio_tag: "עבודות נבחרות",
@@ -2920,6 +2922,7 @@ const translationDictionary = {
         
         service4_title: "Creative Direction & Directing",
         service4_text: "A great film starts with a powerful idea. Conceptual development, scripting, storyboarding, and directing that ensures every visual element serves the emotion and objective of the project.",
+        btn_view_works: "View Projects",
         
         // Portfolio Section
         portfolio_tag: "Selected Works",
@@ -3836,3 +3839,34 @@ function getTranslatedProject(project) {
 
     return project;
 }
+
+// Initialize expanding image-slice services accordion (Inspired by tzvaim.com)
+function initServicesAccordion() {
+    const slices = document.querySelectorAll('.service-slice');
+    slices.forEach(slice => {
+        slice.addEventListener('mouseenter', () => {
+            slices.forEach(s => s.classList.remove('active'));
+            slice.classList.add('active');
+        });
+        
+        // Touch screens click to expand support
+        slice.addEventListener('click', () => {
+            slices.forEach(s => s.classList.remove('active'));
+            slice.classList.add('active');
+        });
+    });
+}
+
+// Scroll to portfolio gallery section and activate category filter
+window.scrollToPortfolioAndFilter = function(filter) {
+    const portfolioSection = document.getElementById('portfolio');
+    if (!portfolioSection) return;
+    
+    const filterBtn = document.querySelector(`.filter-btn[data-filter="${filter}"]`);
+    if (filterBtn) {
+        filterBtn.click();
+    }
+    
+    // Smooth scroll bypass to center alignment
+    portfolioSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+};
