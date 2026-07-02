@@ -748,24 +748,7 @@ img {
     box-shadow: 0 25px 50px rgba(0,0,0,0.6), 0 0 30px rgba(255, 255, 255, 0.02);
 }
 
-/* Background video loop styled to hide player bars */
-.slice-video-bg {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 100%;
-    height: 100%;
-    transform: translate(-50%, -50%) scale(1.6);
-    pointer-events: none;
-    z-index: 0;
-    opacity: 0;
-    transition: opacity 0.8s ease;
-}
 
-.service-slice:hover .slice-video-bg,
-.service-slice.active .slice-video-bg {
-    opacity: 0.3;
-}
 
 /* Siri-style Apple morphing color glow */
 .siri-glow {
@@ -1090,7 +1073,9 @@ html[lang="en"] .slice-content {
     opacity: 0;
     transform: translateY(20px);
     transition: all 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
-    max-width: 480px;
+    width: 480px; /* Lock width to prevent text wrap reflow during card expansion */
+    max-width: 85vw; /* Safe scaling limit for viewport boundaries */
+    flex-shrink: 0;
     text-shadow: 0 2px 10px rgba(0,0,0,0.4);
 }
 
