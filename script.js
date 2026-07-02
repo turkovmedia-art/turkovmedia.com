@@ -1641,10 +1641,13 @@ function initAdminPanel() {
     const btnCancelVideoEdit = document.getElementById('btn-cancel-video-edit');
     const videoIdField = document.getElementById('admin-video-id');
     const videoNameField = document.getElementById('admin-video-name');
+    const videoNameEnField = document.getElementById('admin-video-name-en');
     const videoLinkField = document.getElementById('admin-video-link');
     const videoClientField = document.getElementById('admin-video-client');
+    const videoClientEnField = document.getElementById('admin-video-client-en');
     const videoYearField = document.getElementById('admin-video-year');
     const videoDescField = document.getElementById('admin-video-desc');
+    const videoDescEnField = document.getElementById('admin-video-desc-en');
     const videoTagsContainer = document.getElementById('admin-video-tags-container');
     const allVideosContainer = document.getElementById('all-videos-list-container');
     
@@ -2007,6 +2010,9 @@ function initAdminPanel() {
     function resetVideoForm() {
         addVideoForm.reset();
         videoIdField.value = '';
+        if (videoNameEnField) videoNameEnField.value = '';
+        if (videoClientEnField) videoClientEnField.value = '';
+        if (videoDescEnField) videoDescEnField.value = '';
         videoFormTitle.textContent = 'הוספת סרטון חדש';
         btnVideoSubmit.textContent = 'הוסף סרטון לגלריה';
         btnCancelVideoEdit.style.display = 'none';
@@ -2020,10 +2026,13 @@ function initAdminPanel() {
         
         const idVal = videoIdField.value;
         const title = videoNameField.value.trim();
+        const titleEn = videoNameEnField ? videoNameEnField.value.trim() : '';
         const videoUrl = videoLinkField.value.trim();
         const client = videoClientField.value.trim() || "מנדי טורקוב הפקות";
+        const clientEn = videoClientEnField ? videoClientEnField.value.trim() : '';
         const year = videoYearField.value.trim() || new Date().getFullYear().toString();
         const desc = videoDescField.value.trim() || title;
+        const descEn = videoDescEnField ? videoDescEnField.value.trim() : '';
         
         const checkedBoxes = videoTagsContainer.querySelectorAll('input:checked');
         const categories = Array.from(checkedBoxes).map(cb => cb.value);
@@ -2048,10 +2057,13 @@ function initAdminPanel() {
             const index = videoProjects.findIndex(v => v.id === targetId);
             if (index !== -1) {
                 videoProjects[index].title = title;
+                videoProjects[index].titleEn = titleEn;
                 videoProjects[index].videoUrl = videoUrl;
                 videoProjects[index].categories = categories;
                 videoProjects[index].desc = desc;
+                videoProjects[index].descEn = descEn;
                 videoProjects[index].client = client;
+                videoProjects[index].clientEn = clientEn;
                 videoProjects[index].year = year;
                 videoProjects[index].thumbnail = thumbnail;
             }
@@ -2061,11 +2073,14 @@ function initAdminPanel() {
             const newProject = {
                 id: Date.now(),
                 title: title,
+                titleEn: titleEn,
                 categories: categories,
                 desc: desc,
+                descEn: descEn,
                 thumbnail: thumbnail,
                 videoUrl: videoUrl,
                 client: client,
+                clientEn: clientEn,
                 year: year
             };
             videoProjects.unshift(newProject);
@@ -2086,10 +2101,13 @@ function initAdminPanel() {
         
         videoIdField.value = video.id;
         videoNameField.value = video.title;
+        if (videoNameEnField) videoNameEnField.value = video.titleEn || "";
         videoLinkField.value = video.videoUrl;
         videoClientField.value = video.client || "";
+        if (videoClientEnField) videoClientEnField.value = video.clientEn || "";
         videoYearField.value = video.year || "";
         videoDescField.value = video.desc || "";
+        if (videoDescEnField) videoDescEnField.value = video.descEn || "";
         
         // Check corresponding checkboxes
         const checkboxes = videoTagsContainer.querySelectorAll('input');
@@ -3740,6 +3758,16 @@ const videoTranslations = {
 function getTranslatedProject(project) {
     const currentLang = localStorage.getItem('mendy_portfolio_lang') || 'he';
     if (currentLang === 'he') return project;
+
+    // If direct English translations are stored on the project object, prioritize them
+    if (project.titleEn || project.descEn || project.clientEn) {
+        return {
+            ...project,
+            title: project.titleEn || project.title,
+            desc: project.descEn || project.desc,
+            client: project.clientEn || project.client
+        };
+    }
 
     const title = project.title || '';
     const desc = project.desc || '';
