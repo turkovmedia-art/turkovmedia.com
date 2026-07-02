@@ -3316,5 +3316,27 @@ html[dir="rtl"] .legal-dialog-title {
         font-size: 1.3rem;
         margin-bottom: 15px;
     }
+
+    .video-dialog {
+        width: 95% !important;
+        max-width: 100% !important;
+        margin: auto !important;
+        border-radius: 12px !important;
+    }
+    
+    .dialog-info {
+        padding: 16px 20px !important;
+    }
+    
+    .dialog-video-title {
+        font-size: 1.2rem !important;
+    }
+}
+
+/* Modal Open freeze behavior */
+html.modal-open, body.modal-open {
+    overflow: hidden !important;
+    height: 100% !important;
+    position: relative !important;
 }
 

@@ -815,6 +815,8 @@ function initVideoModal() {
     });
 }
 
+let lastVideoScrollY = 0;
+
 function openVideoPlayer(project) {
     const dialog = document.getElementById('videoDialog');
     const container = document.getElementById('dialogVideoContainer');
@@ -822,6 +824,13 @@ function openVideoPlayer(project) {
     const desc = document.getElementById('dialogVideoDesc');
     
     if (!dialog || !container || !title || !desc) return;
+    
+    // Save the current scroll position before opening the modal
+    lastVideoScrollY = window.scrollY;
+    
+    // Add freeze body scrolling class
+    document.documentElement.classList.add('modal-open');
+    document.body.classList.add('modal-open');
     
     title.textContent = project.title;
     const currentLang = localStorage.getItem('mendy_portfolio_lang') || 'he';
@@ -864,6 +873,18 @@ function closeVideoPlayer() {
     // Clear innerHTML to stop video sound playing in background
     container.innerHTML = '';
     dialog.close();
+    
+    // Remove freeze body scrolling class
+    document.documentElement.classList.remove('modal-open');
+    document.body.classList.remove('modal-open');
+    
+    // Restore the scroll position immediately
+    window.scrollTo(0, lastVideoScrollY);
+    
+    // Restore on the next frame to prevent browser default focus jumping override
+    setTimeout(() => {
+        window.scrollTo(0, lastVideoScrollY);
+    }, 0);
 }
 
 /**
