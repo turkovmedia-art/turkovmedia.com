@@ -709,146 +709,163 @@ img {
     gap: 30px;
 }
 
-.service-card {
-    background: linear-gradient(145deg, rgba(15, 23, 42, 0.45) 0%, rgba(9, 13, 26, 0.65) 100%);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.06);
-    border-radius: 20px;
-    padding: 45px 35px;
-    transition: all 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
-    position: relative;
-    overflow: hidden;
+.services-list-container {
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
-    text-align: right; /* Default RTL for Hebrew */
+    width: 100%;
+    margin-top: 50px;
 }
 
-/* For English language direction adjustments */
-html[lang="en"] .service-card {
-    text-align: left;
-    align-items: flex-start;
-}
-
-.service-card::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    right: 0;
-    width: 3px;
-    height: 100%;
-    background: linear-gradient(to bottom, var(--accent-cyan), var(--accent-blue));
-    transform: scaleY(0);
-    transform-origin: top;
-    transition: all 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
-}
-
-html[lang="en"] .service-card::after {
-    right: auto;
-    left: 0;
-}
-
-.service-card:hover {
-    transform: translateY(-8px);
-    border-color: rgba(0, 240, 255, 0.15);
-    background: linear-gradient(145deg, rgba(15, 23, 42, 0.65) 0%, rgba(9, 13, 26, 0.85) 100%);
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), 0 0 30px rgba(0, 240, 255, 0.05);
-}
-
-.service-card:hover::after {
-    transform: scaleY(1);
-}
-
-.service-icon-box {
-    width: 65px;
-    height: 65px;
-    border-radius: 16px;
-    background: rgba(0, 240, 255, 0.05);
+.service-list-item {
     display: flex;
     align-items: center;
-    justify-content: center;
-    font-size: 1.8rem;
-    color: var(--accent-cyan);
-    margin: 0 0 30px 0; /* Align to the start */
-    border: 1px solid rgba(0, 240, 255, 0.15);
-    transition: all 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
+    padding: 35px 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    position: relative;
+    transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+    cursor: default;
 }
 
-.service-card:hover .service-icon-box {
-    background: linear-gradient(135deg, var(--accent-cyan) 0%, var(--accent-blue) 100%);
-    color: #030712;
-    transform: scale(1.08) rotate(-3deg);
-    box-shadow: 0 0 20px rgba(0, 240, 255, 0.3);
-    border-color: transparent;
+.service-list-item:first-child {
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-.service-title {
-    font-size: 1.35rem;
+.service-list-num {
+    font-family: 'Outfit', sans-serif;
+    font-size: 2.2rem;
     font-weight: 700;
-    margin-bottom: 12px;
-    color: var(--text-light);
-    text-align: right;
-    width: 100%;
+    color: transparent;
+    -webkit-text-stroke: 1px rgba(255, 255, 255, 0.3);
+    margin-left: 50px; /* Hebrew RTL */
+    transition: all 0.4s ease;
+    width: 60px;
+    flex-shrink: 0;
 }
 
-html[lang="en"] .service-title {
-    text-align: left;
+html[lang="en"] .service-list-num {
+    margin-left: 0;
+    margin-right: 50px;
 }
 
-.service-text {
-    font-size: 0.95rem;
-    line-height: 1.6;
-    color: var(--text-muted);
-    text-align: right;
-    margin-bottom: 25px;
+.service-list-content {
+    display: flex;
+    flex-direction: column;
     flex-grow: 1;
 }
 
-html[lang="en"] .service-text {
+.service-list-title {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--text-light);
+    margin-bottom: 10px;
+    transition: all 0.4s ease;
+    text-align: right; /* Hebrew RTL */
+}
+
+html[lang="en"] .service-list-title {
     text-align: left;
 }
 
-/* New Cinematic Number in background */
-.service-number {
-    position: absolute;
-    left: 25px;
-    bottom: 10px;
-    font-size: 6.5rem;
-    font-weight: 800;
-    line-height: 1;
-    font-family: 'Outfit', sans-serif;
-    color: transparent;
-    -webkit-text-stroke: 1px rgba(255, 255, 255, 0.04);
-    pointer-events: none;
-    transition: all 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
-    direction: ltr;
+.service-list-text {
+    font-size: 0.98rem;
+    line-height: 1.6;
+    color: var(--text-muted);
+    max-width: 850px;
+    transition: all 0.4s ease;
+    text-align: right; /* Hebrew RTL */
+    margin: 0;
 }
 
-html[lang="en"] .service-number {
-    left: auto;
-    right: 25px;
+html[lang="en"] .service-list-text {
+    text-align: left;
 }
 
-.service-card:hover .service-number {
-    -webkit-text-stroke: 1px rgba(0, 240, 255, 0.08);
-    transform: translateY(-5px);
+.service-list-arrow {
+    font-size: 1.5rem;
+    color: rgba(255, 255, 255, 0.15);
+    margin-right: 30px; /* Hebrew RTL */
+    transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+    transform: translateX(0);
 }
 
-/* Cinematic film-specs tag at bottom */
-.service-badge {
-    font-family: monospace;
-    font-size: 0.75rem;
+html[lang="en"] .service-list-arrow {
+    margin-right: 0;
+    margin-left: 30px;
+    transform: rotate(180deg); /* Points right in English */
+}
+
+/* Hover effects */
+.service-list-item:hover {
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.service-list-item:hover .service-list-num {
+    -webkit-text-stroke: 1px var(--accent-cyan);
+    transform: scale(1.1);
     color: var(--accent-cyan);
-    opacity: 0.6;
-    letter-spacing: 1px;
-    margin-top: auto;
-    transition: all 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
+    text-shadow: 0 0 10px rgba(0, 240, 255, 0.3);
 }
 
-.service-card:hover .service-badge {
-    opacity: 1;
-    letter-spacing: 1.5px;
+.service-list-item:hover .service-list-title {
+    color: var(--accent-cyan);
+    text-shadow: 0 0 15px rgba(0, 240, 255, 0.15);
+    transform: translateX(-10px);
+}
+
+html[lang="en"] .service-list-item:hover .service-list-title {
+    transform: translateX(10px);
+}
+
+.service-list-item:hover .service-list-text {
+    color: var(--text-light);
+}
+
+.service-list-item:hover .service-list-arrow {
+    color: var(--accent-cyan);
+    transform: translateX(-15px);
+    text-shadow: 0 0 10px rgba(0, 240, 255, 0.5);
+}
+
+html[lang="en"] .service-list-item:hover .service-list-arrow {
+    transform: rotate(180deg) translateX(-15px); /* Slide in English direction */
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .service-list-item {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 25px 10px;
+    }
+    
+    .service-list-num {
+        margin-left: 0;
+        margin-right: 0;
+        margin-bottom: 15px;
+        font-size: 1.8rem;
+    }
+    
+    .service-list-title {
+        font-size: 1.3rem;
+        text-align: right;
+    }
+    
+    html[lang="en"] .service-list-title {
+        text-align: left;
+    }
+    
+    .service-list-text {
+        font-size: 0.9rem;
+        text-align: right;
+    }
+    
+    html[lang="en"] .service-list-text {
+        text-align: left;
+    }
+    
+    .service-list-arrow {
+        display: none; /* Hide arrow on mobile to save space */
+    }
 }
 
 /* ==========================================================================
