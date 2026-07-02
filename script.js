@@ -828,6 +828,9 @@ function openVideoPlayer(project) {
     // Save the current scroll position before opening the modal
     lastVideoScrollY = window.scrollY;
     
+    // Disable smooth scroll temporarily to prevent visual slide/jump animations
+    document.documentElement.style.scrollBehavior = 'auto';
+    
     // Add freeze body scrolling class
     document.documentElement.classList.add('modal-open');
     document.body.classList.add('modal-open');
@@ -862,6 +865,11 @@ function openVideoPlayer(project) {
     }
     
     dialog.showModal();
+    
+    // Re-enable smooth scroll for normal navigation after dialog has rendered
+    setTimeout(() => {
+        document.documentElement.style.scrollBehavior = '';
+    }, 50);
 }
 
 function closeVideoPlayer() {
@@ -869,6 +877,9 @@ function closeVideoPlayer() {
     const container = document.getElementById('dialogVideoContainer');
     
     if (!dialog || !container) return;
+    
+    // Disable smooth scroll temporarily so snap-back is instant and invisible
+    document.documentElement.style.scrollBehavior = 'auto';
     
     // Clear innerHTML to stop video sound playing in background
     container.innerHTML = '';
@@ -878,13 +889,15 @@ function closeVideoPlayer() {
     document.documentElement.classList.remove('modal-open');
     document.body.classList.remove('modal-open');
     
-    // Restore the scroll position immediately
+    // Restore the scroll position immediately (without animation)
     window.scrollTo(0, lastVideoScrollY);
     
     // Restore on the next frame to prevent browser default focus jumping override
     setTimeout(() => {
         window.scrollTo(0, lastVideoScrollY);
-    }, 0);
+        // Re-enable smooth scroll behavior for the rest of the site
+        document.documentElement.style.scrollBehavior = '';
+    }, 50);
 }
 
 /**

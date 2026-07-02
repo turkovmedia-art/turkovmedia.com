@@ -3336,7 +3336,5 @@ html[dir="rtl"] .legal-dialog-title {
 /* Modal Open freeze behavior */
 html.modal-open, body.modal-open {
     overflow: hidden !important;
-    height: 100% !important;
-    position: relative !important;
 }
 
