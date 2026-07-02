@@ -193,17 +193,19 @@ img {
 }
 
 .btn-primary {
-    background: #fff !important; /* Premium clean solid white */
-    color: #000 !important;      /* Contrast black text */
-    box-shadow: 0 4px 15px rgba(255, 255, 255, 0.1);
+    background: var(--accent-cyan) !important; /* Premium brand solid cyan */
+    color: #050814 !important;                /* Contrast dark text */
+    box-shadow: 0 4px 12px rgba(0, 240, 255, 0.15);
     font-weight: 700;
+    border-radius: 12px !important;            /* Premium editorial modern corners */
+    letter-spacing: 0.02em;
 }
 
 .btn-primary:hover {
-    background: var(--accent-cyan) !important; /* Soft premium cyan on hover */
-    color: #000 !important;
-    transform: translateY(-3px);
-    box-shadow: 0 10px 25px rgba(0, 240, 255, 0.25);
+    background: #00d4e3 !important;            /* Elegant dark-cyan on hover */
+    color: #050814 !important;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 240, 255, 0.25);
 }
 
 .btn-secondary {
@@ -232,16 +234,17 @@ img {
     left: 0;
     right: 0;
     z-index: 1000;
-    background: var(--bg-glass);
-    backdrop-filter: blur(16px);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-    transition: var(--transition-smooth);
+    background: rgba(5, 8, 20, 0.45); /* Elegant, slightly transparent background */
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    transition: padding 0.4s ease, background-color 0.4s ease, box-shadow 0.4s ease, backdrop-filter 0.4s ease;
 }
 
 .main-header.scrolled {
-    padding: 10px 0;
-    background: rgba(5, 8, 20, 0.9);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    padding: 6px 0;
+    background: rgba(5, 8, 20, 0.7); /* Slightly darker on scroll for readability */
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+    backdrop-filter: blur(16px);
 }
 
 .header-container {
@@ -1240,8 +1243,22 @@ html[lang="en"] .slice-btn:hover i {
 
 .portfolio-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-    gap: 30px;
+    grid-template-columns: repeat(4, 1fr); /* Exactly 4 columns on desktop */
+    gap: 24px;
+}
+
+@media (max-width: 1200px) {
+    .portfolio-grid {
+        grid-template-columns: repeat(3, 1fr) !important;
+        gap: 20px !important;
+    }
+}
+
+@media (max-width: 991px) {
+    .portfolio-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 16px !important;
+    }
 }
 
 /* Video Grid Card */
@@ -1608,7 +1625,7 @@ html[lang="en"] .slice-btn:hover i {
 
 .dialog-content {
     background: #0a0f24;
-    border: 1px solid var(--border-glass-hover);
+    border: 1px solid rgba(255, 255, 255, 0.08); /* Frosted glass-like thin Apple border */
     border-radius: 24px !important;
     overflow: hidden;
     position: relative;
@@ -1861,12 +1878,7 @@ html[lang="en"] .slice-btn:hover i {
     }
     
     .portfolio-item-desc {
-        font-size: 0.78rem !important;
-        margin-top: 4px !important;
-        display: -webkit-box !important;
-        -webkit-line-clamp: 2 !important;
-        -webkit-box-orient: vertical !important;
-        overflow: hidden !important;
+        display: none !important;
     }
     
     .portfolio-meta {
