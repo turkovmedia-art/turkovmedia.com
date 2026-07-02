@@ -3842,7 +3842,9 @@ function getTranslatedProject(project) {
 
 // Initialize expanding image-slice services accordion (Inspired by tzvaim.com)
 function initServicesAccordion() {
+    const servicesSection = document.querySelector('.services-section');
     const slices = document.querySelectorAll('.service-slice');
+    
     slices.forEach(slice => {
         slice.addEventListener('mouseenter', () => {
             slices.forEach(s => s.classList.remove('active'));
@@ -3855,6 +3857,36 @@ function initServicesAccordion() {
             slice.classList.add('active');
         });
     });
+
+    // Throttled interactive glow blob spawn on mousemove (Apple Siri style trailing light burst)
+    if (servicesSection) {
+        let lastSpawnTime = 0;
+        const spawnDelay = 75; // ms between each blob spawn (prevents performance lag)
+        
+        servicesSection.addEventListener('mousemove', (e) => {
+            const now = Date.now();
+            if (now - lastSpawnTime < spawnDelay) return;
+            lastSpawnTime = now;
+            
+            const blob = document.createElement('div');
+            blob.className = 'interactive-glow-blob';
+            
+            // Calculate mouse coordinates relative to the services section bounding container
+            const rect = servicesSection.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            blob.style.left = `${x}px`;
+            blob.style.top = `${y}px`;
+            
+            servicesSection.appendChild(blob);
+            
+            // Automatically clean up blob element after the fade out completes (1.8s)
+            setTimeout(() => {
+                blob.remove();
+            }, 1800);
+        });
+    }
 }
 
 // Scroll to portfolio gallery section and activate category filter
