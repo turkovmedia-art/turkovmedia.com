@@ -2812,16 +2812,16 @@ const translationDictionary = {
         services_desc: "פתרונות וידאו מקיפים משלב הרעיון ועד לתוצר המוגמר ברמה הקולנועית הגבוהה ביותר.",
         
         service1_title: "צילום קולנועי",
-        service1_text: "צילום שטח וסטודיו ברמה הגבוהה ביותר, שימוש בציוד מתקדם, עדשות קולנועיות ותאורה יצירתית לבניית קומפוזיציות עוצרות נשימה.",
+        service1_text: "להביא את הסיפור שלך למסך הגדול. צילום שטח וסטודיו בעזרת ציוד קולנוע מקצועי, עדשות פריים אנאמורפיות, ותאורה דרמטית שמייצרת אווירה ולא רק מאירה את הסצנה.",
         
-        service2_title: "עריכת וידאו מתקדמת",
-        service2_text: "קאטים דינמיים, תיקוני צבע ועיבוד צבע קולנועי (Color Grading), עריכת סאונד קולנועית (Sound Design), קצב וסגנון המותאמים למותג.",
+        service2_title: "עריכה קולנועית וצבע",
+        service2_text: "הקסם קורה בחדר העריכה. בניית קצב וזרימה סיפורית, עיצוב פסקול ועיבוד צבע (Color Grading) המעניק לכל שוט את ה-Look הייחודי והטקסטורה הקולנועית שלו.",
         
-        service3_title: "צילום רחפן ואווירי",
-        service3_text: "צילום אווירי מתקדם ברזולוציה גבוהה (4K/5K), יצירת שוטים מרהיבים ממעוף הציפור, תנועות מצלמה מורכבות ומדויקות התורמות למימד קולנועי ועוצר נשימה לכל פרויקט.",
+        service3_title: "צילום אווירי ורחפן",
+        service3_text: "לראות את העולם מזוויות שאף אחד לא רגיל לראות. שוטים אוויריים מרהיבים, תנועות מצלמה מורכבות ותכנון נתיבי טיסה שמכניסים אפיות, מרחב ונפח לכל הפקה.",
         
-        service4_title: "טכנולוגיות AI מתקדמות",
-        service4_text: "שילוב כלי בינה מלאכותית ליצירת אפקטים מורכבים, שיפור תמונה וסאונד, יצירת אלמנטים ויזואליים חדשניים ופתרונות עריכה מהדור הבא.",
+        service4_title: "בימוי וקריאייטיב",
+        service4_text: "סרט טוב מתחיל ברעיון מנצח. פיצוח קונספט, כתיבת תסריט, סטוריבורד ובימוי שמוודא שכל שוט משרת את הרגש והמטרה של הפרויקט.",
         
         // Portfolio Section
         portfolio_tag: "עבודות נבחרות",
@@ -2910,16 +2910,16 @@ const translationDictionary = {
         services_desc: "Comprehensive video solutions from the concept stage to the final product at the highest cinematic level.",
         
         service1_title: "Cinematic Videography",
-        service1_text: "Top-level field and studio shooting, utilizing advanced equipment, cinema lenses, and creative lighting to craft breathtaking compositions.",
+        service1_text: "Bringing your story to the big screen. Premium field and studio shooting utilizing professional cinema rigs, anamorphic prime lenses, and dramatic lighting designed to build atmosphere, not just light a scene.",
         
-        service2_title: "Advanced Video Editing",
-        service2_text: "Dynamic cuts, professional color grading, cinematic sound design, pacing, and style tailored precisely to the brand.",
+        service2_title: "Color & Post-Production",
+        service2_text: "The magic happens in the cutting room. Shaping narrative rhythm and flow, immersive sound design, and color grading that gives every shot its signature cinematic look and texture.",
         
-        service3_title: "Drone & Aerial Shooting",
-        service3_text: "Advanced aerial shooting in high resolution (4K/5K), capturing spectacular bird's-eye views and precise camera movements.",
+        service3_title: "Aerial Cinematography",
+        service3_text: "Seeing the world from perspectives people aren't used to. Dynamic aerial shots, complex camera movements, and flight path designs that add epic scale, depth, and production value.",
         
-        service4_title: "Cutting-Edge AI Tech",
-        service4_text: "Integrating artificial intelligence tools for complex visual effects, image and sound enhancement, and next-generation editing solutions.",
+        service4_title: "Creative Direction & Directing",
+        service4_text: "A great film starts with a powerful idea. Conceptual development, scripting, storyboarding, and directing that ensures every visual element serves the emotion and objective of the project.",
         
         // Portfolio Section
         portfolio_tag: "Selected Works",
