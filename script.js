@@ -710,41 +710,56 @@ function renderPortfolioGrid(filter = 'all') {
     
     grid.innerHTML = '';
     
-    const filteredProjects = filter === 'all' 
-        ? videoProjects 
-        : videoProjects.filter(p => p.categories.includes(filter));
+    // Render all categories as horizontal scrolling tracks
+    categoriesList.forEach(cat => {
+        const catProjects = videoProjects.filter(p => p.categories.includes(cat.id));
+        if (catProjects.length === 0) return; // Skip empty categories
         
-    filteredProjects.forEach(project => {
-        // Translate project metadata for display
-        const displayProj = getTranslatedProject(project);
-
-        const card = document.createElement('div');
-        card.className = `portfolio-item scroll-reveal`;
-        card.setAttribute('data-id', project.id);
+        const rowDiv = document.createElement('div');
+        rowDiv.className = 'portfolio-category-row scroll-reveal';
+        rowDiv.id = `row-cat-${cat.id}`;
         
-        card.innerHTML = `
-            <div class="portfolio-thumb-box">
-                <img src="${displayProj.thumbnail}" alt="${displayProj.title}" class="portfolio-thumb" loading="lazy">
-                <div class="portfolio-overlay">
-                    <div class="play-trigger">
-                        <i class="fa-solid fa-play"></i>
+        const titleH3 = document.createElement('h3');
+        titleH3.className = 'portfolio-row-title';
+        titleH3.textContent = getCategoryHebrew(cat.id);
+        rowDiv.appendChild(titleH3);
+        
+        const trackDiv = document.createElement('div');
+        trackDiv.className = 'portfolio-row-track';
+        
+        catProjects.forEach(project => {
+            const displayProj = getTranslatedProject(project);
+            const card = document.createElement('div');
+            
+            // Check if card is configured in portrait (9/16) mode
+            const isVert = project.aspectRatio === '9 / 16';
+            card.className = `portfolio-item scroll-reveal ${isVert ? 'vertical-card' : ''}`;
+            card.setAttribute('data-id', project.id);
+            
+            card.innerHTML = `
+                <div class="portfolio-thumb-box">
+                    <img src="${displayProj.thumbnail}" alt="${displayProj.title}" class="portfolio-thumb" loading="lazy">
+                    <div class="portfolio-overlay">
+                        <div class="play-trigger">
+                            <i class="fa-solid fa-play"></i>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="portfolio-meta">
-                <div class="portfolio-category">${displayProj.categories ? displayProj.categories.map(c => getCategoryHebrew(c)).join(' | ') : getCategoryHebrew(displayProj.category)}</div>
-                <h3 class="portfolio-item-title">${displayProj.title}</h3>
-                <p class="portfolio-item-desc">${displayProj.desc}</p>
-            </div>
-        `;
-        
-        // Add reveal classes dynamically
-        grid.appendChild(card);
-        
-        // Immediately add click listener to trigger player
-        card.addEventListener('click', () => {
-            openVideoPlayer(project);
+                <div class="portfolio-meta">
+                    <div class="portfolio-category">${displayProj.categories ? displayProj.categories.map(c => getCategoryHebrew(c)).join(' | ') : ''}</div>
+                    <h3 class="portfolio-item-title">${displayProj.title}</h3>
+                </div>
+            `;
+            
+            card.addEventListener('click', () => {
+                openVideoPlayer(project);
+            });
+            
+            trackDiv.appendChild(card);
         });
+        
+        rowDiv.appendChild(trackDiv);
+        grid.appendChild(rowDiv);
     });
     
     // Trigger scroll reveal update for newly added elements
@@ -756,7 +771,7 @@ function renderPortfolioGrid(filter = 'all') {
                     entry.target.classList.add('active');
                 }
             });
-        }, { threshold: 0.15 });
+        }, { threshold: 0.05 });
         
         reveals.forEach(el => observer.observe(el));
     }, 50);
@@ -794,16 +809,18 @@ function initPortfolioFilters() {
             
             const filterValue = btn.getAttribute('data-filter');
             
-            // Add a beautiful smooth exit transition to grid items before rendering new ones
-            const items = document.querySelectorAll('.portfolio-item');
-            items.forEach(item => {
-                item.style.opacity = '0';
-                item.style.transform = 'translateY(15px)';
-            });
-            
-            setTimeout(() => {
-                renderPortfolioGrid(filterValue);
-            }, 300);
+            if (filterValue === 'all') {
+                const section = document.getElementById('portfolio');
+                if (section) {
+                    section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            } else {
+                const row = document.getElementById(`row-cat-${filterValue}`);
+                if (row) {
+                    // Smooth scroll directly to corresponding category row
+                    row.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            }
         });
     });
 }
@@ -884,24 +901,30 @@ function openVideoPlayer(project) {
     const ytId = getYouTubeId(project.videoUrl);
     
     if (ytId) {
-        // Determine dynamic aspect ratio and crop scale factor based on video dimensions
+        // Determine dynamic aspect ratio and vertical stretch proportions based on video layout
         let aspectRatio = project.aspectRatio || '16 / 9';
-        let scale = 1.08; // Safe default scale for 16:9 (hides YouTube title & logo overlays with zero subtitle clipping)
+        let topPercent = '-9.5%';     // Shifts iframe up to fully hide top title bar and channel details
+        let heightPercent = '119%';  // Stretches height to hide bottom player bar and logos
         
         if (project.videoUrl && project.videoUrl.includes('/shorts/')) {
             aspectRatio = '9 / 16';
-            scale = 1.0; // Vertical shorts are displayed 100% full frame
+            topPercent = '0%';
+            heightPercent = '100%';
         } else if (aspectRatio.includes('21') || aspectRatio.includes('2.3')) {
-            scale = 1.35; // Cinematic widescreen needs a higher scale factor to crop out letterbox black bars
+            aspectRatio = '21 / 9';  // Set container format to widescreen
         }
         
-        // Support explicit database overrides
-        if (project.scale !== undefined) {
-            scale = project.scale;
+        // Allow explicit custom database override parameters
+        if (project.videoTop !== undefined) {
+            topPercent = project.videoTop;
+        }
+        if (project.videoHeight !== undefined) {
+            heightPercent = project.videoHeight;
         }
         
         container.style.aspectRatio = aspectRatio;
-        container.style.setProperty('--video-scale', scale);
+        container.style.setProperty('--video-top', topPercent);
+        container.style.setProperty('--video-height', heightPercent);
         
         // Render Plyr video embed wrapper
         container.innerHTML = `
@@ -936,7 +959,8 @@ function openVideoPlayer(project) {
     } else {
         // Fallback for non-YouTube files (HTML5 video player via Plyr)
         container.style.aspectRatio = '16 / 9';
-        container.style.setProperty('--video-scale', '1.0');
+        container.style.setProperty('--video-top', '0%');
+        container.style.setProperty('--video-height', '100%');
         const embedUrl = resolveEmbedUrl(displayProj.videoUrl);
         container.innerHTML = `
             <video id="custom-native-player" playsinline controls style="width: 100%; height: 100%; border: none;">
@@ -1742,6 +1766,8 @@ function initAdminPanel() {
     const videoDescField = document.getElementById('admin-video-desc');
     const videoDescEnField = document.getElementById('admin-video-desc-en');
     const videoTagsContainer = document.getElementById('admin-video-tags-container');
+    const videoThumbnailField = document.getElementById('admin-video-thumbnail');
+    const videoIsVerticalField = document.getElementById('admin-video-is-vertical');
     const allVideosContainer = document.getElementById('all-videos-list-container');
     
     // Form & List Elements (Categories)
@@ -2106,6 +2132,8 @@ function initAdminPanel() {
         if (videoNameEnField) videoNameEnField.value = '';
         if (videoClientEnField) videoClientEnField.value = '';
         if (videoDescEnField) videoDescEnField.value = '';
+        if (videoThumbnailField) videoThumbnailField.value = '';
+        if (videoIsVerticalField) videoIsVerticalField.checked = false;
         videoFormTitle.textContent = 'הוספת סרטון חדש';
         btnVideoSubmit.textContent = 'הוסף סרטון לגלריה';
         btnCancelVideoEdit.style.display = 'none';
@@ -2127,6 +2155,9 @@ function initAdminPanel() {
         const desc = videoDescField.value.trim() || title;
         const descEn = videoDescEnField ? videoDescEnField.value.trim() : '';
         
+        const customThumbnail = videoThumbnailField ? videoThumbnailField.value.trim() : '';
+        const isVertical = videoIsVerticalField ? videoIsVerticalField.checked : false;
+        
         const checkedBoxes = videoTagsContainer.querySelectorAll('input:checked');
         const categories = Array.from(checkedBoxes).map(cb => cb.value);
         
@@ -2142,7 +2173,8 @@ function initAdminPanel() {
             return;
         }
         
-        const thumbnail = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
+        const thumbnail = customThumbnail || `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
+        const aspectRatio = isVertical ? '9 / 16' : '16 / 9';
         
         if (idVal) {
             // EDITING EXISTING VIDEO
@@ -2159,6 +2191,8 @@ function initAdminPanel() {
                 videoProjects[index].clientEn = clientEn;
                 videoProjects[index].year = year;
                 videoProjects[index].thumbnail = thumbnail;
+                videoProjects[index].customThumbnail = customThumbnail;
+                videoProjects[index].aspectRatio = aspectRatio;
             }
             alert('הסרטון עודכן בהצלחה!');
         } else {
@@ -2171,10 +2205,12 @@ function initAdminPanel() {
                 desc: desc,
                 descEn: descEn,
                 thumbnail: thumbnail,
+                customThumbnail: customThumbnail,
                 videoUrl: videoUrl,
                 client: client,
                 clientEn: clientEn,
-                year: year
+                year: year,
+                aspectRatio: aspectRatio
             };
             videoProjects.unshift(newProject);
             alert('הסרטון נוסף בהצלחה!');
@@ -2201,6 +2237,8 @@ function initAdminPanel() {
         videoYearField.value = video.year || "";
         videoDescField.value = video.desc || "";
         if (videoDescEnField) videoDescEnField.value = video.descEn || "";
+        if (videoThumbnailField) videoThumbnailField.value = video.customThumbnail || "";
+        if (videoIsVerticalField) videoIsVerticalField.checked = video.aspectRatio === '9 / 16';
         
         // Check corresponding checkboxes
         const checkboxes = videoTagsContainer.querySelectorAll('input');

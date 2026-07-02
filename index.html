@@ -515,6 +515,14 @@
                                 <textarea id="admin-video-desc-en" placeholder="Short description in English..." rows="3"></textarea>
                             </div>
                             <div class="form-group">
+                                <label for="admin-video-thumbnail">קישור לתמונה ממוזערת מותאמת אישית (אופציונלי)</label>
+                                <input type="url" id="admin-video-thumbnail" placeholder="השאר ריק לחילוץ אוטומטי מיוטיוב...">
+                            </div>
+                            <div class="form-group" style="flex-direction: row; align-items: center; gap: 10px; margin-bottom: 20px; display: flex;">
+                                <input type="checkbox" id="admin-video-is-vertical" style="width: auto; margin: 0; cursor: pointer;">
+                                <label for="admin-video-is-vertical" style="margin: 0; cursor: pointer; user-select: none;">סרטון עומד (אנכי - Shorts / Reels)</label>
+                            </div>
+                            <div class="form-group">
                                 <label>תיוגים / קטגוריות</label>
                                 <div class="tags-checkbox-grid" id="admin-video-tags-container">
                                     <!-- Rendered dynamically in JS -->
