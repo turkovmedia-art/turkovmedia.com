@@ -829,8 +829,7 @@ function initVideoModal() {
 }
 
 let lastVideoScrollY = 0;
-let ytPlayer = null;
-let ytProgressInterval = null;
+let plyrInstance = null;
 
 // Helper to extract YouTube video ID from various URL formats
 function getYouTubeId(url) {
@@ -845,7 +844,6 @@ function getYouTubeId(url) {
             const urlParams = new URLSearchParams(new URL(url).search);
             id = urlParams.get('v');
         } catch(e) {
-            // fallback
             const parts = url.split('v=');
             if (parts.length > 1) id = parts[1].split('&')[0];
         }
@@ -873,73 +871,69 @@ function openVideoPlayer(project) {
     
     title.textContent = displayProj.title;
     
-    // Clear previous tracking loop
-    if (ytProgressInterval) {
-        clearInterval(ytProgressInterval);
+    // Destroy previous Plyr player instance to prevent memory leaks
+    if (plyrInstance) {
+        plyrInstance.destroy();
+        plyrInstance = null;
     }
     
     const ytId = getYouTubeId(project.videoUrl);
     
     if (ytId) {
-        // Set dynamic container aspect ratio based on whether video is cinematic widescreen or standard
-        container.style.aspectRatio = project.aspectRatio || '16 / 9';
+        // Reset container aspect ratio to standard 16:9 for Plyr video frame
+        container.style.aspectRatio = '16 / 9';
         
-        // Render YouTube API target frame and custom control bar layout
+        // Render Plyr video embed wrapper
         container.innerHTML = `
-            <div id="youtube-player-target" style="width: 100%; height: 100%;"></div>
-            <div class="custom-video-controls">
-                <button class="control-btn play-pause-btn" id="customPlayPauseBtn">
-                    <i class="fa-solid fa-play"></i>
-                </button>
-                <div class="progress-wrapper" id="customProgressWrapper">
-                    <div class="progress-timeline" id="customTimeline">
-                        <div class="progress-playhead" id="customPlayhead"></div>
-                    </div>
-                </div>
-                <span class="time-label" id="customTimeLabel">0:00 / 0:00</span>
-                <button class="control-btn volume-btn" id="customVolumeBtn">
-                    <i class="fa-solid fa-volume-high"></i>
-                </button>
-                <button class="control-btn fullscreen-btn" id="customFullscreenBtn">
-                    <i class="fa-solid fa-expand"></i>
-                </button>
+            <div class="plyr__video-embed" id="custom-youtube-player" style="width: 100%; height: 100%;">
+                <iframe
+                    src="https://www.youtube.com/embed/${ytId}?origin=https://plyr.io&iv_load_policy=3&modestbranding=1&playsinline=1&showinfo=0&rel=0&enablejsapi=1"
+                    allowfullscreen
+                    allowtransparency
+                    allow="autoplay; fullscreen"
+                ></iframe>
             </div>
         `;
         
-        // Initialize player via YouTube SDK
-        function initPlayer() {
-            ytPlayer = new YT.Player('youtube-player-target', {
-                videoId: ytId,
-                playerVars: {
-                    autoplay: 1,
-                    controls: 0,         // Hides default YouTube progress bar & controls
-                    rel: 0,              // Disables showing related videos
-                    modestbranding: 1,   // Disables YouTube logo
-                    showinfo: 0,
-                    iv_load_policy: 3,
-                    fs: 0                // Disables default fullscreen option
-                },
-                events: {
-                    'onReady': onPlayerReady,
-                    'onStateChange': onPlayerStateChange
-                }
-            });
-        }
+        // Initialize Plyr player wrapper
+        plyrInstance = new Plyr('#custom-youtube-player', {
+            controls: [
+                'play',         // Play/Pause button
+                'progress',     // Timeline progress slider (drag/click to seek)
+                'current-time', // Running play time
+                'mute',         // Mute toggle
+                'volume',       // Volume bar
+                'fullscreen'    // Fullscreen toggle button
+            ],
+            clickToPlay: true
+        });
         
-        if (window.YT && window.YT.Player) {
-            initPlayer();
-        } else {
-            window.onYouTubeIframeAPIReady = initPlayer;
-        }
+        // Auto-play the video when Plyr indicates it is ready
+        plyrInstance.on('ready', () => {
+            plyrInstance.play().catch(e => console.log("Auto-play blocked or failed", e));
+        });
+        
     } else {
-        // Fallback for non-YouTube video files (standard native HTML5 controls)
+        // Fallback for non-YouTube files (HTML5 video player via Plyr)
         container.style.aspectRatio = '16 / 9';
         const embedUrl = resolveEmbedUrl(displayProj.videoUrl);
         container.innerHTML = `
-            <video controls autoplay class="modal-video-element" style="width:100%; height:100%; border:none;">
+            <video id="custom-native-player" playsinline controls style="width: 100%; height: 100%; border: none;">
                 <source src="${embedUrl.url}" type="video/mp4">
             </video>
         `;
+        
+        plyrInstance = new Plyr('#custom-native-player', {
+            controls: [
+                'play',
+                'progress',
+                'current-time',
+                'mute',
+                'volume',
+                'fullscreen'
+            ],
+            clickToPlay: true
+        });
     }
     
     dialog.showModal();
@@ -950,112 +944,17 @@ function openVideoPlayer(project) {
     }, 50);
 }
 
-function onPlayerReady(event) {
-    const playPauseBtn = document.getElementById('customPlayPauseBtn');
-    const volumeBtn = document.getElementById('customVolumeBtn');
-    const fullscreenBtn = document.getElementById('customFullscreenBtn');
-    const progressWrapper = document.getElementById('customProgressWrapper');
-    const timeline = document.getElementById('customTimeline');
-    const playhead = document.getElementById('customPlayhead');
-    const timeLabel = document.getElementById('customTimeLabel');
-    
-    if (!playPauseBtn || !ytPlayer) return;
-    
-    // Play/Pause Action
-    playPauseBtn.addEventListener('click', () => {
-        if (!ytPlayer || !ytPlayer.getPlayerState) return;
-        const state = ytPlayer.getPlayerState();
-        if (state === YT.PlayerState.PLAYING) {
-            ytPlayer.pauseVideo();
-        } else {
-            ytPlayer.playVideo();
-        }
-    });
-    
-    // Format Seconds to time label (M:SS)
-    function formatTime(secs) {
-        const min = Math.floor(secs / 60);
-        const sec = Math.floor(secs % 60);
-        return `${min}:${sec < 10 ? '0' : ''}${sec}`;
-    }
-    
-    // Update timeline position and time display
-    function updateTimeline() {
-        if (!ytPlayer || !ytPlayer.getCurrentTime) return;
-        try {
-            const current = ytPlayer.getCurrentTime();
-            const duration = ytPlayer.getDuration() || 0;
-            
-            if (duration > 0) {
-                const pct = (current / duration) * 100;
-                playhead.style.width = `${pct}%`;
-                timeLabel.textContent = `${formatTime(current)} / ${formatTime(duration)}`;
-            }
-        } catch(e) {}
-    }
-    
-    // Click on progress bar to seek video
-    progressWrapper.addEventListener('click', (e) => {
-        if (!ytPlayer || !ytPlayer.getDuration) return;
-        const rect = timeline.getBoundingClientRect();
-        const clickX = e.clientX - rect.left;
-        const percentage = Math.max(0, Math.min(1, clickX / rect.width));
-        const duration = ytPlayer.getDuration() || 0;
-        
-        if (duration > 0) {
-            ytPlayer.seekTo(duration * percentage, true);
-            playhead.style.width = `${percentage * 100}%`;
-        }
-    });
-    
-    // Mute / Unmute click handler
-    volumeBtn.addEventListener('click', () => {
-        if (!ytPlayer || !ytPlayer.isMuted) return;
-        if (ytPlayer.isMuted()) {
-            ytPlayer.unMute();
-            volumeBtn.querySelector('i').className = 'fa-solid fa-volume-high';
-        } else {
-            ytPlayer.mute();
-            volumeBtn.querySelector('i').className = 'fa-solid fa-volume-xmark';
-        }
-    });
-    
-    // Custom container element Fullscreen toggle
-    fullscreenBtn.addEventListener('click', () => {
-        const videoContainer = document.getElementById('dialogVideoContainer');
-        if (!document.fullscreenElement) {
-            videoContainer.requestFullscreen().catch(err => console.log(err));
-        } else {
-            document.exitFullscreen();
-        }
-    });
-    
-    // Poll progress every 250ms
-    ytProgressInterval = setInterval(updateTimeline, 250);
-}
-
-function onPlayerStateChange(event) {
-    const playPauseBtn = document.getElementById('customPlayPauseBtn');
-    if (!playPauseBtn) return;
-    
-    if (event.data === YT.PlayerState.PLAYING) {
-        playPauseBtn.innerHTML = '<i class="fa-solid fa-pause"></i>';
-    } else {
-        playPauseBtn.innerHTML = '<i class="fa-solid fa-play"></i>';
-    }
-}
-
 function closeVideoPlayer() {
     const dialog = document.getElementById('videoDialog');
     const container = document.getElementById('dialogVideoContainer');
     
     if (!dialog || !container) return;
     
-    // Clear tracking interval
-    if (ytProgressInterval) {
-        clearInterval(ytProgressInterval);
+    // Safely destroy the active Plyr instance to stop playback and clean up memory
+    if (plyrInstance) {
+        plyrInstance.destroy();
+        plyrInstance = null;
     }
-    ytPlayer = null;
     
     // Disable smooth scroll temporarily so snap-back is instant and invisible
     document.documentElement.style.scrollBehavior = 'auto';
