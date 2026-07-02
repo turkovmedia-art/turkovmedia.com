@@ -1229,16 +1229,16 @@ html[lang="en"] .slice-btn:hover i {
 
 .filter-btn:hover {
     color: #fff;
-    background: rgba(255, 255, 255, 0.05);
-    transform: translateY(-2px); /* Soft lift on hover */
+    background: rgba(255, 255, 255, 0.08);
+    transform: translateY(-3px) scale(1.02); /* More noticeable lift on hover */
 }
 
 .filter-btn.active {
     background: #fff; /* Clean white active background */
     color: #000;      /* Contrast text */
     font-weight: 700;
-    transform: translateY(-2px) scale(1.03); /* Active button floats dynamically */
-    box-shadow: 0 8px 20px rgba(255, 255, 255, 0.15);
+    transform: translateY(-4px) scale(1.06); /* Prominent lift and scale active state */
+    box-shadow: 0 12px 24px rgba(255, 255, 255, 0.25);
 }
 
 .portfolio-grid {
@@ -1657,14 +1657,29 @@ html[lang="en"] .slice-btn:hover i {
 }
 
 .video-container {
+    position: relative;
     width: 100%;
     aspect-ratio: 16 / 9;
     background-color: #000;
+    overflow: hidden;
 }
 
-.video-container iframe, .video-container video {
+.video-container iframe {
+    position: absolute;
+    top: -6%; /* Shift upwards to hide YouTube title bar */
+    left: 0;
+    width: 100%;
+    height: 112%; /* Scale height to crop bottom black bars and YouTube branding */
+    border: none;
+}
+
+.video-container video {
+    position: absolute;
+    top: 0;
+    left: 0;
     width: 100%;
     height: 100%;
+    object-fit: cover; /* Native videos scale natively without letterbox space */
     border: none;
 }
 
