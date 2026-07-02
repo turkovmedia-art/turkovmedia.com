@@ -3858,36 +3858,42 @@ function initServicesAccordion() {
         });
     });
 
-    // Throttled interactive glow blob spawn on mousemove (Apple Siri style trailing light burst)
+    // High-performance single-blob trailing Siri glow (GPU accelerated, no layout thrashes, zero flashes!)
     if (servicesSection) {
-        let lastSpawnTime = 0;
-        const spawnDelay = 75; // ms between each blob spawn (prevents performance lag)
+        let blob = document.getElementById('mouse-glow-blob');
+        if (!blob) {
+            blob = document.createElement('div');
+            blob.id = 'mouse-glow-blob';
+            blob.className = 'interactive-glow-blob';
+            blob.style.opacity = '0';
+            blob.style.transform = 'translate3d(0, 0, 0) scale(0.1)';
+            servicesSection.appendChild(blob);
+        }
+        
+        servicesSection.addEventListener('mouseenter', () => {
+            blob.style.opacity = '0.35';
+        });
+        
+        servicesSection.addEventListener('mouseleave', () => {
+            blob.style.opacity = '0';
+        });
         
         servicesSection.addEventListener('mousemove', (e) => {
-            // Do not spawn glow blobs when hovering over the service cards
-            if (e.target.closest('.service-slice')) return;
-
-            const now = Date.now();
-            if (now - lastSpawnTime < spawnDelay) return;
-            lastSpawnTime = now;
+            // Hide the glow when hovering directly over card elements to keep cards clean
+            if (e.target.closest('.service-slice')) {
+                blob.style.opacity = '0';
+                return;
+            } else {
+                blob.style.opacity = '0.35';
+            }
             
-            const blob = document.createElement('div');
-            blob.className = 'interactive-glow-blob';
-            
-            // Calculate mouse coordinates relative to the services section bounding container
+            // Calculate cursor coordinates relative to servicesSection
             const rect = servicesSection.getBoundingClientRect();
             const x = e.clientX - rect.left;
             const y = e.clientY - rect.top;
             
-            blob.style.left = `${x}px`;
-            blob.style.top = `${y}px`;
-            
-            servicesSection.appendChild(blob);
-            
-            // Automatically clean up blob element after the fade out completes (1.8s)
-            setTimeout(() => {
-                blob.remove();
-            }, 1800);
+            // Apply GPU accelerated translate3d position with scale burst (centered on cursor offset)
+            blob.style.transform = `translate3d(${x - 80}px, ${y - 80}px, 0) scale(4.2)`;
         });
     }
 }

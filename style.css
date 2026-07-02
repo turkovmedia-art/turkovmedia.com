@@ -1160,34 +1160,23 @@ html[lang="en"] .slice-btn:hover i {
     }
 }
 
-/* Interactive Apple Siri Glow Burst effect for services section */
+/* High-performance single-blob Siri glow (Smooth mouse-trailing backlight) */
 .interactive-glow-blob {
     position: absolute;
     width: 160px;
     height: 160px;
+    top: 0;
+    left: 0;
     border-radius: 50%;
-    background: radial-gradient(circle, rgba(0, 240, 255, 0.22) 0%, rgba(139, 92, 246, 0.14) 40%, rgba(0, 180, 219, 0.05) 70%, transparent 100%);
-    filter: blur(40px);
-    transform: translate(-50%, -50%) scale(0.1);
-    opacity: 0.35; /* Soft, subtle look */
+    background: radial-gradient(circle, rgba(0, 240, 255, 0.28) 0%, rgba(139, 92, 246, 0.2) 40%, rgba(0, 180, 219, 0.08) 70%, transparent 100%);
+    filter: blur(55px);
+    transform: translate3d(0, 0, 0) scale(0.1);
+    opacity: 0;
     pointer-events: none;
-    animation: apple-glow-burst 1.8s cubic-bezier(0.1, 0.8, 0.25, 1) forwards;
     z-index: 1; /* Renders behind the accordion card elements */
-}
-
-@keyframes apple-glow-burst {
-    0% {
-        transform: translate(-50%, -50%) scale(0.1);
-        opacity: 0.35;
-    }
-    30% {
-        background: radial-gradient(circle, rgba(0, 240, 255, 0.2) 0%, rgba(236, 72, 153, 0.15) 45%, rgba(245, 158, 11, 0.08) 70%, transparent 100%);
-    }
-    100% {
-        transform: translate(-50%, -50%) scale(4.8);
-        filter: blur(95px);
-        opacity: 0;
-    }
+    will-change: transform, opacity;
+    /* Spring-like transition curve makes the glow trail dynamically behind the cursor */
+    transition: transform 0.4s cubic-bezier(0.1, 0.85, 0.25, 1), opacity 0.5s ease;
 }
 
 /* ==========================================================================
@@ -1246,19 +1235,18 @@ html[lang="en"] .slice-btn:hover i {
 
 /* Video Grid Card */
 .portfolio-item {
-    background: var(--bg-glass);
-    border: 1px solid var(--border-glass);
-    border-radius: var(--border-radius-md);
-    overflow: hidden;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    overflow: visible;
     cursor: pointer;
     transition: var(--transition-smooth);
     position: relative;
+    text-align: center;
 }
 
 .portfolio-item:hover {
-    transform: translateY(-5px);
-    border-color: var(--border-glass-hover);
-    box-shadow: 0 15px 35px rgba(0,0,0,0.5), 0 0 20px rgba(0, 240, 255, 0.05);
+    transform: none;
 }
 
 .portfolio-thumb-box {
@@ -1266,17 +1254,25 @@ html[lang="en"] .slice-btn:hover i {
     aspect-ratio: 16 / 9;
     overflow: hidden;
     background-color: #000;
+    border-radius: 16px; /* Soft, premium rounded corners like Channel 12 */
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1), box-shadow 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
 }
 
 .portfolio-thumb {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: var(--transition-smooth);
+    transition: transform 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+.portfolio-item:hover .portfolio-thumb-box {
+    transform: translateY(-6px);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6), 0 0 25px rgba(0, 240, 255, 0.06);
 }
 
 .portfolio-item:hover .portfolio-thumb {
-    transform: scale(1.05);
+    transform: scale(1.04);
 }
 
 .portfolio-overlay {
@@ -1285,12 +1281,12 @@ html[lang="en"] .slice-btn:hover i {
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(5, 8, 20, 0.6);
+    background: rgba(5, 8, 20, 0.55);
     display: flex;
     align-items: center;
     justify-content: center;
     opacity: 0;
-    transition: var(--transition-smooth);
+    transition: opacity 0.3s ease;
 }
 
 .portfolio-item:hover .portfolio-overlay {
@@ -1298,18 +1294,18 @@ html[lang="en"] .slice-btn:hover i {
 }
 
 .play-trigger {
-    width: 60px;
-    height: 60px;
+    width: 55px;
+    height: 55px;
     border-radius: 50%;
-    background: var(--accent-cyan);
-    color: var(--text-dark);
+    background: #fff;
+    color: #000;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.5rem;
-    box-shadow: 0 0 25px var(--accent-cyan);
+    font-size: 1.3rem;
+    box-shadow: 0 8px 25px rgba(255, 255, 255, 0.3);
     transform: scale(0.8);
-    transition: var(--transition-smooth);
+    transition: transform 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
 }
 
 .portfolio-item:hover .play-trigger {
@@ -1317,23 +1313,22 @@ html[lang="en"] .slice-btn:hover i {
 }
 
 .portfolio-meta {
-    padding: 24px;
-    text-align: right;
+    padding: 15px 10px 0 10px;
+    text-align: center; /* Centered title text below card */
 }
 
 .portfolio-category {
-    font-size: 0.85rem;
-    color: var(--accent-cyan);
-    font-weight: 700;
-    margin-bottom: 8px;
-    text-transform: uppercase;
+    display: none; /* Hide category labels on card face like the ref image */
 }
 
 .portfolio-item-title {
-    font-size: 1.25rem;
-    margin-bottom: 8px;
-    line-height: 1.3;
-    transition: var(--transition-smooth);
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--text-light);
+    margin: 0;
+    line-height: 1.4;
+    transition: color 0.3s ease;
+    text-align: center;
 }
 
 .portfolio-item:hover .portfolio-item-title {
@@ -1341,10 +1336,7 @@ html[lang="en"] .slice-btn:hover i {
 }
 
 .portfolio-item-desc {
-    color: var(--text-muted);
-    font-size: 0.9rem;
-    font-weight: 300;
-    display: block;
+    display: none; /* Hide description on card face like the ref image */
 }
 
 /* ==========================================================================
