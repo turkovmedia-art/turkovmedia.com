@@ -1322,8 +1322,8 @@ html[lang="en"] .slice-btn:hover i {
 }
 
 .play-trigger {
-    width: 80px;
-    height: 80px;
+    width: 140px;
+    height: 140px;
     background: transparent;
     display: flex;
     align-items: center;

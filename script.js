@@ -733,10 +733,7 @@ function renderPortfolioGrid(filter = 'all') {
                 <img src="${displayProj.thumbnail}" alt="${displayProj.title}" class="portfolio-thumb" loading="lazy">
                 <div class="portfolio-overlay">
                     <div class="play-trigger">
-                        <video class="hover-logo-video" muted playsinline style="width: 80px; height: 80px; object-fit: contain; mix-blend-mode: screen; filter: drop-shadow(0 0 10px rgba(0, 240, 255, 0.45)); pointer-events: none;">
-                            <source src="assets/Icone.mov" type="video/quicktime">
-                            <source src="assets/Icone.mp4" type="video/mp4">
-                        </video>
+                        <video class="hover-logo-video" src="assets/Icone.mp4" muted playsinline style="width: 100%; height: 100%; object-fit: contain; mix-blend-mode: screen; pointer-events: none;"></video>
                     </div>
                 </div>
             </div>
