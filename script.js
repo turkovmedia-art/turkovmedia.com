@@ -865,16 +865,14 @@ function setupCustomVideoLoader(plyrInstance, container) {
     const initLoader = () => {
         const plyrContainer = container.querySelector('.plyr');
         if (plyrContainer) {
-            // Hide video stream initially to prevent YouTube branding flash
-            plyrContainer.classList.remove('plyr-visible');
-            
             if (!plyrContainer.querySelector('.plyr-custom-loader-overlay')) {
                 const loaderOverlay = document.createElement('div');
                 loaderOverlay.className = 'plyr-custom-loader-overlay';
                 loaderOverlay.innerHTML = `<img src="assets/Icone.gif" alt="Loading..." style="width: 100%; height: 100%; object-fit: contain;">`;
                 plyrContainer.appendChild(loaderOverlay);
                 
-                // Show loader initially while video is buffering to play
+                // Show loader initially while video is buffering to play (starts solid black)
+                loaderOverlay.classList.remove('stalled-state');
                 loaderOverlay.classList.add('active');
                 
                 let lastTime = 0;
@@ -917,9 +915,9 @@ function setupCustomVideoLoader(plyrInstance, container) {
                 
                 // Listen to Plyr events for buffering/stalling
                 plyrInstance.on('playing', () => {
-                    // Fade in the video stream and hide loader overlay
-                    plyrContainer.classList.add('plyr-visible');
                     loaderOverlay.classList.remove('active');
+                    // Add stalled-state so that subsequent stall overlays are semi-transparent
+                    loaderOverlay.classList.add('stalled-state');
                     startChecking();
                 });
                 plyrInstance.on('pause', () => {
@@ -947,8 +945,8 @@ function setupCustomVideoLoader(plyrInstance, container) {
                 });
                 
                 if (plyrInstance.playing) {
-                    plyrContainer.classList.add('plyr-visible');
                     loaderOverlay.classList.remove('active');
+                    loaderOverlay.classList.add('stalled-state');
                     startChecking();
                 }
             }
@@ -1611,12 +1609,15 @@ const firebaseConfig = {
 let db = null;
 let isSiteLocked = false;
 
-// Async SHA-256 hashing helper to secure sensitive passcodes from source inspection
-async function hashString(str) {
-    const msgBuffer = new TextEncoder().encode(str);
-    const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
-    const hashArray = Array.from(new Uint8Array(hashBuffer));
-    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+// Synchronous polynomial rolling hash helper (works in insecure HTTP contexts where crypto.subtle is undefined)
+function simpleHash(str) {
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+        const char = str.charCodeAt(i);
+        hash = (hash << 5) - hash + char;
+        hash = hash & hash; // Convert to 32bit integer
+    }
+    return hash.toString();
 }
 
 // Check site maintenance mode and render glassmorphic lock screen if active
@@ -1671,11 +1672,11 @@ function checkSiteLock(maintenanceMode) {
             const input = document.getElementById('maintenance-passcode');
             const btn = document.getElementById('btn-submit-passcode');
             
-            const verify = async () => {
+            const verify = () => {
                 const entered = input.value.trim();
-                const hashed = await hashString(entered);
-                // Compare hashed passcode with the secure SHA-256 representation
-                if (hashed === '832dfc2b5e039f24b37d9e465902406c044166242841b980d6ca6dcd367fbe82') {
+                const hashed = simpleHash(entered);
+                // Compare hashed passcode with the polynomial hash of '327548723'
+                if (hashed === '-1904507817') {
                     sessionStorage.setItem('mendy_portfolio_bypass_lock', 'true');
                     document.getElementById('maintenance-lock-screen').remove();
                     document.documentElement.classList.remove('modal-open');
@@ -2797,8 +2798,8 @@ const defaultCategories = ${JSON.stringify(categoriesList, null, 4)};
         btnToggleSiteLock.addEventListener('click', async () => {
             const passcode = prompt('אנא הזן את קוד הגישה הסודי לנעילה או שחרור של האתר בענן:');
             if (passcode === null) return; // Cancelled
-            const hashed = await hashString(passcode.trim());
-            if (hashed !== '832dfc2b5e039f24b37d9e465902406c044166242841b980d6ca6dcd367fbe82') {
+            const hashed = simpleHash(passcode.trim());
+            if (hashed !== '-1904507817') {
                 alert('קוד גישה שגוי! שינוי הסטטוס נדחה.');
                 return;
             }

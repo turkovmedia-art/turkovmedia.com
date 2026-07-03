@@ -3903,17 +3903,22 @@ html.modal-open, body.modal-open {
     left: 0;
     width: 100%;
     height: 100%;
-    z-index: 100;
-    background: rgba(4, 8, 20, 0.7);
+    z-index: 10;
+    background: #000; /* Solid black for initial load to fully hide YouTube logo flash */
     display: none;
     align-items: center;
     justify-content: center;
     pointer-events: none;
     border-radius: 24px;
+    transition: background 0.3s ease;
 }
 
 .plyr-custom-loader-overlay.active {
     display: flex;
+}
+
+.plyr-custom-loader-overlay.stalled-state {
+    background: rgba(0, 0, 0, 0.65); /* Semi-transparent for subsequent buffering stalls */
 }
 
 .plyr-custom-loader-overlay img,
@@ -3921,17 +3926,6 @@ html.modal-open, body.modal-open {
     width: 100px;
     height: 100px;
     object-fit: contain;
-}
-
-/* Hide raw video/iframe stream during loading to prevent YouTube branding flash */
-.video-dialog .plyr__video-wrapper {
-    opacity: 0 !important;
-    transition: opacity 0.4s ease-in-out !important;
-    background: #000 !important;
-}
-
-.video-dialog .plyr.plyr-visible .plyr__video-wrapper {
-    opacity: 1 !important;
 }
 
 /* Premium glassmorphic maintenance mode lock overlay */
