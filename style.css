@@ -3916,10 +3916,22 @@ html.modal-open, body.modal-open {
     display: flex;
 }
 
+.plyr-custom-loader-overlay img,
 .plyr-custom-loader-overlay video {
-    width: 110px;
-    height: 110px;
+    width: 100px;
+    height: 100px;
     object-fit: contain;
+}
+
+/* Hide raw video/iframe stream during loading to prevent YouTube branding flash */
+.video-dialog .plyr__video-wrapper {
+    opacity: 0 !important;
+    transition: opacity 0.4s ease-in-out !important;
+    background: #000 !important;
+}
+
+.video-dialog .plyr.plyr-visible .plyr__video-wrapper {
+    opacity: 1 !important;
 }
 
 /* Premium glassmorphic maintenance mode lock overlay */

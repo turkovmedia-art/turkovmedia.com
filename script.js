@@ -639,6 +639,11 @@ let clientLogos = [
 // 2. DOM Elements & Initialization
 // ==========================================================================
 document.addEventListener('DOMContentLoaded', () => {
+    // Instant Site Lock cache check (prevents content flash before Firebase loads)
+    if (localStorage.getItem('mendy_portfolio_site_locked') === 'true') {
+        checkSiteLock(true);
+    }
+    
     initializeDatabase();
     initLanguageSwitcher(); // Setup language translations
     initServicesAccordion(); // Setup expanding services slices
@@ -859,89 +864,93 @@ function setupCustomVideoLoader(plyrInstance, container) {
     
     const initLoader = () => {
         const plyrContainer = container.querySelector('.plyr');
-        if (plyrContainer && !plyrContainer.querySelector('.plyr-custom-loader-overlay')) {
-            const loaderOverlay = document.createElement('div');
-            loaderOverlay.className = 'plyr-custom-loader-overlay';
-            loaderOverlay.innerHTML = `<video src="assets/Icone.mov" autoplay loop muted playsinline style="width: 100%; height: 100%; object-fit: contain;"></video>`;
-            plyrContainer.appendChild(loaderOverlay);
+        if (plyrContainer) {
+            // Hide video stream initially to prevent YouTube branding flash
+            plyrContainer.classList.remove('plyr-visible');
             
-            let lastTime = 0;
-            let lastCheck = Date.now();
-            let checkInterval = null;
-            
-            const startChecking = () => {
-                if (checkInterval) clearInterval(checkInterval);
-                lastTime = plyrInstance.currentTime;
-                lastCheck = Date.now();
+            if (!plyrContainer.querySelector('.plyr-custom-loader-overlay')) {
+                const loaderOverlay = document.createElement('div');
+                loaderOverlay.className = 'plyr-custom-loader-overlay';
+                loaderOverlay.innerHTML = `<img src="assets/Icone.gif" alt="Loading..." style="width: 100%; height: 100%; object-fit: contain;">`;
+                plyrContainer.appendChild(loaderOverlay);
                 
-                checkInterval = setInterval(() => {
-                    if (!plyrInstance) {
-                        clearInterval(checkInterval);
-                        return;
-                    }
+                // Show loader initially while video is buffering to play
+                loaderOverlay.classList.add('active');
+                
+                let lastTime = 0;
+                let lastCheck = Date.now();
+                let checkInterval = null;
+                
+                const startChecking = () => {
+                    if (checkInterval) clearInterval(checkInterval);
+                    lastTime = plyrInstance.currentTime;
+                    lastCheck = Date.now();
                     
-                    const curTime = plyrInstance.currentTime;
-                    const now = Date.now();
-                    
-                    if (plyrInstance.playing) {
-                        const timeDiff = curTime - lastTime;
-                        const realDiff = (now - lastCheck) / 1000;
+                    checkInterval = setInterval(() => {
+                        if (!plyrInstance) {
+                            clearInterval(checkInterval);
+                            return;
+                        }
                         
-                        // High-precision micro-buffering: if the video has played less than 5ms
-                        // but real-world elapsed time is more than 40ms, it is stalled/buffering!
-                        if (timeDiff <= 0.005 && realDiff >= 0.04) {
-                            loaderOverlay.classList.add('active');
-                            const v = loaderOverlay.querySelector('video');
-                            if (v && v.paused) v.play().catch(e => {});
+                        const curTime = plyrInstance.currentTime;
+                        const now = Date.now();
+                        
+                        if (plyrInstance.playing) {
+                            const timeDiff = curTime - lastTime;
+                            const realDiff = (now - lastCheck) / 1000;
+                            
+                            // High-precision micro-buffering: if the video has played less than 5ms
+                            // but real-world elapsed time is more than 40ms, it is stalled/buffering!
+                            if (timeDiff <= 0.005 && realDiff >= 0.04) {
+                                loaderOverlay.classList.add('active');
+                            } else {
+                                loaderOverlay.classList.remove('active');
+                            }
                         } else {
                             loaderOverlay.classList.remove('active');
                         }
-                    } else {
-                        loaderOverlay.classList.remove('active');
+                        
+                        lastTime = curTime;
+                        lastCheck = now;
+                    }, 40); // Checked every 40ms for high responsiveness
+                };
+                
+                // Listen to Plyr events for buffering/stalling
+                plyrInstance.on('playing', () => {
+                    // Fade in the video stream and hide loader overlay
+                    plyrContainer.classList.add('plyr-visible');
+                    loaderOverlay.classList.remove('active');
+                    startChecking();
+                });
+                plyrInstance.on('pause', () => {
+                    loaderOverlay.classList.remove('active');
+                    if (checkInterval) {
+                        clearInterval(checkInterval);
+                        checkInterval = null;
                     }
-                    
-                    lastTime = curTime;
-                    lastCheck = now;
-                }, 40); // Checked every 40ms for high responsiveness
-            };
-            
-            // Listen to Plyr events for buffering/stalling
-            plyrInstance.on('playing', () => {
-                loaderOverlay.classList.remove('active');
-                startChecking();
-            });
-            plyrInstance.on('pause', () => {
-                loaderOverlay.classList.remove('active');
-                if (checkInterval) {
-                    clearInterval(checkInterval);
-                    checkInterval = null;
+                });
+                plyrInstance.on('seeking', () => {
+                    loaderOverlay.classList.add('active');
+                });
+                plyrInstance.on('seeked', () => {
+                    loaderOverlay.classList.remove('active');
+                });
+                plyrInstance.on('waiting', () => {
+                    loaderOverlay.classList.add('active');
+                });
+                plyrInstance.on('stalled', () => {
+                    loaderOverlay.classList.add('active');
+                });
+                
+                plyrInstance.on('destroy', () => {
+                    if (checkInterval) clearInterval(checkInterval);
+                });
+                
+                if (plyrInstance.playing) {
+                    plyrContainer.classList.add('plyr-visible');
+                    loaderOverlay.classList.remove('active');
+                    startChecking();
                 }
-            });
-            plyrInstance.on('seeking', () => {
-                loaderOverlay.classList.add('active');
-                const v = loaderOverlay.querySelector('video');
-                if (v && v.paused) v.play().catch(e => {});
-            });
-            plyrInstance.on('seeked', () => {
-                loaderOverlay.classList.remove('active');
-            });
-            plyrInstance.on('waiting', () => {
-                loaderOverlay.classList.add('active');
-                const v = loaderOverlay.querySelector('video');
-                if (v && v.paused) v.play().catch(e => {});
-            });
-            plyrInstance.on('stalled', () => {
-                loaderOverlay.classList.add('active');
-                const v = loaderOverlay.querySelector('video');
-                if (v && v.paused) v.play().catch(e => {});
-            });
-            
-            plyrInstance.on('destroy', () => {
-                if (checkInterval) clearInterval(checkInterval);
-            });
-            
-            if (plyrInstance.playing) {
-                startChecking();
             }
         }
     };
@@ -1602,10 +1611,21 @@ const firebaseConfig = {
 let db = null;
 let isSiteLocked = false;
 
+// Async SHA-256 hashing helper to secure sensitive passcodes from source inspection
+async function hashString(str) {
+    const msgBuffer = new TextEncoder().encode(str);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
 // Check site maintenance mode and render glassmorphic lock screen if active
 function checkSiteLock(maintenanceMode) {
     const bypass = sessionStorage.getItem('mendy_portfolio_bypass_lock') === 'true' || 
                    localStorage.getItem('mendy_portfolio_admin_remembered') === 'true';
+    
+    // Save to local cache so that it loads instantly on next page visit (preventing flash of content)
+    localStorage.setItem('mendy_portfolio_site_locked', maintenanceMode ? 'true' : 'false');
     
     // Update admin panel control elements if they exist
     const lockBtn = document.getElementById('btn-toggle-site-lock');
@@ -1651,8 +1671,11 @@ function checkSiteLock(maintenanceMode) {
             const input = document.getElementById('maintenance-passcode');
             const btn = document.getElementById('btn-submit-passcode');
             
-            const verify = () => {
-                if (input.value.trim() === '327548723') {
+            const verify = async () => {
+                const entered = input.value.trim();
+                const hashed = await hashString(entered);
+                // Compare hashed passcode with the secure SHA-256 representation
+                if (hashed === '832dfc2b5e039f24b37d9e465902406c044166242841b980d6ca6dcd367fbe82') {
                     sessionStorage.setItem('mendy_portfolio_bypass_lock', 'true');
                     document.getElementById('maintenance-lock-screen').remove();
                     document.documentElement.classList.remove('modal-open');
@@ -2772,9 +2795,10 @@ const defaultCategories = ${JSON.stringify(categoriesList, null, 4)};
     const btnToggleSiteLock = document.getElementById('btn-toggle-site-lock');
     if (btnToggleSiteLock) {
         btnToggleSiteLock.addEventListener('click', async () => {
-            const passcode = prompt('אנא הזן קוד סודי (327548723) לנעילה או שחרור של האתר בענן:');
+            const passcode = prompt('אנא הזן את קוד הגישה הסודי לנעילה או שחרור של האתר בענן:');
             if (passcode === null) return; // Cancelled
-            if (passcode !== '327548723') {
+            const hashed = await hashString(passcode.trim());
+            if (hashed !== '832dfc2b5e039f24b37d9e465902406c044166242841b980d6ca6dcd367fbe82') {
                 alert('קוד גישה שגוי! שינוי הסטטוס נדחה.');
                 return;
             }
