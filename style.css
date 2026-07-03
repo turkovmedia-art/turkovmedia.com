@@ -1322,8 +1322,8 @@ html[lang="en"] .slice-btn:hover i {
 }
 
 .play-trigger {
-    width: 140px;
-    height: 140px;
+    width: 180px;
+    height: 180px;
     background: transparent;
     display: flex;
     align-items: center;
@@ -3912,6 +3912,10 @@ html.modal-open, body.modal-open {
     pointer-events: none;
     border-radius: 24px;
     transition: background 0.3s ease;
+}
+
+.plyr-custom-loader-overlay.initial-load {
+    background: #000 !important; /* Solid black background for first load to hide YouTube logo flash */
 }
 
 .plyr-custom-loader-overlay.active {
