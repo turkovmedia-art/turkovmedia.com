@@ -1201,16 +1201,7 @@ html[lang="en"] .slice-btn:hover i {
 }
 
 .portfolio-filters {
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 15px;
-    margin-bottom: 50px;
-    padding: 5px;
-    border-radius: 16px;
-    width: fit-content;
-    margin-left: auto;
-    margin-right: auto;
+    display: none !important; /* Hidden as per request to remove category buttons at the top */
 }
 
 .filter-btn {
@@ -1244,7 +1235,7 @@ html[lang="en"] .slice-btn:hover i {
 .portfolio-grid {
     display: flex;
     flex-direction: column;
-    gap: 45px;
+    gap: 30px; /* Reduced gap between rows */
 }
 
 .portfolio-category-row {
@@ -1252,8 +1243,14 @@ html[lang="en"] .slice-btn:hover i {
     width: 100%;
     display: flex;
     flex-direction: column;
-    gap: 15px;
-    scroll-margin-top: 100px; /* Offset for header when smooth scrolling */
+    gap: 10px; /* Reduced spacing between title and row */
+    scroll-margin-top: 100px;
+    border-bottom: 1.5px solid rgba(255, 255, 255, 0.05); /* Premium glass divider line between rows */
+    padding-bottom: 25px;
+}
+
+.portfolio-category-row:last-child {
+    border-bottom: none; /* No divider line on the last row */
 }
 
 .portfolio-row-title {
@@ -1263,7 +1260,7 @@ html[lang="en"] .slice-btn:hover i {
     font-family: var(--font-hebrew);
     padding-right: 12px;
     border-right: 3px solid var(--accent-cyan);
-    margin-bottom: 5px;
+    margin-bottom: 2px;
     text-align: right;
 }
 
@@ -1271,27 +1268,27 @@ html[lang="en"] .slice-btn:hover i {
     display: flex;
     gap: 20px;
     overflow-x: auto;
+    overflow-y: hidden !important; /* Freeze vertical movement */
     scroll-snap-type: x mandatory;
-    padding: 5px 5px 20px 5px;
-    scrollbar-width: thin;
-    scrollbar-color: rgba(0, 240, 255, 0.25) transparent;
+    
+    /* Full screen edge-to-edge breakout trick */
+    width: 100vw;
+    position: relative;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 10px calc(50vw - 50% + 20px) 15px calc(50vw - 50% + 20px);
+    
+    /* Hide scrollbars for dynamic clean look like Mako/Apple VOD */
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none;  /* IE and Edge */
     scroll-behavior: smooth;
     -webkit-overflow-scrolling: touch;
-    direction: rtl; /* Widescreen sliding goes towards the left in RTL */
+    direction: rtl;
 }
 
+/* Hide scrollbars for webkit (Chrome, Safari, Opera) */
 .portfolio-row-track::-webkit-scrollbar {
-    height: 6px;
-}
-.portfolio-row-track::-webkit-scrollbar-track {
-    background: transparent;
-}
-.portfolio-row-track::-webkit-scrollbar-thumb {
-    background: rgba(0, 240, 255, 0.2);
-    border-radius: 10px;
-}
-.portfolio-row-track::-webkit-scrollbar-thumb:hover {
-    background: var(--accent-cyan);
+    display: none !important;
 }
 
 .portfolio-item {
@@ -1654,6 +1651,19 @@ html[lang="en"] .slice-btn:hover i {
     border-radius: 24px !important;
     overflow: visible;
     outline: none;
+}
+
+/* Elegant vertical player overrides to emulate high-end reels/shorts frame */
+.video-dialog.vertical-player {
+    max-width: 380px !important;
+    width: 85% !important;
+}
+
+.video-dialog.vertical-player .video-container {
+    aspect-ratio: 9 / 16 !important;
+    max-height: 80vh !important;
+    border-radius: 24px !important;
+    overflow: hidden !important;
 }
 
 /* Modal backdrop blur and shading */
