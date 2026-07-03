@@ -1328,12 +1328,12 @@ html[lang="en"] .slice-btn:hover i {
     display: flex;
     align-items: center;
     justify-content: center;
-    transform: scale(0.85);
+    transform: scale(1.35);
     transition: transform 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
 }
 
 .portfolio-item:hover .play-trigger {
-    transform: scale(1.1);
+    transform: scale(1.6);
 }
 
 .portfolio-meta {
