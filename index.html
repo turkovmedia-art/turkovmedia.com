@@ -99,13 +99,24 @@
     <!-- Hero Section -->
     <section id="hero" class="hero-section">
         <!-- Background Video Loop: Desktop -->
-        <video class="hero-video-bg video-desktop" autoplay loop muted playsinline id="heroVideoBgDesktop">
-            <source src="assets/hero-bg-desktop.mp4" type="video/mp4">
-        </video>
+        <video class="hero-video-bg video-desktop" autoplay loop muted playsinline id="heroVideoBgDesktop" preload="none"></video>
         <!-- Background Video Loop: Mobile -->
-        <video class="hero-video-bg video-mobile" autoplay loop muted playsinline id="heroVideoBgMobile">
-            <source src="assets/hero-bg-mobile.mp4" type="video/mp4">
-        </video>
+        <video class="hero-video-bg video-mobile" autoplay loop muted playsinline id="heroVideoBgMobile" preload="none"></video>
+        
+        <script>
+            (function() {
+                var isMobile = window.innerWidth <= 768;
+                var desktopVideo = document.getElementById('heroVideoBgDesktop');
+                var mobileVideo = document.getElementById('heroVideoBgMobile');
+                if (isMobile && mobileVideo) {
+                    mobileVideo.src = 'assets/hero-bg-mobile.mp4';
+                    mobileVideo.preload = 'auto';
+                } else if (desktopVideo) {
+                    desktopVideo.src = 'assets/hero-bg-desktop.mp4';
+                    desktopVideo.preload = 'auto';
+                }
+            })();
+        </script>
         <div class="hero-overlay"></div>
         <div class="hero-container">
             <div class="hero-content">
