@@ -736,6 +736,16 @@ function renderPortfolioGrid(filter = 'all') {
     
     grid.innerHTML = '';
     
+    // Check if the device is a touch screen (mobile) or lacks WebM support
+    const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+    const useWebmHover = !isTouchDevice && (function() {
+        try {
+            return document.createElement('video').canPlayType('video/webm; codecs="vp9, vorbis"') !== '';
+        } catch (e) {
+            return false;
+        }
+    })();
+    
     const filteredProjects = filter === 'all' 
         ? videoProjects 
         : videoProjects.filter(p => p.categories.includes(filter));
@@ -754,7 +764,10 @@ function renderPortfolioGrid(filter = 'all') {
                 <img src="${displayProj.thumbnail}" alt="${displayProj.title}" class="portfolio-thumb" loading="lazy">
                 <div class="portfolio-overlay">
                     <div class="play-trigger">
-                        <video class="hover-logo-video" src="${LOADER_WEBM_BASE64}" muted playsinline style="width: 100%; height: 100%; object-fit: contain; pointer-events: none;"></video>
+                        ${useWebmHover ? 
+                            `<video class="hover-logo-video" src="${LOADER_WEBM_BASE64}" muted playsinline style="width: 100%; height: 100%; object-fit: contain; pointer-events: none;"></video>` :
+                            `<img class="hover-logo-fallback" src="assets/logo-dark-bg.png" style="width: 80%; height: 80%; object-fit: contain; pointer-events: none; filter: brightness(0) invert(1); opacity: 0.95;">`
+                        }
                     </div>
                 </div>
             </div>
@@ -763,45 +776,47 @@ function renderPortfolioGrid(filter = 'all') {
             </div>
         `;
         
-        const video = card.querySelector('.hover-logo-video');
-        let checkInterval = null;
-        
-        card.addEventListener('mouseenter', () => {
-            if (!video) return;
-            if (checkInterval) clearInterval(checkInterval);
+        if (useWebmHover) {
+            const video = card.querySelector('.hover-logo-video');
+            let checkInterval = null;
             
-            // Start from the beginning
-            video.currentTime = 0;
-            video.play().catch(e => {});
+            card.addEventListener('mouseenter', () => {
+                if (!video) return;
+                if (checkInterval) clearInterval(checkInterval);
+                
+                // Start from the beginning
+                video.currentTime = 0;
+                video.play().catch(e => {});
+                
+                // Calculate halfway mark dynamically or fallback to 2.18s
+                const halfTime = video.duration ? (video.duration / 2) : 2.18;
+                checkInterval = setInterval(() => {
+                    if (video.currentTime >= halfTime) {
+                        video.pause();
+                        clearInterval(checkInterval);
+                        checkInterval = null;
+                    }
+                }, 30);
+            });
             
-            // Calculate halfway mark dynamically or fallback to 2.18s
-            const halfTime = video.duration ? (video.duration / 2) : 2.18;
-            checkInterval = setInterval(() => {
-                if (video.currentTime >= halfTime) {
-                    video.pause();
-                    clearInterval(checkInterval);
-                    checkInterval = null;
-                }
-            }, 30);
-        });
-        
-        card.addEventListener('mouseleave', () => {
-            if (!video) return;
-            if (checkInterval) clearInterval(checkInterval);
-            
-            // Play the remaining second half (disappearing animation)
-            video.play().catch(e => {});
-            
-            const fullTime = video.duration ? (video.duration - 0.1) : 4.2;
-            checkInterval = setInterval(() => {
-                if (video.currentTime >= fullTime || video.ended) {
-                    video.pause();
-                    video.currentTime = 0;
-                    clearInterval(checkInterval);
-                    checkInterval = null;
-                }
-            }, 30);
-        });
+            card.addEventListener('mouseleave', () => {
+                if (!video) return;
+                if (checkInterval) clearInterval(checkInterval);
+                
+                // Play the remaining second half (disappearing animation)
+                video.play().catch(e => {});
+                
+                const fullTime = video.duration ? (video.duration - 0.1) : 4.2;
+                checkInterval = setInterval(() => {
+                    if (video.currentTime >= fullTime || video.ended) {
+                        video.pause();
+                        video.currentTime = 0;
+                        clearInterval(checkInterval);
+                        checkInterval = null;
+                    }
+                }, 30);
+            });
+        }
         
         grid.appendChild(card);
         
@@ -956,11 +971,13 @@ function openVideoPlayer(project) {
             aspectRatio = '21 / 9';  // Set container format to widescreen
         }
         
-        let topPercent = '0%';
-        let heightPercent = '100%';
+        let topPercent = '-11.5%';     // Shifts iframe up to fully hide top title bar and channel details (11.5% crop)
+        let heightPercent = '123%';    // Stretches height to hide bottom player bar and logos (123% scale)
         
         if (aspectRatio === '9 / 16') {
             dialog.classList.add('vertical-player');
+            topPercent = '-9%';        // Crop margins tailored for portrait viewport
+            heightPercent = '118%';
         } else {
             dialog.classList.remove('vertical-player');
         }
