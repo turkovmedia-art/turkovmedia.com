@@ -1588,10 +1588,14 @@ html[lang="en"] .slice-btn:hover i {
    11. Native Dialog Video Player Modal (HTML5 Dialog)
    ========================================================================== */
 .video-dialog {
+    position: fixed !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    margin: 0 !important;
     border: none;
     background: transparent;
     padding: 0;
-    margin: auto;
     max-width: 900px; /* Restored to original widescreen max-width */
     max-height: 90vh; /* Restored to original height constraints */
     width: 90%;
@@ -1659,11 +1663,11 @@ html[lang="en"] .slice-btn:hover i {
 @keyframes dialogShow {
     from {
         opacity: 0;
-        transform: scale(0.95) translateY(20px);
+        transform: translate(-50%, -50%) scale(0.95) translateY(20px);
     }
     to {
         opacity: 1;
-        transform: scale(1) translateY(0);
+        transform: translate(-50%, -50%) scale(1) translateY(0);
     }
 }
 
@@ -3903,7 +3907,7 @@ html.modal-open, body.modal-open {
     left: 0;
     width: 100%;
     height: 100%;
-    z-index: 10;
+    z-index: 9999 !important; /* Position above all video streams and Plyr layers */
     background: #000; /* Solid black for initial load to fully hide YouTube logo flash */
     display: none;
     align-items: center;
@@ -3926,6 +3930,14 @@ html.modal-open, body.modal-open {
     width: 100px;
     height: 100px;
     object-fit: contain;
+}
+
+/* Force hide the default circular Plyr loading spinner */
+.plyr__loading,
+.plyr__loading-html {
+    display: none !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
 }
 
 /* Premium glassmorphic maintenance mode lock overlay */
