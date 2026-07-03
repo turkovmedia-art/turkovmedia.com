@@ -956,13 +956,11 @@ function openVideoPlayer(project) {
             aspectRatio = '21 / 9';  // Set container format to widescreen
         }
         
-        let topPercent = '-11.5%';     // Shifts iframe up to fully hide top title bar and channel details (11.5% crop)
-        let heightPercent = '123%';    // Stretches height to hide bottom player bar and logos (123% scale)
+        let topPercent = '0%';
+        let heightPercent = '100%';
         
         if (aspectRatio === '9 / 16') {
             dialog.classList.add('vertical-player');
-            topPercent = '-9%';        // Crop margins tailored for portrait viewport
-            heightPercent = '118%';
         } else {
             dialog.classList.remove('vertical-player');
         }

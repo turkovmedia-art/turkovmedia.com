@@ -104,18 +104,20 @@
         <video class="hero-video-bg video-mobile" autoplay loop muted playsinline id="heroVideoBgMobile" preload="none"></video>
         
         <script>
-            (function() {
+            window.addEventListener('load', function() {
                 var isMobile = window.innerWidth <= 768;
                 var desktopVideo = document.getElementById('heroVideoBgDesktop');
                 var mobileVideo = document.getElementById('heroVideoBgMobile');
                 if (isMobile && mobileVideo) {
                     mobileVideo.src = 'assets/hero-bg-mobile.mp4';
                     mobileVideo.preload = 'auto';
+                    mobileVideo.load();
                 } else if (desktopVideo) {
                     desktopVideo.src = 'assets/hero-bg-desktop.mp4';
                     desktopVideo.preload = 'auto';
+                    desktopVideo.load();
                 }
-            })();
+            });
         </script>
         <div class="hero-overlay"></div>
         <div class="hero-container">
@@ -812,6 +814,6 @@
     <!-- Plyr Video Player library -->
     <script src="https://cdn.plyr.io/3.7.8/plyr.js"></script>
     <script src="data.js"></script>
-    <script src="script.js"></script>
+    <script src="script.js" defer></script>
 </body>
 </html>
