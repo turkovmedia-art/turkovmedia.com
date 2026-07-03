@@ -862,103 +862,101 @@ function getYouTubeId(url) {
 function setupCustomVideoLoader(plyrInstance, container) {
     if (!plyrInstance) return;
     
-    const initLoader = () => {
-        const plyrContainer = container.querySelector('.plyr');
-        if (plyrContainer) {
-            if (!plyrContainer.querySelector('.plyr-custom-loader-overlay')) {
-                const loaderOverlay = document.createElement('div');
-                loaderOverlay.className = 'plyr-custom-loader-overlay';
-                loaderOverlay.innerHTML = `<img src="assets/Icone.gif" alt="Loading..." style="width: 100%; height: 100%; object-fit: contain;">`;
-                plyrContainer.appendChild(loaderOverlay);
-                
-                // Show loader initially while video is buffering to play (starts solid black)
-                loaderOverlay.classList.remove('stalled-state');
-                loaderOverlay.classList.add('active');
-                
-                let lastTime = 0;
-                let lastCheck = Date.now();
-                let checkInterval = null;
-                
-                const startChecking = () => {
-                    if (checkInterval) clearInterval(checkInterval);
-                    lastTime = plyrInstance.currentTime;
-                    lastCheck = Date.now();
-                    
-                    checkInterval = setInterval(() => {
-                        if (!plyrInstance) {
-                            clearInterval(checkInterval);
-                            return;
-                        }
-                        
-                        const curTime = plyrInstance.currentTime;
-                        const now = Date.now();
-                        
-                        if (plyrInstance.playing) {
-                            const timeDiff = curTime - lastTime;
-                            const realDiff = (now - lastCheck) / 1000;
-                            
-                            // High-precision micro-buffering: if the video has played less than 5ms
-                            // but real-world elapsed time is more than 40ms, it is stalled/buffering!
-                            if (timeDiff <= 0.005 && realDiff >= 0.04) {
-                                loaderOverlay.classList.add('active');
-                            } else {
-                                loaderOverlay.classList.remove('active');
-                            }
-                        } else {
-                            loaderOverlay.classList.remove('active');
-                        }
-                        
-                        lastTime = curTime;
-                        lastCheck = now;
-                    }, 40); // Checked every 40ms for high responsiveness
-                };
-                
-                // Listen to Plyr events for buffering/stalling
-                plyrInstance.on('playing', () => {
-                    loaderOverlay.classList.remove('active');
-                    // Add stalled-state so that subsequent stall overlays are semi-transparent
-                    loaderOverlay.classList.add('stalled-state');
-                    startChecking();
-                });
-                plyrInstance.on('pause', () => {
-                    loaderOverlay.classList.remove('active');
-                    if (checkInterval) {
-                        clearInterval(checkInterval);
-                        checkInterval = null;
-                    }
-                });
-                plyrInstance.on('seeking', () => {
-                    loaderOverlay.classList.add('active');
-                });
-                plyrInstance.on('seeked', () => {
-                    loaderOverlay.classList.remove('active');
-                });
-                plyrInstance.on('waiting', () => {
-                    loaderOverlay.classList.add('active');
-                });
-                plyrInstance.on('stalled', () => {
-                    loaderOverlay.classList.add('active');
-                });
-                
-                plyrInstance.on('destroy', () => {
-                    if (checkInterval) clearInterval(checkInterval);
-                });
-                
-                if (plyrInstance.playing) {
-                    loaderOverlay.classList.remove('active');
-                    loaderOverlay.classList.add('stalled-state');
-                    startChecking();
-                }
+    // Create and append loader overlay synchronously to container to ensure immediate display
+    let loaderOverlay = container.querySelector('.plyr-custom-loader-overlay');
+    if (!loaderOverlay) {
+        loaderOverlay = document.createElement('div');
+        loaderOverlay.className = 'plyr-custom-loader-overlay';
+        loaderOverlay.innerHTML = `<img src="assets/Icone.gif" alt="Loading..." style="width: 100%; height: 100%; object-fit: contain;">`;
+        container.appendChild(loaderOverlay);
+    }
+    
+    // Show loader initially while video is buffering to play (starts solid black)
+    loaderOverlay.classList.remove('stalled-state');
+    loaderOverlay.classList.add('active');
+    
+    let lastTime = 0;
+    let lastCheck = Date.now();
+    let checkInterval = null;
+    
+    const startChecking = () => {
+        if (checkInterval) clearInterval(checkInterval);
+        lastTime = plyrInstance.currentTime;
+        lastCheck = Date.now();
+        
+        checkInterval = setInterval(() => {
+            if (!plyrInstance) {
+                clearInterval(checkInterval);
+                return;
             }
+            
+            const curTime = plyrInstance.currentTime;
+            const now = Date.now();
+            
+            if (plyrInstance.playing) {
+                const timeDiff = curTime - lastTime;
+                const realDiff = (now - lastCheck) / 1000;
+                
+                // High-precision micro-buffering: if progress stalled but real time passed
+                if (timeDiff <= 0.005 && realDiff >= 0.04) {
+                    loaderOverlay.classList.add('active');
+                } else {
+                    loaderOverlay.classList.remove('active');
+                }
+            } else {
+                loaderOverlay.classList.remove('active');
+            }
+            
+            lastTime = curTime;
+            lastCheck = now;
+        }, 40); // Checked every 40ms for high responsiveness
+    };
+    
+    const registerListeners = () => {
+        // Listen to Plyr events for buffering/stalling
+        plyrInstance.on('playing', () => {
+            loaderOverlay.classList.remove('active');
+            // Add stalled-state so that subsequent stall overlays are semi-transparent
+            loaderOverlay.classList.add('stalled-state');
+            startChecking();
+        });
+        plyrInstance.on('pause', () => {
+            loaderOverlay.classList.remove('active');
+            if (checkInterval) {
+                clearInterval(checkInterval);
+                checkInterval = null;
+            }
+        });
+        plyrInstance.on('seeking', () => {
+            loaderOverlay.classList.add('active');
+        });
+        plyrInstance.on('seeked', () => {
+            loaderOverlay.classList.remove('active');
+        });
+        plyrInstance.on('waiting', () => {
+            loaderOverlay.classList.add('active');
+        });
+        plyrInstance.on('stalled', () => {
+            loaderOverlay.classList.add('active');
+        });
+        
+        plyrInstance.on('destroy', () => {
+            if (checkInterval) clearInterval(checkInterval);
+        });
+        
+        if (plyrInstance.playing) {
+            loaderOverlay.classList.remove('active');
+            loaderOverlay.classList.add('stalled-state');
+            startChecking();
         }
     };
 
     if (plyrInstance.ready) {
-        initLoader();
+        registerListeners();
     } else {
         plyrInstance.on('ready', () => {
             plyrInstance.play().catch(e => console.log("Auto-play blocked or failed", e));
-            initLoader();
+            registerListeners();
         });
     }
 }
@@ -1623,7 +1621,8 @@ function simpleHash(str) {
 // Check site maintenance mode and render glassmorphic lock screen if active
 function checkSiteLock(maintenanceMode) {
     const bypass = sessionStorage.getItem('mendy_portfolio_bypass_lock') === 'true' || 
-                   localStorage.getItem('mendy_portfolio_admin_remembered') === 'true';
+                   window.location.hash.includes('admin') || 
+                   window.location.hash.includes('manage');
     
     // Save to local cache so that it loads instantly on next page visit (preventing flash of content)
     localStorage.setItem('mendy_portfolio_site_locked', maintenanceMode ? 'true' : 'false');
