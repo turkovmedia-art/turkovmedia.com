@@ -1004,19 +1004,6 @@ function openVideoPlayer(project) {
             clickToPlay: true,
             autoplay: true
         });
-        
-        // Append custom WebM spinner directly to the Plyr container
-        const ytPlayerElement = container.querySelector('.plyr');
-        if (ytPlayerElement && !ytPlayerElement.querySelector('.plyr-custom-spinner')) {
-            const customSpinner = document.createElement('video');
-            customSpinner.className = 'plyr-custom-spinner';
-            customSpinner.src = 'assets/Icone.webm';
-            customSpinner.autoplay = true;
-            customSpinner.loop = true;
-            customSpinner.muted = true;
-            customSpinner.setAttribute('playsinline', '');
-            ytPlayerElement.appendChild(customSpinner);
-        }
     } else {
         // Fallback for non-YouTube files (HTML5 video player via Plyr)
         container.style.aspectRatio = '16 / 9';
@@ -1041,19 +1028,6 @@ function openVideoPlayer(project) {
             clickToPlay: true,
             autoplay: true
         });
-        
-        // Append custom WebM spinner directly to the Plyr container
-        const nativePlayerElement = container.querySelector('.plyr');
-        if (nativePlayerElement && !nativePlayerElement.querySelector('.plyr-custom-spinner')) {
-            const customSpinner = document.createElement('video');
-            customSpinner.className = 'plyr-custom-spinner';
-            customSpinner.src = 'assets/Icone.webm';
-            customSpinner.autoplay = true;
-            customSpinner.loop = true;
-            customSpinner.muted = true;
-            customSpinner.setAttribute('playsinline', '');
-            nativePlayerElement.appendChild(customSpinner);
-        }
     }
     
     dialog.showModal();

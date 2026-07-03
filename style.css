@@ -3897,31 +3897,6 @@ html.modal-open, body.modal-open {
     transform: translate(-50%, -50%) scale(1.08) !important;
 }
 
-/* Hide default Plyr circular loading spinner */
-.plyr__loading,
-.plyr__loading-html {
-    display: none !important;
-}
-
-/* Custom WebM spinner positioned absolutely at the center */
-.plyr-custom-spinner {
-    display: none;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 100px;
-    height: 100px;
-    object-fit: contain;
-    pointer-events: none;
-    z-index: 10;
-}
-
-/* Show our custom WebM spinner when Plyr is in loading state */
-.plyr--loading .plyr-custom-spinner {
-    display: block !important;
-}
-
 
 
 /* Premium glassmorphic maintenance mode lock overlay */
