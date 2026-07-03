@@ -878,6 +878,7 @@ function setupCustomVideoLoader(plyrInstance, container) {
     let lastTime = 0;
     let lastCheck = Date.now();
     let checkInterval = null;
+    let isStalled = false;
     
     const startChecking = () => {
         if (checkInterval) clearInterval(checkInterval);
@@ -893,14 +894,15 @@ function setupCustomVideoLoader(plyrInstance, container) {
             const curTime = plyrInstance.currentTime;
             const now = Date.now();
             
-            if (plyrInstance.playing) {
+            // If the user has not explicitly paused the video, check if it's stalled
+            if (!plyrInstance.paused) {
                 const timeDiff = curTime - lastTime;
                 const realDiff = (now - lastCheck) / 1000;
                 
-                // High-precision micro-buffering: if progress stalled but real time passed
+                // High-precision micro-buffering: progress stalled but real time passed
                 if (timeDiff <= 0.005 && realDiff >= 0.04) {
                     loaderOverlay.classList.add('active');
-                } else {
+                } else if (!isStalled) {
                     loaderOverlay.classList.remove('active');
                 }
             } else {
@@ -915,28 +917,39 @@ function setupCustomVideoLoader(plyrInstance, container) {
     const registerListeners = () => {
         // Listen to Plyr events for buffering/stalling
         plyrInstance.on('playing', () => {
+            isStalled = false;
             loaderOverlay.classList.remove('active');
             // Add stalled-state so that subsequent stall overlays are semi-transparent
             loaderOverlay.classList.add('stalled-state');
             startChecking();
         });
+        
         plyrInstance.on('pause', () => {
+            isStalled = false;
             loaderOverlay.classList.remove('active');
             if (checkInterval) {
                 clearInterval(checkInterval);
                 checkInterval = null;
             }
         });
+        
         plyrInstance.on('seeking', () => {
+            isStalled = true;
             loaderOverlay.classList.add('active');
         });
+        
         plyrInstance.on('seeked', () => {
+            isStalled = false;
             loaderOverlay.classList.remove('active');
         });
+        
         plyrInstance.on('waiting', () => {
+            isStalled = true;
             loaderOverlay.classList.add('active');
         });
+        
         plyrInstance.on('stalled', () => {
+            isStalled = true;
             loaderOverlay.classList.add('active');
         });
         
@@ -945,6 +958,7 @@ function setupCustomVideoLoader(plyrInstance, container) {
         });
         
         if (plyrInstance.playing) {
+            isStalled = false;
             loaderOverlay.classList.remove('active');
             loaderOverlay.classList.add('stalled-state');
             startChecking();
