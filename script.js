@@ -890,72 +890,59 @@ function openVideoPlayer(project) {
             aspectRatio = '21 / 9';  // Set container format to widescreen
         }
         
+        let topPercent = '-11.5%';     // Shifts iframe up to fully hide top title bar and channel details (11.5% crop)
+        let heightPercent = '123%';    // Stretches height to hide bottom player bar and logos (123% scale)
+        
         if (aspectRatio === '9 / 16') {
-            // PORTRAIT VIDEO LAYOUT (SHORTS / REELS) - Clean native iframe bypass to prevent Plyr stretching/letterbox
             dialog.classList.add('vertical-player');
-            container.style.aspectRatio = '9 / 16';
-            container.style.setProperty('--video-top', '-7%');
-            container.style.setProperty('--video-height', '114%');
-            
-            container.innerHTML = `
-                <div class="vertical-youtube-wrapper">
-                    <iframe
-                        src="https://www.youtube.com/embed/${ytId}?autoplay=1&modestbranding=1&rel=0&playsinline=1&showinfo=0&iv_load_policy=3"
-                        allowfullscreen
-                        allowtransparency
-                        allow="autoplay; fullscreen"
-                    ></iframe>
-                </div>
-            `;
+            topPercent = '-9%';        // Crop margins tailored for portrait viewport
+            heightPercent = '118%';
         } else {
-            // WIDESCREEN VIDEO LAYOUT (PLYR ENHANCED)
             dialog.classList.remove('vertical-player');
-            
-            let topPercent = '-9.5%';     // Shifts iframe up to fully hide top title bar and channel details
-            let heightPercent = '119%';  // Stretches height to hide bottom player bar and logos
-            
-            // Allow explicit custom database override parameters
-            if (project.videoTop !== undefined) {
-                topPercent = project.videoTop;
-            }
-            if (project.videoHeight !== undefined) {
-                heightPercent = project.videoHeight;
-            }
-            
-            container.style.aspectRatio = aspectRatio;
-            container.style.setProperty('--video-top', topPercent);
-            container.style.setProperty('--video-height', heightPercent);
-            
-            // Render Plyr video embed wrapper
-            container.innerHTML = `
-                <div class="plyr__video-embed" id="custom-youtube-player" style="width: 100%; height: 100%;">
-                    <iframe
-                        src="https://www.youtube.com/embed/${ytId}?origin=https://plyr.io&iv_load_policy=3&modestbranding=1&playsinline=1&showinfo=0&rel=0&enablejsapi=1"
-                        allowfullscreen
-                        allowtransparency
-                        allow="autoplay; fullscreen"
-                    ></iframe>
-                </div>
-            `;
-            
-            // Initialize Plyr player wrapper
-            plyrInstance = new Plyr('#custom-youtube-player', {
-                controls: [
-                    'play',         // Play/Pause button
-                    'progress',     // Timeline progress slider (drag/click to seek)
-                    'current-time', // Running play time
-                    'mute',         // Mute toggle
-                    'volume',       // Volume bar
-                    'fullscreen'    // Fullscreen toggle button
-                ],
-                clickToPlay: true
-            });
-            
-            // Auto-play the video when Plyr indicates it is ready
-            plyrInstance.on('ready', () => {
-                plyrInstance.play().catch(e => console.log("Auto-play blocked or failed", e));
-            });
         }
+        
+        // Allow explicit custom database override parameters
+        if (project.videoTop !== undefined) {
+            topPercent = project.videoTop;
+        }
+        if (project.videoHeight !== undefined) {
+            heightPercent = project.videoHeight;
+        }
+        
+        container.style.aspectRatio = aspectRatio;
+        container.style.setProperty('--video-top', topPercent);
+        container.style.setProperty('--video-height', heightPercent);
+        
+        // Render Plyr video embed wrapper (used for both vertical and widescreen to preserve navigation)
+        container.innerHTML = `
+            <div class="plyr__video-embed" id="custom-youtube-player" style="width: 100%; height: 100%;">
+                <iframe
+                    src="https://www.youtube.com/embed/${ytId}?origin=https://plyr.io&iv_load_policy=3&modestbranding=1&playsinline=1&showinfo=0&rel=0&enablejsapi=1"
+                    allowfullscreen
+                    allowtransparency
+                    allow="autoplay; fullscreen"
+                ></iframe>
+            </div>
+        `;
+        
+        // Initialize Plyr player wrapper with full custom control bar
+        plyrInstance = new Plyr('#custom-youtube-player', {
+            controls: [
+                'play',         // Play/Pause button
+                'progress',     // Timeline progress slider (drag/click to seek)
+                'current-time', // Running play time
+                'mute',         // Mute toggle
+                'volume',       // Volume bar
+                'fullscreen'    // Fullscreen toggle button
+            ],
+            clickToPlay: true
+        });
+        
+        // Auto-play the video when Plyr indicates it is ready
+        plyrInstance.on('ready', () => {
+            plyrInstance.play().catch(e => console.log("Auto-play blocked or failed", e));
+        });
+    }
         
     } else {
         // Fallback for non-YouTube files (HTML5 video player via Plyr)
