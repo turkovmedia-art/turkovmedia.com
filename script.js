@@ -867,7 +867,12 @@ function setupCustomVideoLoader(plyrInstance, container) {
     if (!loaderOverlay) {
         loaderOverlay = document.createElement('div');
         loaderOverlay.className = 'plyr-custom-loader-overlay';
-        loaderOverlay.innerHTML = `<video src="assets/Icone.mov" autoplay loop muted playsinline style="width: 100%; height: 100%; object-fit: contain;"></video>`;
+        loaderOverlay.innerHTML = `
+            <video autoplay loop muted playsinline style="width: 100%; height: 100%; object-fit: contain;">
+                <source src="assets/Icone.mov" type="video/quicktime">
+                <source src="assets/Icone.mp4" type="video/mp4">
+            </video>
+        `;
         container.appendChild(loaderOverlay);
     }
     
