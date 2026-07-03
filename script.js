@@ -942,8 +942,6 @@ function openVideoPlayer(project) {
         plyrInstance.on('ready', () => {
             plyrInstance.play().catch(e => console.log("Auto-play blocked or failed", e));
         });
-    }
-        
     } else {
         // Fallback for non-YouTube files (HTML5 video player via Plyr)
         container.style.aspectRatio = '16 / 9';
