@@ -3909,7 +3909,7 @@ html.modal-open, body.modal-open {
     width: 100%;
     height: 100%;
     z-index: 9999 !important; /* Position above all video streams and Plyr layers */
-    background: #000; /* Solid black for initial load to fully hide YouTube logo flash */
+    background: transparent !important; /* Completely transparent background to overlay on top of player controls */
     display: none;
     align-items: center;
     justify-content: center;
@@ -3923,7 +3923,7 @@ html.modal-open, body.modal-open {
 }
 
 .plyr-custom-loader-overlay.stalled-state {
-    background: rgba(0, 0, 0, 0.65); /* Semi-transparent for subsequent buffering stalls */
+    background: transparent !important;
 }
 
 .plyr-custom-loader-overlay img,
