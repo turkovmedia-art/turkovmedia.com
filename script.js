@@ -854,6 +854,55 @@ function getYouTubeId(url) {
     return id;
 }
 
+function setupCustomVideoLoader(plyrInstance, container) {
+    if (!plyrInstance) return;
+    
+    const initLoader = () => {
+        const plyrContainer = container.querySelector('.plyr');
+        if (plyrContainer && !plyrContainer.querySelector('.plyr-custom-loader-overlay')) {
+            const loaderOverlay = document.createElement('div');
+            loaderOverlay.className = 'plyr-custom-loader-overlay';
+            loaderOverlay.innerHTML = `<video src="assets/Icone.mov" autoplay loop muted playsinline style="width: 100%; height: 100%; object-fit: contain;"></video>`;
+            plyrContainer.appendChild(loaderOverlay);
+            
+            // Listen to Plyr events for buffering/stalling
+            plyrInstance.on('waiting', () => {
+                loaderOverlay.classList.add('active');
+                const v = loaderOverlay.querySelector('video');
+                if (v && v.paused) v.play().catch(e => {});
+            });
+            plyrInstance.on('stalled', () => {
+                loaderOverlay.classList.add('active');
+                const v = loaderOverlay.querySelector('video');
+                if (v && v.paused) v.play().catch(e => {});
+            });
+            plyrInstance.on('seeking', () => {
+                loaderOverlay.classList.add('active');
+                const v = loaderOverlay.querySelector('video');
+                if (v && v.paused) v.play().catch(e => {});
+            });
+            plyrInstance.on('playing', () => {
+                loaderOverlay.classList.remove('active');
+            });
+            plyrInstance.on('seeked', () => {
+                loaderOverlay.classList.remove('active');
+            });
+            plyrInstance.on('pause', () => {
+                loaderOverlay.classList.remove('active');
+            });
+        }
+    };
+
+    if (plyrInstance.ready) {
+        initLoader();
+    } else {
+        plyrInstance.on('ready', () => {
+            plyrInstance.play().catch(e => console.log("Auto-play blocked or failed", e));
+            initLoader();
+        });
+    }
+}
+
 function openVideoPlayer(project) {
     const dialog = document.getElementById('videoDialog');
     const container = document.getElementById('dialogVideoContainer');
@@ -938,10 +987,7 @@ function openVideoPlayer(project) {
             clickToPlay: true
         });
         
-        // Auto-play the video when Plyr indicates it is ready
-        plyrInstance.on('ready', () => {
-            plyrInstance.play().catch(e => console.log("Auto-play blocked or failed", e));
-        });
+        setupCustomVideoLoader(plyrInstance, container);
     } else {
         // Fallback for non-YouTube files (HTML5 video player via Plyr)
         container.style.aspectRatio = '16 / 9';
@@ -965,6 +1011,8 @@ function openVideoPlayer(project) {
             ],
             clickToPlay: true
         });
+        
+        setupCustomVideoLoader(plyrInstance, container);
     }
     
     dialog.showModal();
@@ -1499,6 +1547,84 @@ const firebaseConfig = {
 };
 
 let db = null;
+let isSiteLocked = false;
+
+// Check site maintenance mode and render glassmorphic lock screen if active
+function checkSiteLock(maintenanceMode) {
+    const bypass = sessionStorage.getItem('mendy_portfolio_bypass_lock') === 'true' || 
+                   localStorage.getItem('mendy_portfolio_admin_remembered') === 'true';
+    
+    // Update admin panel control elements if they exist
+    const lockBtn = document.getElementById('btn-toggle-site-lock');
+    const lockLabel = document.getElementById('site-lock-status-label');
+    if (lockBtn && lockLabel) {
+        if (maintenanceMode) {
+            lockBtn.textContent = 'שחרר אתר (פתיחה לקהל) 🔓';
+            lockBtn.style.background = 'rgba(16, 185, 129, 0.15)';
+            lockBtn.style.borderColor = '#10b981';
+            lockBtn.style.color = '#34d399';
+            lockLabel.textContent = 'האתר נעול לקהל הרחב 🔒';
+            lockLabel.style.color = '#ef4444';
+        } else {
+            lockBtn.textContent = 'נעל אתר (מצב אתר בבנייה) 🔒';
+            lockBtn.style.background = 'rgba(239, 68, 68, 0.15)';
+            lockBtn.style.borderColor = '#ef4444';
+            lockBtn.style.color = '#f87171';
+            lockLabel.textContent = 'האתר פתוח לקהל הרחב 🔓';
+            lockLabel.style.color = '#10b981';
+        }
+    }
+
+    if (maintenanceMode && !bypass) {
+        if (!document.getElementById('maintenance-lock-screen')) {
+            const overlay = document.createElement('div');
+            overlay.id = 'maintenance-lock-screen';
+            overlay.className = 'maintenance-overlay';
+            overlay.innerHTML = `
+                <div class="maintenance-glass">
+                    <img src="assets/logo-original.png" alt="Mendy Turkov Logo" class="maintenance-logo">
+                    <h1 class="maintenance-title">אתר בבנייה</h1>
+                    <p class="maintenance-text">האתר עובר כעת שדרוג ועבודות תחזוקה.<br>נחזור לפעילות מלאה בקרוב מאוד!</p>
+                    <div class="maintenance-input-group">
+                        <input type="password" id="maintenance-passcode" class="maintenance-input" placeholder="הזן קוד גישה">
+                        <button id="btn-submit-passcode" class="maintenance-btn">כניסה לאתר</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(overlay);
+            document.documentElement.classList.add('modal-open');
+            document.body.classList.add('modal-open');
+            
+            const input = document.getElementById('maintenance-passcode');
+            const btn = document.getElementById('btn-submit-passcode');
+            
+            const verify = () => {
+                if (input.value.trim() === '327548723') {
+                    sessionStorage.setItem('mendy_portfolio_bypass_lock', 'true');
+                    document.getElementById('maintenance-lock-screen').remove();
+                    document.documentElement.classList.remove('modal-open');
+                    document.body.classList.remove('modal-open');
+                } else {
+                    alert('קוד גישה שגוי!');
+                    input.value = '';
+                }
+            };
+            
+            btn.addEventListener('click', verify);
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') verify();
+            });
+        }
+    } else {
+        const overlay = document.getElementById('maintenance-lock-screen');
+        if (overlay) {
+            overlay.remove();
+            document.documentElement.classList.remove('modal-open');
+            document.body.classList.remove('modal-open');
+        }
+    }
+}
+
 try {
     if (typeof firebase !== 'undefined') {
         firebase.initializeApp(firebaseConfig);
@@ -1538,6 +1664,10 @@ async function loadDatabaseFromFirestore() {
             if (data.videoProjects) videoProjects = data.videoProjects;
             if (data.clientLogos) clientLogos = data.clientLogos;
             if (data.categoriesList) categoriesList = data.categoriesList;
+            
+            // Site lock configurations
+            isSiteLocked = data.maintenanceMode === true;
+            checkSiteLock(isSiteLocked);
             return true;
         }
     } catch (e) {
@@ -1649,6 +1779,10 @@ async function revalidateDatabaseFromFirestore() {
         const doc = await db.collection("portfolio").doc("data").get();
         if (doc.exists) {
             const data = doc.data();
+            
+            // Background check for site maintenance lock status
+            isSiteLocked = data.maintenanceMode === true;
+            checkSiteLock(isSiteLocked);
             
             // Compare stringified versions to check for changes
             const videosChanged = JSON.stringify(videoProjects) !== JSON.stringify(data.videoProjects);
@@ -2577,6 +2711,42 @@ const defaultCategories = ${JSON.stringify(categoriesList, null, 4)};
             } catch (err) {
                 console.error(err);
                 alert('שגיאה בשחזור הנתונים לענן: ' + err.message);
+            }
+        });
+    }
+
+    // Site Lock Button Listener
+    const btnToggleSiteLock = document.getElementById('btn-toggle-site-lock');
+    if (btnToggleSiteLock) {
+        btnToggleSiteLock.addEventListener('click', async () => {
+            const passcode = prompt('אנא הזן קוד סודי (327548723) לנעילה או שחרור של האתר בענן:');
+            if (passcode === null) return; // Cancelled
+            if (passcode !== '327548723') {
+                alert('קוד גישה שגוי! שינוי הסטטוס נדחה.');
+                return;
+            }
+            
+            try {
+                btnToggleSiteLock.disabled = true;
+                btnToggleSiteLock.textContent = 'מעדכן ענן... ⏳';
+                
+                // Toggle state
+                isSiteLocked = !isSiteLocked;
+                
+                await db.collection("portfolio").doc("data").set({
+                    maintenanceMode: isSiteLocked
+                }, { merge: true });
+                
+                checkSiteLock(isSiteLocked);
+                alert(isSiteLocked ? 'האתר ננעל בהצלחה לענן! 🔒' : 'האתר שוחרר ונפתח בהצלחה לכולם! 🔓');
+            } catch (err) {
+                console.error("Error setting maintenance mode in Firestore:", err);
+                alert("שגיאה בעדכון הסטטוס בענן: " + err.message);
+                // Revert local flag on error
+                isSiteLocked = !isSiteLocked;
+                checkSiteLock(isSiteLocked);
+            } finally {
+                btnToggleSiteLock.disabled = false;
             }
         });
     }
