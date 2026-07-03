@@ -710,56 +710,37 @@ function renderPortfolioGrid(filter = 'all') {
     
     grid.innerHTML = '';
     
-    // Render all categories as horizontal scrolling tracks
-    categoriesList.forEach(cat => {
-        const catProjects = videoProjects.filter(p => p.categories.includes(cat.id));
-        if (catProjects.length === 0) return; // Skip empty categories
+    const filteredProjects = filter === 'all' 
+        ? videoProjects 
+        : videoProjects.filter(p => p.categories.includes(filter));
         
-        const rowDiv = document.createElement('div');
-        rowDiv.className = 'portfolio-category-row scroll-reveal';
-        rowDiv.id = `row-cat-${cat.id}`;
+    filteredProjects.forEach(project => {
+        const displayProj = getTranslatedProject(project);
+
+        const card = document.createElement('div');
+        const isVert = project.aspectRatio === '9 / 16';
+        card.className = `portfolio-item scroll-reveal ${isVert ? 'vertical-card' : ''}`;
+        card.setAttribute('data-id', project.id);
         
-        const titleH3 = document.createElement('h3');
-        titleH3.className = 'portfolio-row-title';
-        titleH3.textContent = getCategoryHebrew(cat.id);
-        rowDiv.appendChild(titleH3);
-        
-        const trackDiv = document.createElement('div');
-        trackDiv.className = 'portfolio-row-track';
-        
-        catProjects.forEach(project => {
-            const displayProj = getTranslatedProject(project);
-            const card = document.createElement('div');
-            
-            // Check if card is configured in portrait (9/16) mode
-            const isVert = project.aspectRatio === '9 / 16';
-            card.className = `portfolio-item scroll-reveal ${isVert ? 'vertical-card' : ''}`;
-            card.setAttribute('data-id', project.id);
-            
-            card.innerHTML = `
-                <div class="portfolio-thumb-box">
-                    <img src="${displayProj.thumbnail}" alt="${displayProj.title}" class="portfolio-thumb" loading="lazy">
-                    <div class="portfolio-overlay">
-                        <div class="play-trigger">
-                            <i class="fa-solid fa-play"></i>
-                        </div>
+        card.innerHTML = `
+            <div class="portfolio-thumb-box">
+                <img src="${displayProj.thumbnail}" alt="${displayProj.title}" class="portfolio-thumb" loading="lazy">
+                <div class="portfolio-overlay">
+                    <div class="play-trigger">
+                        <i class="fa-solid fa-play"></i>
                     </div>
                 </div>
-                <div class="portfolio-meta">
-                    <div class="portfolio-category">${displayProj.categories ? displayProj.categories.map(c => getCategoryHebrew(c)).join(' | ') : ''}</div>
-                    <h3 class="portfolio-item-title">${displayProj.title}</h3>
-                </div>
-            `;
-            
-            card.addEventListener('click', () => {
-                openVideoPlayer(project);
-            });
-            
-            trackDiv.appendChild(card);
-        });
+            </div>
+            <div class="portfolio-meta">
+                <h3 class="portfolio-item-title">${displayProj.title}</h3>
+            </div>
+        `;
         
-        rowDiv.appendChild(trackDiv);
-        grid.appendChild(rowDiv);
+        grid.appendChild(card);
+        
+        card.addEventListener('click', () => {
+            openVideoPlayer(project);
+        });
     });
     
     // Trigger scroll reveal update for newly added elements
@@ -771,7 +752,7 @@ function renderPortfolioGrid(filter = 'all') {
                     entry.target.classList.add('active');
                 }
             });
-        }, { threshold: 0.05 });
+        }, { threshold: 0.15 });
         
         reveals.forEach(el => observer.observe(el));
     }, 50);
@@ -809,18 +790,16 @@ function initPortfolioFilters() {
             
             const filterValue = btn.getAttribute('data-filter');
             
-            if (filterValue === 'all') {
-                const section = document.getElementById('portfolio');
-                if (section) {
-                    section.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                }
-            } else {
-                const row = document.getElementById(`row-cat-${filterValue}`);
-                if (row) {
-                    // Smooth scroll directly to corresponding category row
-                    row.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                }
-            }
+            // Add a beautiful smooth exit transition to grid items before rendering new ones
+            const items = document.querySelectorAll('.portfolio-item');
+            items.forEach(item => {
+                item.style.opacity = '0';
+                item.style.transform = 'translateY(15px)';
+            });
+            
+            setTimeout(() => {
+                renderPortfolioGrid(filterValue);
+            }, 300);
         });
     });
 }

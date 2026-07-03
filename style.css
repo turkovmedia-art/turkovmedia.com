@@ -1201,7 +1201,16 @@ html[lang="en"] .slice-btn:hover i {
 }
 
 .portfolio-filters {
-    display: none !important; /* Hidden as per request to remove category buttons at the top */
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 50px;
+    padding: 5px;
+    border-radius: 16px;
+    width: fit-content;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .filter-btn {
@@ -1233,68 +1242,26 @@ html[lang="en"] .slice-btn:hover i {
 }
 
 .portfolio-grid {
-    display: flex;
-    flex-direction: column;
-    gap: 30px; /* Reduced gap between rows */
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); /* Exactly 4 columns on desktop */
+    gap: 24px;
 }
 
-.portfolio-category-row {
-    position: relative;
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    gap: 10px; /* Reduced spacing between title and row */
-    scroll-margin-top: 100px;
-    border-bottom: 1.5px solid rgba(255, 255, 255, 0.05); /* Premium glass divider line between rows */
-    padding-bottom: 25px;
+@media (max-width: 1200px) {
+    .portfolio-grid {
+        grid-template-columns: repeat(3, 1fr) !important;
+        gap: 20px !important;
+    }
 }
 
-.portfolio-category-row:last-child {
-    border-bottom: none; /* No divider line on the last row */
-}
-
-.portfolio-row-title {
-    font-size: 1.35rem;
-    font-weight: 700;
-    color: #fff;
-    font-family: var(--font-hebrew);
-    padding-right: 12px;
-    border-right: 3px solid var(--accent-cyan);
-    margin-bottom: 2px;
-    text-align: right;
-}
-
-.portfolio-row-track {
-    display: flex;
-    gap: 20px;
-    overflow-x: auto;
-    overflow-y: hidden !important; /* Freeze vertical movement */
-    scroll-snap-type: x mandatory;
-    
-    /* Full screen edge-to-edge breakout trick */
-    width: 100vw;
-    position: relative;
-    left: 50%;
-    transform: translateX(-50%);
-    padding: 10px calc(50vw - 50% + 20px) 15px calc(50vw - 50% + 20px);
-    
-    /* Hide scrollbars for dynamic clean look like Mako/Apple VOD */
-    scrollbar-width: none; /* Firefox */
-    -ms-overflow-style: none;  /* IE and Edge */
-    scroll-behavior: smooth;
-    -webkit-overflow-scrolling: touch;
-    direction: rtl;
-}
-
-/* Hide scrollbars for webkit (Chrome, Safari, Opera) */
-.portfolio-row-track::-webkit-scrollbar {
-    display: none !important;
+@media (max-width: 991px) {
+    .portfolio-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 16px !important;
+    }
 }
 
 .portfolio-item {
-    scroll-snap-align: start;
-    flex: 0 0 auto;
-    width: 320px; /* Standard horizontal landscape card width */
     background: transparent !important;
     border: none !important;
     box-shadow: none !important;
@@ -1305,27 +1272,9 @@ html[lang="en"] .slice-btn:hover i {
     text-align: center;
 }
 
-/* Vertical 9/16 layout card customization */
-.portfolio-item.vertical-card {
-    width: 190px; /* Vertical portrait card is narrower */
-}
+/* Vertical 9/16 layout card customization inside the grid */
 .portfolio-item.vertical-card .portfolio-thumb-box {
     aspect-ratio: 9 / 16 !important;
-}
-
-@media (max-width: 768px) {
-    .portfolio-grid {
-        gap: 30px !important;
-    }
-    .portfolio-item {
-        width: 250px; /* Narrower horizontally on mobile */
-    }
-    .portfolio-item.vertical-card {
-        width: 140px; /* Thinner vertically on mobile */
-    }
-    .portfolio-row-title {
-        font-size: 1.15rem;
-    }
 }
 
 .portfolio-thumb-box {
