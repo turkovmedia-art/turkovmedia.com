@@ -1322,22 +1322,18 @@ html[lang="en"] .slice-btn:hover i {
 }
 
 .play-trigger {
-    width: 55px;
-    height: 55px;
-    border-radius: 50%;
-    background: #fff;
-    color: #000;
+    width: 80px;
+    height: 80px;
+    background: transparent;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.3rem;
-    box-shadow: 0 8px 25px rgba(255, 255, 255, 0.3);
-    transform: scale(0.8);
+    transform: scale(0.85);
     transition: transform 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
 }
 
 .portfolio-item:hover .play-trigger {
-    transform: scale(1);
+    transform: scale(1.05);
 }
 
 .portfolio-meta {
@@ -3933,13 +3929,7 @@ html.modal-open, body.modal-open {
     object-fit: contain;
 }
 
-/* Force hide the default circular Plyr loading spinner */
-.plyr__loading,
-.plyr__loading-html {
-    display: none !important;
-    opacity: 0 !important;
-    visibility: hidden !important;
-}
+
 
 /* Premium glassmorphic maintenance mode lock overlay */
 .maintenance-overlay {

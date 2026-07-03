@@ -733,7 +733,10 @@ function renderPortfolioGrid(filter = 'all') {
                 <img src="${displayProj.thumbnail}" alt="${displayProj.title}" class="portfolio-thumb" loading="lazy">
                 <div class="portfolio-overlay">
                     <div class="play-trigger">
-                        <i class="fa-solid fa-play"></i>
+                        <video class="hover-logo-video" muted playsinline style="width: 80px; height: 80px; object-fit: contain; mix-blend-mode: screen; filter: drop-shadow(0 0 10px rgba(0, 240, 255, 0.45)); pointer-events: none;">
+                            <source src="assets/Icone.mov" type="video/quicktime">
+                            <source src="assets/Icone.mp4" type="video/mp4">
+                        </video>
                     </div>
                 </div>
             </div>
@@ -741,6 +744,46 @@ function renderPortfolioGrid(filter = 'all') {
                 <h3 class="portfolio-item-title">${displayProj.title}</h3>
             </div>
         `;
+        
+        const video = card.querySelector('.hover-logo-video');
+        let checkInterval = null;
+        
+        card.addEventListener('mouseenter', () => {
+            if (!video) return;
+            if (checkInterval) clearInterval(checkInterval);
+            
+            // Start from the beginning
+            video.currentTime = 0;
+            video.play().catch(e => {});
+            
+            // Calculate halfway mark dynamically or fallback to 2.18s
+            const halfTime = video.duration ? (video.duration / 2) : 2.18;
+            checkInterval = setInterval(() => {
+                if (video.currentTime >= halfTime) {
+                    video.pause();
+                    clearInterval(checkInterval);
+                    checkInterval = null;
+                }
+            }, 30);
+        });
+        
+        card.addEventListener('mouseleave', () => {
+            if (!video) return;
+            if (checkInterval) clearInterval(checkInterval);
+            
+            // Play the remaining second half (disappearing animation)
+            video.play().catch(e => {});
+            
+            const fullTime = video.duration ? (video.duration - 0.1) : 4.2;
+            checkInterval = setInterval(() => {
+                if (video.currentTime >= fullTime || video.ended) {
+                    video.pause();
+                    video.currentTime = 0;
+                    clearInterval(checkInterval);
+                    checkInterval = null;
+                }
+            }, 30);
+        });
         
         grid.appendChild(card);
         
@@ -860,136 +903,8 @@ function getYouTubeId(url) {
 }
 
 function setupCustomVideoLoader(plyrInstance, container) {
-    if (!plyrInstance) return;
-    
-    // Create and append loader overlay synchronously to container to ensure immediate display
-    let loaderOverlay = container.querySelector('.plyr-custom-loader-overlay');
-    if (!loaderOverlay) {
-        loaderOverlay = document.createElement('div');
-        loaderOverlay.className = 'plyr-custom-loader-overlay';
-        loaderOverlay.innerHTML = `
-            <video autoplay loop muted playsinline style="width: 100%; height: 100%; object-fit: contain;">
-                <source src="assets/Icone.mov" type="video/quicktime">
-                <source src="assets/Icone.mp4" type="video/mp4">
-            </video>
-        `;
-        container.appendChild(loaderOverlay);
-    }
-    
-    const showLoader = () => {
-        loaderOverlay.classList.add('active');
-        const v = loaderOverlay.querySelector('video');
-        if (v && v.paused) {
-            v.play().catch(e => console.log("Loader autoplay blocked", e));
-        }
-    };
-    
-    const hideLoader = () => {
-        loaderOverlay.classList.remove('active');
-    };
-    
-    // Show loader initially while video is buffering to play (starts solid black)
-    loaderOverlay.classList.remove('stalled-state');
-    showLoader();
-    
-    let lastTime = 0;
-    let lastCheck = Date.now();
-    let checkInterval = null;
-    let isStalled = false;
-    
-    const startChecking = () => {
-        if (checkInterval) clearInterval(checkInterval);
-        lastTime = plyrInstance.currentTime;
-        lastCheck = Date.now();
-        
-        checkInterval = setInterval(() => {
-            if (!plyrInstance) {
-                clearInterval(checkInterval);
-                return;
-            }
-            
-            const curTime = plyrInstance.currentTime;
-            const now = Date.now();
-            
-            // If the user has not explicitly paused the video, check if it's stalled
-            if (!plyrInstance.paused) {
-                const timeDiff = curTime - lastTime;
-                const realDiff = (now - lastCheck) / 1000;
-                
-                // High-precision micro-buffering: progress stalled but real time passed
-                if (timeDiff <= 0.005 && realDiff >= 0.04) {
-                    showLoader();
-                } else if (!isStalled) {
-                    hideLoader();
-                }
-            } else {
-                hideLoader();
-            }
-            
-            lastTime = curTime;
-            lastCheck = now;
-        }, 40); // Checked every 40ms for high responsiveness
-    };
-    
-    const registerListeners = () => {
-        // Listen to Plyr events for buffering/stalling
-        plyrInstance.on('playing', () => {
-            isStalled = false;
-            hideLoader();
-            // Add stalled-state so that subsequent stall overlays are semi-transparent
-            loaderOverlay.classList.add('stalled-state');
-            startChecking();
-        });
-        
-        plyrInstance.on('pause', () => {
-            isStalled = false;
-            hideLoader();
-            if (checkInterval) {
-                clearInterval(checkInterval);
-                checkInterval = null;
-            }
-        });
-        
-        plyrInstance.on('seeking', () => {
-            isStalled = true;
-            showLoader();
-        });
-        
-        plyrInstance.on('seeked', () => {
-            isStalled = false;
-            hideLoader();
-        });
-        
-        plyrInstance.on('waiting', () => {
-            isStalled = true;
-            showLoader();
-        });
-        
-        plyrInstance.on('stalled', () => {
-            isStalled = true;
-            showLoader();
-        });
-        
-        plyrInstance.on('destroy', () => {
-            if (checkInterval) clearInterval(checkInterval);
-        });
-        
-        if (plyrInstance.playing) {
-            isStalled = false;
-            hideLoader();
-            loaderOverlay.classList.add('stalled-state');
-            startChecking();
-        }
-    };
-
-    if (plyrInstance.ready) {
-        registerListeners();
-    } else {
-        plyrInstance.on('ready', () => {
-            plyrInstance.play().catch(e => console.log("Auto-play blocked or failed", e));
-            registerListeners();
-        });
-    }
+    // Disabled per user request - default loading indicator restored
+    return;
 }
 
 function openVideoPlayer(project) {
