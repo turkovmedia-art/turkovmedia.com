@@ -718,7 +718,8 @@ function renderPortfolioGrid(filter = 'all') {
         const displayProj = getTranslatedProject(project);
 
         const card = document.createElement('div');
-        const isVert = project.aspectRatio === '9 / 16';
+        // Apply vertical portrait cards only when a specific category filter is sorted/selected
+        const isVert = filter !== 'all' && project.aspectRatio === '9 / 16';
         card.className = `portfolio-item scroll-reveal ${isVert ? 'vertical-card' : ''}`;
         card.setAttribute('data-id', project.id);
         
@@ -893,17 +894,18 @@ function openVideoPlayer(project) {
             // PORTRAIT VIDEO LAYOUT (SHORTS / REELS) - Clean native iframe bypass to prevent Plyr stretching/letterbox
             dialog.classList.add('vertical-player');
             container.style.aspectRatio = '9 / 16';
-            container.style.setProperty('--video-top', '0%');
-            container.style.setProperty('--video-height', '100%');
+            container.style.setProperty('--video-top', '-7%');
+            container.style.setProperty('--video-height', '114%');
             
             container.innerHTML = `
-                <iframe
-                    src="https://www.youtube.com/embed/${ytId}?autoplay=1&modestbranding=1&rel=0&playsinline=1&showinfo=0&iv_load_policy=3"
-                    allowfullscreen
-                    allowtransparency
-                    allow="autoplay; fullscreen"
-                    style="width: 100%; height: 100%; border: none; border-radius: 24px; display: block;"
-                ></iframe>
+                <div class="vertical-youtube-wrapper">
+                    <iframe
+                        src="https://www.youtube.com/embed/${ytId}?autoplay=1&modestbranding=1&rel=0&playsinline=1&showinfo=0&iv_load_policy=3"
+                        allowfullscreen
+                        allowtransparency
+                        allow="autoplay; fullscreen"
+                    ></iframe>
+                </div>
             `;
         } else {
             // WIDESCREEN VIDEO LAYOUT (PLYR ENHANCED)
@@ -1153,12 +1155,28 @@ function initContactForm() {
         const email = emailEl ? emailEl.value.trim() : '';
         const message = document.getElementById('message').value.trim();
         
-        if (!name || !message) {
-            return; // Browser validation handles required fields, but just in case
+        if (!name || !message || !phone || !email) {
+            alert('אנא מלא את כל שדות החובה בטופס.');
+            return;
         }
         
-        if (!phone && !email) {
-            alert('אנא הזן לפחות פרט קשר אחד: מספר טלפון או כתובת אימייל.');
+        // Strict Validation Checks (Logical Israel-styled names, clean 8+ numbers, valid email extensions)
+        const nameRegex = /^[a-zA-Z\u0590-\u05FF]+[\s]+[a-zA-Z\u0590-\u05FF]+.*$/;
+        if (!nameRegex.test(name)) {
+            alert('אנא הזן שם מלא תקין (שם פרטי ושם משפחה באותיות בלבד).');
+            return;
+        }
+        
+        const phoneClean = phone.replace(/-/g, '');
+        const phoneRegex = /^[0-9]+$/;
+        if (!phoneRegex.test(phoneClean) || phoneClean.length < 8) {
+            alert('אנא הזן מספר טלפון תקין (ספרות בלבד, לפחות 8 ספרות).');
+            return;
+        }
+        
+        const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        if (!emailRegex.test(email)) {
+            alert('אנא הזן כתובת אימייל תקינה עם סיומת (לדוגמה name@example.com).');
             return;
         }
         

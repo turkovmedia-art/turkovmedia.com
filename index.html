@@ -376,17 +376,17 @@
                         
                         <div class="form-group">
                             <label for="name" data-i18n="contact_form_name">שם מלא</label>
-                            <input type="text" id="name" required placeholder="ישראל ישראלי">
+                            <input type="text" id="name" required pattern="^[a-zA-Z\u0590-\u05FF]+[\s]+[a-zA-Z\u0590-\u05FF]+.*$" title="אנא הזן שם פרטי ושם משפחה באותיות בלבד" placeholder="ישראל ישראלי">
                         </div>
                         
                         <div class="form-group">
                             <label for="phone" data-i18n="contact_form_phone">טלפון ליצירת קשר</label>
-                            <input type="tel" id="phone" placeholder="050-1234567">
+                            <input type="tel" id="phone" required pattern="[0-9\-]{8,15}" title="אנא הזן מספר טלפון תקין (ספרות בלבד, לפחות 8 ספרות)" placeholder="050-1234567">
                         </div>
                         
                         <div class="form-group">
                             <label for="email" data-i18n="contact_form_email">כתובת אימייל</label>
-                            <input type="email" id="email" placeholder="name@example.com">
+                            <input type="email" id="email" required pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}" title="אנא הזן כתובת אימייל תקינה עם סיומת (לדוגמה name@example.com)" placeholder="name@example.com">
                         </div>
                         
                         <div class="form-group">
