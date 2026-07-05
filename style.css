@@ -1627,6 +1627,13 @@ html[lang="en"] .slice-btn:hover i {
     left: 0 !important;
 }
 
+.video-dialog:has(.plyr--fullscreen-active) .dialog-content {
+    width: 100% !important;
+    height: 100% !important;
+    border: none !important;
+    border-radius: 0 !important;
+}
+
 .video-dialog:has(.plyr--fullscreen-active) .video-container {
     max-width: 100% !important;
     max-height: 100% !important;
@@ -1634,6 +1641,11 @@ html[lang="en"] .slice-btn:hover i {
     height: 100% !important;
     border-radius: 0 !important;
     aspect-ratio: auto !important;
+}
+
+.video-dialog:has(.plyr--fullscreen-active) .dialog-close,
+.video-dialog:has(.plyr--fullscreen-active) .dialog-info {
+    display: none !important;
 }
 
 /* Elegant vertical player overrides to emulate high-end reels/shorts frame */
@@ -1671,10 +1683,10 @@ html[lang="en"] .slice-btn:hover i {
 /* Iframe stretch cropping to hide YouTube overlays in portrait layout */
 .video-dialog.vertical-player .plyr__video-embed iframe {
     position: absolute !important;
-    top: var(--video-top, -9%) !important;
+    top: var(--video-top, -11.5%) !important;
     left: 0 !important;
     width: 100% !important;
-    height: var(--video-height, 118%) !important;
+    height: var(--video-height, 123%) !important;
     transform: none !important;
 }
 
@@ -1878,11 +1890,28 @@ html[lang="en"] .slice-btn:hover i {
         gap: 20px;
     }
     
+    .header-container {
+        position: relative !important;
+        display: flex !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+    }
+    
+    .mobile-menu-toggle {
+        display: block !important;
+        z-index: 10 !important;
+        margin: 0 !important;
+    }
+    
     .header-cta {
-        display: flex;
-        align-items: center;
-        margin-left: 12px;
-        margin-right: 12px;
+        position: absolute !important;
+        left: 50% !important;
+        top: 50% !important;
+        transform: translate(-50%, -50%) !important;
+        margin: 0 !important;
+        z-index: 10 !important;
+        display: flex !important;
+        align-items: center !important;
     }
     .header-cta .btn {
         display: none !important;
@@ -1945,36 +1974,23 @@ html[lang="en"] .slice-btn:hover i {
     }
     
     .portfolio-filters {
-        display: grid !important;
-        grid-template-columns: repeat(2, 1fr) !important;
-        gap: 8px !important;
+        display: flex !important;
+        flex-wrap: wrap !important;
+        justify-content: center !important;
+        gap: 6px 8px !important;
         width: 100% !important;
-        max-width: 340px !important;
-        margin-left: auto !important;
-        margin-right: auto !important;
-        padding: 10px 5px !important;
+        max-width: 100% !important;
+        padding: 8px 4px !important;
     }
     
     .filter-btn {
-        width: 100% !important;
-        text-align: center !important;
-        padding: 8px 6px !important;
-        font-size: 0.8rem !important;
+        width: auto !important;
+        flex-shrink: 0 !important;
+        padding: 6px 10px !important;
+        font-size: 0.76rem !important;
         border-radius: 8px !important;
-    }
-
-    /* Force exactly 3 rows of filter buttons on mobile */
-    .filter-btn:nth-child(1) {
-        grid-column: span 2 !important;
-    }
-    .filter-btn:nth-child(2) {
-        grid-column: span 2 !important;
-    }
-    .filter-btn:nth-child(3) {
-        grid-column: span 1 !important;
-    }
-    .filter-btn:nth-child(4) {
-        grid-column: span 1 !important;
+        white-space: nowrap !important;
+        margin: 0 !important;
     }
     
     .portfolio-item-title {
@@ -2003,6 +2019,47 @@ html[lang="en"] .slice-btn:hover i {
         height: 28px; /* Slightly smaller height on mobile */
         width: 80px; /* Slightly smaller fixed width on mobile */
         margin: 0 16px; /* Tighter margins on mobile */
+    }
+
+    /* Center contact text and form fields on mobile */
+    .contact-text {
+        text-align: center !important;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+    }
+    
+    .contact-text .section-title {
+        text-align: center !important;
+    }
+    
+    .contact-desc {
+        text-align: center !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+    }
+    
+    .contact-form-box {
+        text-align: center !important;
+        padding: 30px 20px !important;
+    }
+    
+    .contact-form-box .form-title {
+        text-align: center !important;
+    }
+    
+    .form-group {
+        text-align: center !important;
+    }
+    
+    .form-group label {
+        text-align: center !important;
+        display: block !important;
+    }
+    
+    .form-group input, 
+    .form-group textarea {
+        text-align: center !important;
     }
 }
 
@@ -3922,10 +3979,10 @@ html.modal-open, body.modal-open {
 
 .plyr__video-embed iframe {
     position: absolute !important;
-    top: var(--video-top, -9.5%) !important; /* Dynamically offset vertically to hide top title bar */
+    top: var(--video-top, -14%) !important; /* Dynamically offset vertically to hide top title bar */
     left: 0 !important;
     width: 100% !important; /* Preserves 100% horizontal frame with zero side cropping */
-    height: var(--video-height, 119%) !important; /* Stretches height to hide bottom logo/share buttons */
+    height: var(--video-height, 128%) !important; /* Stretches height to hide bottom logo/share buttons */
     transform: none !important;
 }
 

@@ -736,9 +736,8 @@ function renderPortfolioGrid(filter = 'all') {
     
     grid.innerHTML = '';
     
-    // Check if the device is a touch screen (mobile) or lacks WebM support
-    const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-    const useWebmHover = !isTouchDevice && (function() {
+    // Check if browser supports WebM
+    const useWebmHover = (function() {
         try {
             return document.createElement('video').canPlayType('video/webm; codecs="vp9, vorbis"') !== '';
         } catch (e) {
@@ -765,7 +764,7 @@ function renderPortfolioGrid(filter = 'all') {
                 <div class="portfolio-overlay">
                     <div class="play-trigger">
                         ${useWebmHover ? 
-                            `<video class="hover-logo-video" src="${LOADER_WEBM_BASE64}" muted playsinline style="width: 100%; height: 100%; object-fit: contain; pointer-events: none;"></video>` :
+                            `<video class="hover-logo-video" src="assets/Icone.webm" muted playsinline style="width: 100%; height: 100%; object-fit: contain; pointer-events: none; background: transparent;"></video>` :
                             `<img class="hover-logo-fallback" src="assets/logo-dark-bg.png" style="width: 80%; height: 80%; object-fit: contain; pointer-events: none; filter: brightness(0) invert(1); opacity: 0.95;">`
                         }
                     </div>
@@ -779,16 +778,19 @@ function renderPortfolioGrid(filter = 'all') {
         if (useWebmHover) {
             const video = card.querySelector('.hover-logo-video');
             let checkInterval = null;
+            let lastTriggered = 0;
             
-            card.addEventListener('mouseenter', () => {
+            const startHoverAnimation = () => {
+                const now = Date.now();
+                if (now - lastTriggered < 100) return;
+                lastTriggered = now;
+                
                 if (!video) return;
                 if (checkInterval) clearInterval(checkInterval);
                 
-                // Start from the beginning
                 video.currentTime = 0;
                 video.play().catch(e => {});
                 
-                // Calculate halfway mark dynamically or fallback to 2.18s
                 const halfTime = video.duration ? (video.duration / 2) : 2.18;
                 checkInterval = setInterval(() => {
                     if (video.currentTime >= halfTime) {
@@ -797,13 +799,12 @@ function renderPortfolioGrid(filter = 'all') {
                         checkInterval = null;
                     }
                 }, 30);
-            });
+            };
             
-            card.addEventListener('mouseleave', () => {
+            const endHoverAnimation = () => {
                 if (!video) return;
                 if (checkInterval) clearInterval(checkInterval);
                 
-                // Play the remaining second half (disappearing animation)
                 video.play().catch(e => {});
                 
                 const fullTime = video.duration ? (video.duration - 0.1) : 4.2;
@@ -815,7 +816,13 @@ function renderPortfolioGrid(filter = 'all') {
                         checkInterval = null;
                     }
                 }, 30);
-            });
+            };
+            
+            card.addEventListener('mouseenter', startHoverAnimation);
+            card.addEventListener('touchstart', startHoverAnimation, { passive: true });
+            
+            card.addEventListener('mouseleave', endHoverAnimation);
+            card.addEventListener('touchend', endHoverAnimation, { passive: true });
         }
         
         grid.appendChild(card);
@@ -971,13 +978,13 @@ function openVideoPlayer(project) {
             aspectRatio = '21 / 9';  // Set container format to widescreen
         }
         
-        let topPercent = '-11.5%';     // Shifts iframe up to fully hide top title bar and channel details (11.5% crop)
-        let heightPercent = '123%';    // Stretches height to hide bottom player bar and logos (123% scale)
+        let topPercent = '-14%';     // Shifts iframe up to fully hide top title bar and channel details (14% crop)
+        let heightPercent = '128%';    // Stretches height to hide bottom player bar and logos (128% scale)
         
         if (aspectRatio === '9 / 16') {
             dialog.classList.add('vertical-player');
-            topPercent = '-9%';        // Crop margins tailored for portrait viewport
-            heightPercent = '118%';
+            topPercent = '-11.5%';        // Crop margins tailored for portrait viewport
+            heightPercent = '123%';
         } else {
             dialog.classList.remove('vertical-player');
         }
