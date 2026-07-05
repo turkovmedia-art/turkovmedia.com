@@ -1005,7 +1005,7 @@ function openVideoPlayer(project) {
         container.innerHTML = `
             <div class="plyr__video-embed" id="custom-youtube-player" style="width: 100%; height: 100%;">
                 <iframe
-                    src="https://www.youtube.com/embed/${ytId}?origin=${window.location.origin}&iv_load_policy=3&modestbranding=1&controls=1&playsinline=1&showinfo=0&rel=0&enablejsapi=1&autoplay=1"
+                    src="https://www.youtube.com/embed/${ytId}?origin=${window.location.origin}&iv_load_policy=3&modestbranding=1&controls=0&playsinline=1&showinfo=0&rel=0&enablejsapi=1&autoplay=1"
                     allowfullscreen
                     allowtransparency
                     allow="autoplay; fullscreen"
@@ -1025,6 +1025,13 @@ function openVideoPlayer(project) {
             ],
             clickToPlay: true,
             autoplay: true
+        });
+        
+        plyrInstance.on('enterfullscreen', () => {
+            dialog.classList.add('fullscreen-active');
+        });
+        plyrInstance.on('exitfullscreen', () => {
+            dialog.classList.remove('fullscreen-active');
         });
     } else {
         // Fallback for non-YouTube files (HTML5 video player via Plyr)
@@ -1049,6 +1056,13 @@ function openVideoPlayer(project) {
             ],
             clickToPlay: true,
             autoplay: true
+        });
+        
+        plyrInstance.on('enterfullscreen', () => {
+            dialog.classList.add('fullscreen-active');
+        });
+        plyrInstance.on('exitfullscreen', () => {
+            dialog.classList.remove('fullscreen-active');
         });
     }
     
@@ -1078,6 +1092,7 @@ function closeVideoPlayer() {
     // Clear innerHTML to stop video sound playing in background
     container.innerHTML = '';
     dialog.classList.remove('vertical-player');
+    dialog.classList.remove('fullscreen-active');
     dialog.close();
     
     // Remove freeze body scrolling class

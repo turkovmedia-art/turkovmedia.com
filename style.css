@@ -1616,7 +1616,8 @@ html[lang="en"] .slice-btn:hover i {
 }
 
 /* Reset dialog constraints when Plyr player inside is fullscreen active (iOS / mobile Safari support) */
-.video-dialog:has(.plyr--fullscreen-active) {
+.video-dialog:has(.plyr--fullscreen-active),
+.video-dialog.fullscreen-active {
     max-width: 100vw !important;
     max-height: 100vh !important;
     width: 100vw !important;
@@ -1627,14 +1628,16 @@ html[lang="en"] .slice-btn:hover i {
     left: 0 !important;
 }
 
-.video-dialog:has(.plyr--fullscreen-active) .dialog-content {
+.video-dialog:has(.plyr--fullscreen-active) .dialog-content,
+.video-dialog.fullscreen-active .dialog-content {
     width: 100% !important;
     height: 100% !important;
     border: none !important;
     border-radius: 0 !important;
 }
 
-.video-dialog:has(.plyr--fullscreen-active) .video-container {
+.video-dialog:has(.plyr--fullscreen-active) .video-container,
+.video-dialog.fullscreen-active .video-container {
     max-width: 100% !important;
     max-height: 100% !important;
     width: 100% !important;
@@ -1644,7 +1647,9 @@ html[lang="en"] .slice-btn:hover i {
 }
 
 .video-dialog:has(.plyr--fullscreen-active) .dialog-close,
-.video-dialog:has(.plyr--fullscreen-active) .dialog-info {
+.video-dialog:has(.plyr--fullscreen-active) .dialog-info,
+.video-dialog.fullscreen-active .dialog-close,
+.video-dialog.fullscreen-active .dialog-info {
     display: none !important;
 }
 
