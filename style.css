@@ -1891,30 +1891,37 @@ html[lang="en"] .slice-btn:hover i {
     }
     
     .header-container {
-        position: relative !important;
         display: flex !important;
         justify-content: space-between !important;
         align-items: center !important;
+        padding: 10px 16px !important;
+    }
+    
+    .logo {
+        order: 1 !important;
+        flex-shrink: 0 !important;
+    }
+    
+    .header-cta {
+        position: static !important;
+        transform: none !important;
+        margin: 0 10px !important;
+        z-index: 10 !important;
+        display: flex !important;
+        align-items: center !important;
+        flex-shrink: 0 !important;
+        order: 2 !important;
+    }
+    .header-cta .btn {
+        display: none !important;
     }
     
     .mobile-menu-toggle {
         display: block !important;
         z-index: 10 !important;
         margin: 0 !important;
-    }
-    
-    .header-cta {
-        position: absolute !important;
-        left: 50% !important;
-        top: 50% !important;
-        transform: translate(-50%, -50%) !important;
-        margin: 0 !important;
-        z-index: 10 !important;
-        display: flex !important;
-        align-items: center !important;
-    }
-    .header-cta .btn {
-        display: none !important;
+        order: 3 !important;
+        flex-shrink: 0 !important;
     }
     
     /* Layout structure change */
@@ -2021,15 +2028,20 @@ html[lang="en"] .slice-btn:hover i {
         margin: 0 16px; /* Tighter margins on mobile */
     }
 
+    /* Reduce margins between headers and category buttons on mobile */
+    .section-header {
+        margin-bottom: 25px !important;
+    }
+
     /* Center contact text and form fields on mobile */
-    .contact-text {
+    .contact-info {
         text-align: center !important;
         display: flex !important;
         flex-direction: column !important;
         align-items: center !important;
     }
     
-    .contact-text .section-title {
+    .contact-info .section-title {
         text-align: center !important;
     }
     
@@ -2037,6 +2049,17 @@ html[lang="en"] .slice-btn:hover i {
         text-align: center !important;
         margin-left: auto !important;
         margin-right: auto !important;
+    }
+    
+    /* Fullscreen player browser viewport stretch overrides */
+    .plyr:fullscreen,
+    .plyr:-webkit-full-screen,
+    .video-container:fullscreen,
+    .video-container :-webkit-full-screen {
+        width: 100vw !important;
+        height: 100vh !important;
+        max-width: 100vw !important;
+        max-height: 100vh !important;
     }
     
     .contact-form-box {
