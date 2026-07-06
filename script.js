@@ -736,12 +736,11 @@ function renderPortfolioGrid(filter = 'all') {
     
     grid.innerHTML = '';
     
-    // Check if the device is a touch screen (mobile) or supports WebM/MP4 video formats
+    // Check if the device is a touch screen (mobile) or supports transparent WebM video format
     const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-    const useVideoHover = !isTouchDevice && (function() {
+    const useWebmHover = !isTouchDevice && (function() {
         try {
-            const v = document.createElement('video');
-            return v.canPlayType('video/webm') !== '' || v.canPlayType('video/mp4') !== '';
+            return document.createElement('video').canPlayType('video/webm') !== '';
         } catch (e) {
             return false;
         }
@@ -765,10 +764,9 @@ function renderPortfolioGrid(filter = 'all') {
                 <img src="${displayProj.thumbnail}" alt="${displayProj.title}" class="portfolio-thumb" loading="lazy">
                 <div class="portfolio-overlay">
                     <div class="play-trigger">
-                        ${useVideoHover ? `
+                        ${useWebmHover ? `
                             <video class="hover-logo-video" muted playsinline preload="auto" style="width: 100%; height: 100%; object-fit: contain; pointer-events: none;">
                                 <source src="assets/Icone.webm" type="video/webm">
-                                <source src="assets/Icone.mp4" type="video/mp4">
                             </video>
                         ` : `
                             <div class="hover-logo-fallback-circle" style="
@@ -794,7 +792,7 @@ function renderPortfolioGrid(filter = 'all') {
             </div>
         `;
         
-        if (useVideoHover) {
+        if (useWebmHover) {
             const video = card.querySelector('.hover-logo-video');
             let checkInterval = null;
             
