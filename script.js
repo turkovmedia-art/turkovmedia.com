@@ -767,7 +767,7 @@ function renderPortfolioGrid(filter = 'all') {
                     <div class="play-trigger">
                         ${useVideoHover ? `
                             <video class="hover-logo-video" muted playsinline preload="auto" style="width: 100%; height: 100%; object-fit: contain; pointer-events: none;">
-                                <source src="${LOADER_WEBM_BASE64}" type="video/webm">
+                                <source src="assets/Icone.webm" type="video/webm">
                                 <source src="assets/Icone.mp4" type="video/mp4">
                             </video>
                         ` : `
