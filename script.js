@@ -1010,6 +1010,7 @@ function openVideoPlayer(project) {
                     allowfullscreen
                     allowtransparency
                     allow="autoplay; fullscreen"
+                    style="opacity: 1 !important;"
                 ></iframe>
             </div>
         `;

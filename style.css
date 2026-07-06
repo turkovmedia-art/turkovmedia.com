@@ -4030,12 +4030,6 @@ html.modal-open, body.modal-open {
     height: var(--video-height, 128%) !important; /* Stretches height to hide bottom logo/share buttons */
     min-height: var(--video-height, 128%) !important; /* Forces iOS Safari to stretch external iframe height */
     transform: none !important;
-    opacity: 0;
-    transition: opacity 0.35s ease-in-out !important;
-}
-
-/* Fade in the iframe only when Plyr is fully ready and initialized, hiding loading flashes */
-.plyr--ready .plyr__video-embed iframe {
     opacity: 1 !important;
 }
 
