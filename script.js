@@ -754,8 +754,10 @@ function renderPortfolioGrid(filter = 'all') {
         const displayProj = getTranslatedProject(project);
 
         const card = document.createElement('div');
-        // Apply vertical portrait cards only when a specific category filter is sorted/selected
-        const isVert = filter !== 'all' && project.aspectRatio === '9 / 16';
+        // Apply vertical portrait cards only when a specific category filter is sorted/selected AND the category allows vertical formats
+        const currentCategory = categoriesList.find(c => c.id === filter);
+        const catSupportsVertical = !currentCategory || currentCategory.allowVertical !== false;
+        const isVert = filter !== 'all' && project.aspectRatio === '9 / 16' && catSupportsVertical;
         card.className = `portfolio-item scroll-reveal ${isVert ? 'vertical-card' : ''}`;
         card.setAttribute('data-id', project.id);
         
@@ -2526,7 +2528,11 @@ function initAdminPanel() {
                 <button class="cat-delete-btn" aria-label="מחק קטגוריה" onclick="deleteCategoryItem('${cat.id}')">
                     <i class="fa-regular fa-trash-can"></i>
                 </button>
-                <div class="cat-info">${cat.name}</div>
+                <div class="cat-info" style="flex-grow: 1;">${cat.name}</div>
+                <div class="cat-vertical-toggle" style="display: flex; align-items: center; gap: 6px; margin: 0 15px; font-size: 0.85rem; color: var(--text-muted);">
+                    <input type="checkbox" id="allow-vert-${cat.id}" ${cat.allowVertical !== false ? 'checked' : ''} onchange="toggleCategoryVertical('${cat.id}', this.checked)" style="width: auto; margin: 0; cursor: pointer;">
+                    <label for="allow-vert-${cat.id}" style="margin: 0; cursor: pointer; user-select: none;">סרטון עומד</label>
+                </div>
                 <div class="cat-drag-handle" style="cursor: grab; color: rgba(255,255,255,0.3); padding: 5px 10px; display: flex; align-items: center; justify-content: center;">
                     <i class="fa-solid fa-grip-vertical"></i>
                 </div>
@@ -2540,12 +2546,16 @@ function initAdminPanel() {
         const name = categoryNameField.value.trim();
         if (!name) return;
         
+        const allowVerticalCheckbox = document.getElementById('admin-category-allow-vertical');
+        const allowVertical = allowVerticalCheckbox ? allowVerticalCheckbox.checked : true;
+        
         // Generate safe unique key
         const newKey = `cat_${Date.now()}`;
         
         const newCat = {
             id: newKey,
-            name: name
+            name: name,
+            allowVertical: allowVertical
         };
         
         categoriesList.push(newCat);
@@ -2557,6 +2567,17 @@ function initAdminPanel() {
         renderCategoryFilters();
         alert('הקטגוריה נוספה בהצלחה!');
     });
+    
+    // Toggle allowVertical property on category
+    window.toggleCategoryVertical = function(id, isChecked) {
+        const cat = categoriesList.find(c => c.id === id);
+        if (cat) {
+            cat.allowVertical = isChecked;
+            syncChanges();
+            renderCategoryFilters();
+            renderPortfolioGrid('all');
+        }
+    };
     
     // Expose delete category globally
     window.deleteCategoryItem = function(id) {
