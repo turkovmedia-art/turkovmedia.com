@@ -1018,9 +1018,27 @@ function openVideoPlayer(project) {
                 top: 0; left: 0; width: 100%; height: 100%;
                 background: url('${project.image}') center center / cover no-repeat;
                 z-index: 5;
-                pointer-events: none;
+                cursor: pointer;
                 transition: opacity 0.4s ease-in-out;
-            "></div>
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            ">
+                <!-- Golden premium pulsing play icon -->
+                <div class="custom-pulse-play-btn" style="
+                    width: 76px;
+                    height: 76px;
+                    background: rgba(212, 175, 55, 0.9);
+                    border-radius: 50%;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    box-shadow: 0 0 25px rgba(212, 175, 55, 0.7);
+                    transition: transform 0.2s ease, background-color 0.2s ease;
+                ">
+                    <i class="fas fa-play" style="color: #000; font-size: 26px; margin-left: 6px;"></i>
+                </div>
+            </div>
         `;
         
         // Initialize Plyr player wrapper with full custom control bar
@@ -1038,7 +1056,12 @@ function openVideoPlayer(project) {
             playsinline: true
         });
         
+        let safetyTimeout = null;
         const fadeOutPoster = () => {
+            if (safetyTimeout) {
+                clearTimeout(safetyTimeout);
+                safetyTimeout = null;
+            }
             const poster = document.getElementById('player-poster-overlay');
             if (poster) {
                 poster.style.opacity = '0';
@@ -1051,18 +1074,28 @@ function openVideoPlayer(project) {
             container.classList.add('video-has-played');
         };
         
-        // Listen to iframe load event to remove the cover poster overlay as fast as possible
-        const iframe = container.querySelector('iframe');
-        if (iframe) {
-            iframe.addEventListener('load', () => {
-                setTimeout(fadeOutPoster, 300);
+        // Bind click on the poster cover to play the video instantly
+        const posterOverlay = document.getElementById('player-poster-overlay');
+        if (posterOverlay) {
+            posterOverlay.addEventListener('click', (e) => {
+                e.stopPropagation();
+                plyrInstance.play();
             });
         }
         
-        plyrInstance.on('play', fadeOutPoster);
+        // Fade out poster cover only when video starts playing to avoid showing YouTube loading screen / red play button
+        plyrInstance.on('playing', fadeOutPoster);
+        plyrInstance.on('timeupdate', () => {
+            if (plyrInstance.currentTime > 0) {
+                fadeOutPoster();
+            }
+        });
+        
+        // Safety fallback timeout to fade out poster after 3.5 seconds
+        safetyTimeout = setTimeout(fadeOutPoster, 3500);
         
         plyrInstance.on('ready', () => {
-            // Once Plyr API is ready, try to restore sound (since it started as mute=1 to guarantee autoplay)
+            // Once Plyr API is ready, try to play with sound
             plyrInstance.muted = false;
             plyrInstance.play().catch(() => {
                 plyrInstance.muted = true;
@@ -1091,9 +1124,27 @@ function openVideoPlayer(project) {
                 top: 0; left: 0; width: 100%; height: 100%;
                 background: url('${project.image}') center center / cover no-repeat;
                 z-index: 5;
-                pointer-events: none;
+                cursor: pointer;
                 transition: opacity 0.4s ease-in-out;
-            "></div>
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            ">
+                <!-- Golden premium pulsing play icon -->
+                <div class="custom-pulse-play-btn" style="
+                    width: 76px;
+                    height: 76px;
+                    background: rgba(212, 175, 55, 0.9);
+                    border-radius: 50%;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    box-shadow: 0 0 25px rgba(212, 175, 55, 0.7);
+                    transition: transform 0.2s ease, background-color 0.2s ease;
+                ">
+                    <i class="fas fa-play" style="color: #000; font-size: 26px; margin-left: 6px;"></i>
+                </div>
+            </div>
         `;
         
         plyrInstance = new Plyr('#custom-native-player', {
@@ -1110,7 +1161,12 @@ function openVideoPlayer(project) {
             playsinline: true
         });
         
+        let safetyTimeout = null;
         const fadeOutPoster = () => {
+            if (safetyTimeout) {
+                clearTimeout(safetyTimeout);
+                safetyTimeout = null;
+            }
             const poster = document.getElementById('player-poster-overlay');
             if (poster) {
                 poster.style.opacity = '0';
@@ -1123,14 +1179,25 @@ function openVideoPlayer(project) {
             container.classList.add('video-has-played');
         };
         
-        const videoElement = container.querySelector('video');
-        if (videoElement) {
-            videoElement.addEventListener('loadeddata', () => {
-                setTimeout(fadeOutPoster, 300);
+        // Bind click on the poster cover to play the video instantly
+        const posterOverlay = document.getElementById('player-poster-overlay');
+        if (posterOverlay) {
+            posterOverlay.addEventListener('click', (e) => {
+                e.stopPropagation();
+                plyrInstance.play();
             });
         }
         
-        plyrInstance.on('play', fadeOutPoster);
+        // Fade out poster cover only when video starts playing to avoid showing loading screen
+        plyrInstance.on('playing', fadeOutPoster);
+        plyrInstance.on('timeupdate', () => {
+            if (plyrInstance.currentTime > 0) {
+                fadeOutPoster();
+            }
+        });
+        
+        // Safety fallback timeout to fade out poster after 3.5 seconds
+        safetyTimeout = setTimeout(fadeOutPoster, 3500);
         
         plyrInstance.on('ready', () => {
             plyrInstance.play().catch(() => {
