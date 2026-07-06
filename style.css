@@ -2091,6 +2091,20 @@ html[lang="en"] .slice-btn:hover i {
     .form-group textarea {
         text-align: center !important;
     }
+
+    /* Disable direct pointer events to YouTube iframe to prevent native play/pause overlay trigger on iOS/Android */
+    .plyr__video-embed iframe {
+        pointer-events: none !important;
+    }
+    
+    /* Ensure the Plyr control bar and overlay play wrapper remain responsive and clickable */
+    .plyr__video-wrapper {
+        pointer-events: auto !important;
+    }
+    
+    .plyr__controls {
+        pointer-events: auto !important;
+    }
 }
 
 
