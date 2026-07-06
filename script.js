@@ -978,13 +978,13 @@ function openVideoPlayer(project) {
             aspectRatio = '21 / 9';  // Set container format to widescreen
         }
         
-        let topPercent = '-18.5%';     // Shifts iframe up to fully hide top title bar and channel details (18.5% crop)
-        let heightPercent = '137%';    // Stretches height to hide bottom player bar and logos (137% scale)
+        let topPercent = '-23.5%';     // Shifts iframe up to fully hide top title bar and channel details (23.5% crop)
+        let heightPercent = '147%';    // Stretches height to hide bottom player bar and logos (147% scale)
         
         if (aspectRatio === '9 / 16') {
             dialog.classList.add('vertical-player');
-            topPercent = '-14%';        // Crop margins tailored for portrait viewport
-            heightPercent = '128%';
+            topPercent = '-17.5%';        // Crop margins tailored for portrait viewport
+            heightPercent = '135%';
         } else {
             dialog.classList.remove('vertical-player');
         }
