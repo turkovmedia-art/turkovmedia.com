@@ -1850,9 +1850,49 @@ html[lang="en"] .slice-btn:hover i {
         border-bottom: none !important;
     }
 
-    /* Navigation Menu Toggle for Mobile */
+    .header-container {
+        display: flex !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+        position: relative !important;
+        padding: 10px 15px !important;
+    }
+    
+    .logo {
+        order: 1 !important;
+        flex: 1 1 0% !important;
+        display: flex !important;
+        justify-content: flex-start !important;
+    }
+    
+    /* Center the switcher */
+    .header-cta {
+        order: 2 !important;
+        flex: 0 0 auto !important;
+        display: flex !important;
+        justify-content: center !important;
+        align-items: center !important;
+        margin: 0 !important;
+        position: absolute !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+    }
+    
+    .header-cta .btn {
+        display: none !important;
+    }
+    
     .mobile-menu-toggle {
-        display: block;
+        display: flex !important;
+        order: 3 !important;
+        flex: 1 1 0% !important;
+        justify-content: flex-end !important;
+        margin: 0 !important;
+        background: none;
+        border: none;
+        color: var(--text-light);
+        font-size: 1.5rem;
+        cursor: pointer;
     }
     
     .nav-menu {
@@ -1876,16 +1916,6 @@ html[lang="en"] .slice-btn:hover i {
         flex-direction: column;
         align-items: center;
         gap: 20px;
-    }
-    
-    .header-cta {
-        display: flex;
-        align-items: center;
-        margin-left: 12px;
-        margin-right: 12px;
-    }
-    .header-cta .btn {
-        display: none !important;
     }
     
     /* Layout structure change */

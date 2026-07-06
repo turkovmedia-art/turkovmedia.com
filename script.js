@@ -901,10 +901,13 @@ function initVideoModal() {
     
     // Close dialog when clicking outside the content area (on the backdrop)
     dialog.addEventListener('click', (e) => {
-        const rect = dialog.getBoundingClientRect();
-        const isInDialog = (rect.top <= e.clientY && e.clientY <= rect.top + rect.height &&
-          rect.left <= e.clientX && e.clientX <= rect.left + rect.width);
-        if (!isInDialog) {
+        // If the browser is in fullscreen mode, do not close the player
+        if (document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement) {
+            return;
+        }
+        
+        // e.target === dialog ensures the click was directly on the dialog backdrop
+        if (e.target === dialog) {
             closeVideoPlayer();
         }
     });
