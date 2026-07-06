@@ -1029,6 +1029,17 @@ function openVideoPlayer(project) {
             autoplay: true
         });
         
+        plyrInstance.on('play', () => {
+            container.classList.add('video-has-played');
+        });
+        
+        plyrInstance.on('ready', () => {
+            plyrInstance.play().catch(() => {
+                plyrInstance.muted = true;
+                plyrInstance.play();
+            });
+        });
+        
         plyrInstance.on('enterfullscreen', () => {
             dialog.classList.add('fullscreen-active');
         });
@@ -1058,6 +1069,17 @@ function openVideoPlayer(project) {
             ],
             clickToPlay: true,
             autoplay: true
+        });
+        
+        plyrInstance.on('play', () => {
+            container.classList.add('video-has-played');
+        });
+        
+        plyrInstance.on('ready', () => {
+            plyrInstance.play().catch(() => {
+                plyrInstance.muted = true;
+                plyrInstance.play();
+            });
         });
         
         plyrInstance.on('enterfullscreen', () => {

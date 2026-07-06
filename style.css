@@ -1773,6 +1773,8 @@ html[lang="en"] .slice-btn:hover i {
     min-height: var(--video-height, 100%) !important;
     border: none !important;
     transform: none !important;
+    opacity: 0 !important;
+    transition: opacity 0.3s ease-in-out !important;
 }
 
 .video-container video {
@@ -4033,6 +4035,13 @@ html.modal-open, body.modal-open {
     height: var(--video-height, 147%) !important; /* Stretches height to hide bottom logo/share buttons */
     min-height: var(--video-height, 147%) !important; /* Forces iOS Safari to stretch external iframe height */
     transform: none !important;
+    opacity: 0 !important; /* Start completely hidden to block initial YouTube poster / watermark flash */
+    transition: opacity 0.3s ease-in-out !important;
+}
+
+/* Fade in the iframe only when playback starts and offsets are fully stable */
+.video-container.video-has-played iframe,
+.video-container.video-has-played .plyr__video-embed iframe {
     opacity: 1 !important;
 }
 
