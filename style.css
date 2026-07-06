@@ -1691,7 +1691,9 @@ html[lang="en"] .slice-btn:hover i {
     top: var(--video-top, -11.5%) !important;
     left: 0 !important;
     width: 100% !important;
+    min-width: 100% !important;
     height: var(--video-height, 123%) !important;
+    min-height: var(--video-height, 123%) !important; /* Forces iOS Safari to stretch portrait iframe height */
     transform: none !important;
 }
 
@@ -4010,7 +4012,9 @@ html.modal-open, body.modal-open {
     top: var(--video-top, -14%) !important; /* Dynamically offset vertically to hide top title bar */
     left: 0 !important;
     width: 100% !important; /* Preserves 100% horizontal frame with zero side cropping */
+    min-width: 100% !important;
     height: var(--video-height, 128%) !important; /* Stretches height to hide bottom logo/share buttons */
+    min-height: var(--video-height, 128%) !important; /* Forces iOS Safari to stretch external iframe height */
     transform: none !important;
 }
 
