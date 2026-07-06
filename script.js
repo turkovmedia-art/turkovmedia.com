@@ -736,11 +736,12 @@ function renderPortfolioGrid(filter = 'all') {
     
     grid.innerHTML = '';
     
-    // Check if the device is a touch screen (mobile) or lacks WebM support
+    // Check if the device is a touch screen (mobile) or supports WebM/MP4 video formats
     const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-    const useWebmHover = !isTouchDevice && (function() {
+    const useVideoHover = !isTouchDevice && (function() {
         try {
-            return document.createElement('video').canPlayType('video/webm; codecs="vp9, vorbis"') !== '';
+            const v = document.createElement('video');
+            return v.canPlayType('video/webm') !== '' || v.canPlayType('video/mp4') !== '';
         } catch (e) {
             return false;
         }
@@ -764,10 +765,27 @@ function renderPortfolioGrid(filter = 'all') {
                 <img src="${displayProj.thumbnail}" alt="${displayProj.title}" class="portfolio-thumb" loading="lazy">
                 <div class="portfolio-overlay">
                     <div class="play-trigger">
-                        ${useWebmHover ? 
-                            `<video class="hover-logo-video" src="${LOADER_WEBM_BASE64}" muted playsinline style="width: 100%; height: 100%; object-fit: contain; pointer-events: none;"></video>` :
-                            `<img class="hover-logo-fallback" src="assets/logo-dark-bg.png" style="width: 80%; height: 80%; object-fit: contain; pointer-events: none; filter: brightness(0) invert(1); opacity: 0.95;">`
-                        }
+                        ${useVideoHover ? `
+                            <video class="hover-logo-video" muted playsinline preload="auto" style="width: 100%; height: 100%; object-fit: contain; pointer-events: none;">
+                                <source src="${LOADER_WEBM_BASE64}" type="video/webm">
+                                <source src="assets/Icone.mp4" type="video/mp4">
+                            </video>
+                        ` : `
+                            <div class="hover-logo-fallback-circle" style="
+                                width: 55px;
+                                height: 55px;
+                                border: 2px solid rgba(255, 255, 255, 0.9);
+                                border-radius: 50%;
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                                background: rgba(0, 0, 0, 0.55);
+                                backdrop-filter: blur(4px);
+                                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+                            ">
+                                <i class="fa-solid fa-play" style="color: #ffffff; font-size: 18px; margin-left: 3px;"></i>
+                            </div>
+                        `}
                     </div>
                 </div>
             </div>
@@ -776,7 +794,7 @@ function renderPortfolioGrid(filter = 'all') {
             </div>
         `;
         
-        if (useWebmHover) {
+        if (useVideoHover) {
             const video = card.querySelector('.hover-logo-video');
             let checkInterval = null;
             
