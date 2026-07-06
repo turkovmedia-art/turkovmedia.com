@@ -1005,7 +1005,7 @@ function openVideoPlayer(project) {
         container.innerHTML = `
             <div class="plyr__video-embed" id="custom-youtube-player" style="width: 100%; height: 100%;">
                 <iframe
-                    src="https://www.youtube.com/embed/${ytId}?origin=${window.location.origin}&iv_load_policy=3&modestbranding=1&controls=0&playsinline=1&showinfo=0&rel=0&enablejsapi=1&autoplay=1"
+                    src="https://www.youtube.com/embed/${ytId}?origin=${window.location.origin}&iv_load_policy=3&modestbranding=1&controls=0&playsinline=1&showinfo=0&rel=0&enablejsapi=1&autoplay=1&mute=1"
                     scrolling="no"
                     allowfullscreen
                     allowtransparency
@@ -1034,19 +1034,36 @@ function openVideoPlayer(project) {
                 'fullscreen'    // Fullscreen toggle button
             ],
             clickToPlay: true,
-            autoplay: true
+            autoplay: true,
+            playsinline: true
         });
         
-        plyrInstance.on('play', () => {
+        const fadeOutPoster = () => {
             const poster = document.getElementById('player-poster-overlay');
             if (poster) {
                 poster.style.opacity = '0';
-                setTimeout(() => poster.remove(), 400);
+                setTimeout(() => {
+                    if (poster.parentNode) {
+                        poster.remove();
+                    }
+                }, 400);
             }
             container.classList.add('video-has-played');
-        });
+        };
+        
+        // Listen to iframe load event to remove the cover poster overlay as fast as possible
+        const iframe = container.querySelector('iframe');
+        if (iframe) {
+            iframe.addEventListener('load', () => {
+                setTimeout(fadeOutPoster, 300);
+            });
+        }
+        
+        plyrInstance.on('play', fadeOutPoster);
         
         plyrInstance.on('ready', () => {
+            // Once Plyr API is ready, try to restore sound (since it started as mute=1 to guarantee autoplay)
+            plyrInstance.muted = false;
             plyrInstance.play().catch(() => {
                 plyrInstance.muted = true;
                 plyrInstance.play();
@@ -1089,17 +1106,31 @@ function openVideoPlayer(project) {
                 'fullscreen'
             ],
             clickToPlay: true,
-            autoplay: true
+            autoplay: true,
+            playsinline: true
         });
         
-        plyrInstance.on('play', () => {
+        const fadeOutPoster = () => {
             const poster = document.getElementById('player-poster-overlay');
             if (poster) {
                 poster.style.opacity = '0';
-                setTimeout(() => poster.remove(), 400);
+                setTimeout(() => {
+                    if (poster.parentNode) {
+                        poster.remove();
+                    }
+                }, 400);
             }
             container.classList.add('video-has-played');
-        });
+        };
+        
+        const videoElement = container.querySelector('video');
+        if (videoElement) {
+            videoElement.addEventListener('loadeddata', () => {
+                setTimeout(fadeOutPoster, 300);
+            });
+        }
+        
+        plyrInstance.on('play', fadeOutPoster);
         
         plyrInstance.on('ready', () => {
             plyrInstance.play().catch(() => {
