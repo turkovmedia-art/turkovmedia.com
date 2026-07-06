@@ -736,8 +736,9 @@ function renderPortfolioGrid(filter = 'all') {
     
     grid.innerHTML = '';
     
-    // Check if browser supports WebM
-    const useWebmHover = (function() {
+    // Check if the device is a touch screen (mobile) or lacks WebM support
+    const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+    const useWebmHover = !isTouchDevice && (function() {
         try {
             return document.createElement('video').canPlayType('video/webm; codecs="vp9, vorbis"') !== '';
         } catch (e) {
@@ -764,7 +765,7 @@ function renderPortfolioGrid(filter = 'all') {
                 <div class="portfolio-overlay">
                     <div class="play-trigger">
                         ${useWebmHover ? 
-                            `<video class="hover-logo-video" src="assets/Icone.webm" muted playsinline style="width: 100%; height: 100%; object-fit: contain; pointer-events: none; background: transparent;"></video>` :
+                            `<video class="hover-logo-video" src="${LOADER_WEBM_BASE64}" muted playsinline style="width: 100%; height: 100%; object-fit: contain; pointer-events: none;"></video>` :
                             `<img class="hover-logo-fallback" src="assets/logo-dark-bg.png" style="width: 80%; height: 80%; object-fit: contain; pointer-events: none; filter: brightness(0) invert(1); opacity: 0.95;">`
                         }
                     </div>
@@ -778,19 +779,16 @@ function renderPortfolioGrid(filter = 'all') {
         if (useWebmHover) {
             const video = card.querySelector('.hover-logo-video');
             let checkInterval = null;
-            let lastTriggered = 0;
             
-            const startHoverAnimation = () => {
-                const now = Date.now();
-                if (now - lastTriggered < 100) return;
-                lastTriggered = now;
-                
+            card.addEventListener('mouseenter', () => {
                 if (!video) return;
                 if (checkInterval) clearInterval(checkInterval);
                 
+                // Start from the beginning
                 video.currentTime = 0;
                 video.play().catch(e => {});
                 
+                // Calculate halfway mark dynamically or fallback to 2.18s
                 const halfTime = video.duration ? (video.duration / 2) : 2.18;
                 checkInterval = setInterval(() => {
                     if (video.currentTime >= halfTime) {
@@ -799,12 +797,13 @@ function renderPortfolioGrid(filter = 'all') {
                         checkInterval = null;
                     }
                 }, 30);
-            };
+            });
             
-            const endHoverAnimation = () => {
+            card.addEventListener('mouseleave', () => {
                 if (!video) return;
                 if (checkInterval) clearInterval(checkInterval);
                 
+                // Play the remaining second half (disappearing animation)
                 video.play().catch(e => {});
                 
                 const fullTime = video.duration ? (video.duration - 0.1) : 4.2;
@@ -816,13 +815,7 @@ function renderPortfolioGrid(filter = 'all') {
                         checkInterval = null;
                     }
                 }, 30);
-            };
-            
-            card.addEventListener('mouseenter', startHoverAnimation);
-            card.addEventListener('touchstart', startHoverAnimation, { passive: true });
-            
-            card.addEventListener('mouseleave', endHoverAnimation);
-            card.addEventListener('touchend', endHoverAnimation, { passive: true });
+            });
         }
         
         grid.appendChild(card);
@@ -978,13 +971,13 @@ function openVideoPlayer(project) {
             aspectRatio = '21 / 9';  // Set container format to widescreen
         }
         
-        let topPercent = '-27.5%';     // Shifts iframe up to fully hide top title bar and channel details (27.5% crop)
-        let heightPercent = '155%';    // Stretches height to hide bottom player bar and logos (155% scale)
+        let topPercent = '-11.5%';     // Shifts iframe up to fully hide top title bar and channel details (11.5% crop)
+        let heightPercent = '123%';    // Stretches height to hide bottom player bar and logos (123% scale)
         
         if (aspectRatio === '9 / 16') {
             dialog.classList.add('vertical-player');
-            topPercent = '-21.5%';        // Crop margins tailored for portrait viewport
-            heightPercent = '143%';
+            topPercent = '-9%';        // Crop margins tailored for portrait viewport
+            heightPercent = '118%';
         } else {
             dialog.classList.remove('vertical-player');
         }
@@ -1001,43 +994,15 @@ function openVideoPlayer(project) {
         container.style.setProperty('--video-top', topPercent);
         container.style.setProperty('--video-height', heightPercent);
         
-        // Render Plyr video embed wrapper and a custom poster cover overlay to block YouTube logo on start
+        // Render Plyr video embed wrapper (used for both vertical and widescreen to preserve navigation)
         container.innerHTML = `
             <div class="plyr__video-embed" id="custom-youtube-player" style="width: 100%; height: 100%;">
                 <iframe
-                    src="https://www.youtube.com/embed/${ytId}?origin=${window.location.origin}&iv_load_policy=3&modestbranding=1&controls=0&playsinline=1&showinfo=0&rel=0&enablejsapi=1&autoplay=1&mute=1"
-                    scrolling="no"
+                    src="https://www.youtube.com/embed/${ytId}?origin=${window.location.origin}&iv_load_policy=3&modestbranding=1&playsinline=1&showinfo=0&rel=0&enablejsapi=1&autoplay=1"
                     allowfullscreen
                     allowtransparency
                     allow="autoplay; fullscreen"
-                    style="opacity: 1 !important;"
                 ></iframe>
-            </div>
-            <div id="player-poster-overlay" style="
-                position: absolute;
-                top: 0; left: 0; width: 100%; height: 100%;
-                background: url('${project.image}') center center / cover no-repeat;
-                z-index: 5;
-                cursor: pointer;
-                transition: opacity 0.4s ease-in-out;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-            ">
-                <!-- Golden premium pulsing play icon -->
-                <div class="custom-pulse-play-btn" style="
-                    width: 76px;
-                    height: 76px;
-                    background: rgba(212, 175, 55, 0.9);
-                    border-radius: 50%;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    box-shadow: 0 0 25px rgba(212, 175, 55, 0.7);
-                    transition: transform 0.2s ease, background-color 0.2s ease;
-                ">
-                    <i class="fas fa-play" style="color: #000; font-size: 26px; margin-left: 6px;"></i>
-                </div>
             </div>
         `;
         
@@ -1052,62 +1017,7 @@ function openVideoPlayer(project) {
                 'fullscreen'    // Fullscreen toggle button
             ],
             clickToPlay: true,
-            autoplay: true,
-            playsinline: true
-        });
-        
-        let safetyTimeout = null;
-        const fadeOutPoster = () => {
-            if (safetyTimeout) {
-                clearTimeout(safetyTimeout);
-                safetyTimeout = null;
-            }
-            const poster = document.getElementById('player-poster-overlay');
-            if (poster) {
-                poster.style.opacity = '0';
-                setTimeout(() => {
-                    if (poster.parentNode) {
-                        poster.remove();
-                    }
-                }, 400);
-            }
-            container.classList.add('video-has-played');
-        };
-        
-        // Bind click on the poster cover to play the video instantly
-        const posterOverlay = document.getElementById('player-poster-overlay');
-        if (posterOverlay) {
-            posterOverlay.addEventListener('click', (e) => {
-                e.stopPropagation();
-                plyrInstance.play();
-            });
-        }
-        
-        // Fade out poster cover only when video starts playing to avoid showing YouTube loading screen / red play button
-        plyrInstance.on('playing', fadeOutPoster);
-        plyrInstance.on('timeupdate', () => {
-            if (plyrInstance.currentTime > 0) {
-                fadeOutPoster();
-            }
-        });
-        
-        // Safety fallback timeout to fade out poster after 3.5 seconds
-        safetyTimeout = setTimeout(fadeOutPoster, 3500);
-        
-        plyrInstance.on('ready', () => {
-            // Once Plyr API is ready, try to play with sound
-            plyrInstance.muted = false;
-            plyrInstance.play().catch(() => {
-                plyrInstance.muted = true;
-                plyrInstance.play();
-            });
-        });
-        
-        plyrInstance.on('enterfullscreen', () => {
-            dialog.classList.add('fullscreen-active');
-        });
-        plyrInstance.on('exitfullscreen', () => {
-            dialog.classList.remove('fullscreen-active');
+            autoplay: true
         });
     } else {
         // Fallback for non-YouTube files (HTML5 video player via Plyr)
@@ -1119,32 +1029,6 @@ function openVideoPlayer(project) {
             <video id="custom-native-player" autoplay playsinline controls style="width: 100%; height: 100%; border: none;">
                 <source src="${embedUrl.url}" type="video/mp4">
             </video>
-            <div id="player-poster-overlay" style="
-                position: absolute;
-                top: 0; left: 0; width: 100%; height: 100%;
-                background: url('${project.image}') center center / cover no-repeat;
-                z-index: 5;
-                cursor: pointer;
-                transition: opacity 0.4s ease-in-out;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-            ">
-                <!-- Golden premium pulsing play icon -->
-                <div class="custom-pulse-play-btn" style="
-                    width: 76px;
-                    height: 76px;
-                    background: rgba(212, 175, 55, 0.9);
-                    border-radius: 50%;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    box-shadow: 0 0 25px rgba(212, 175, 55, 0.7);
-                    transition: transform 0.2s ease, background-color 0.2s ease;
-                ">
-                    <i class="fas fa-play" style="color: #000; font-size: 26px; margin-left: 6px;"></i>
-                </div>
-            </div>
         `;
         
         plyrInstance = new Plyr('#custom-native-player', {
@@ -1157,60 +1041,7 @@ function openVideoPlayer(project) {
                 'fullscreen'
             ],
             clickToPlay: true,
-            autoplay: true,
-            playsinline: true
-        });
-        
-        let safetyTimeout = null;
-        const fadeOutPoster = () => {
-            if (safetyTimeout) {
-                clearTimeout(safetyTimeout);
-                safetyTimeout = null;
-            }
-            const poster = document.getElementById('player-poster-overlay');
-            if (poster) {
-                poster.style.opacity = '0';
-                setTimeout(() => {
-                    if (poster.parentNode) {
-                        poster.remove();
-                    }
-                }, 400);
-            }
-            container.classList.add('video-has-played');
-        };
-        
-        // Bind click on the poster cover to play the video instantly
-        const posterOverlay = document.getElementById('player-poster-overlay');
-        if (posterOverlay) {
-            posterOverlay.addEventListener('click', (e) => {
-                e.stopPropagation();
-                plyrInstance.play();
-            });
-        }
-        
-        // Fade out poster cover only when video starts playing to avoid showing loading screen
-        plyrInstance.on('playing', fadeOutPoster);
-        plyrInstance.on('timeupdate', () => {
-            if (plyrInstance.currentTime > 0) {
-                fadeOutPoster();
-            }
-        });
-        
-        // Safety fallback timeout to fade out poster after 3.5 seconds
-        safetyTimeout = setTimeout(fadeOutPoster, 3500);
-        
-        plyrInstance.on('ready', () => {
-            plyrInstance.play().catch(() => {
-                plyrInstance.muted = true;
-                plyrInstance.play();
-            });
-        });
-        
-        plyrInstance.on('enterfullscreen', () => {
-            dialog.classList.add('fullscreen-active');
-        });
-        plyrInstance.on('exitfullscreen', () => {
-            dialog.classList.remove('fullscreen-active');
+            autoplay: true
         });
     }
     
@@ -1240,7 +1071,6 @@ function closeVideoPlayer() {
     // Clear innerHTML to stop video sound playing in background
     container.innerHTML = '';
     dialog.classList.remove('vertical-player');
-    dialog.classList.remove('fullscreen-active');
     dialog.close();
     
     // Remove freeze body scrolling class
