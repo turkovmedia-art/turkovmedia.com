@@ -978,13 +978,13 @@ function openVideoPlayer(project) {
             aspectRatio = '21 / 9';  // Set container format to widescreen
         }
         
-        let topPercent = '-23.5%';     // Shifts iframe up to fully hide top title bar and channel details (23.5% crop)
-        let heightPercent = '147%';    // Stretches height to hide bottom player bar and logos (147% scale)
+        let topPercent = '-27.5%';     // Shifts iframe up to fully hide top title bar and channel details (27.5% crop)
+        let heightPercent = '155%';    // Stretches height to hide bottom player bar and logos (155% scale)
         
         if (aspectRatio === '9 / 16') {
             dialog.classList.add('vertical-player');
-            topPercent = '-17.5%';        // Crop margins tailored for portrait viewport
-            heightPercent = '135%';
+            topPercent = '-21.5%';        // Crop margins tailored for portrait viewport
+            heightPercent = '143%';
         } else {
             dialog.classList.remove('vertical-player');
         }
@@ -1001,7 +1001,7 @@ function openVideoPlayer(project) {
         container.style.setProperty('--video-top', topPercent);
         container.style.setProperty('--video-height', heightPercent);
         
-        // Render Plyr video embed wrapper (used for both vertical and widescreen to preserve navigation)
+        // Render Plyr video embed wrapper and a custom poster cover overlay to block YouTube logo on start
         container.innerHTML = `
             <div class="plyr__video-embed" id="custom-youtube-player" style="width: 100%; height: 100%;">
                 <iframe
@@ -1013,6 +1013,14 @@ function openVideoPlayer(project) {
                     style="opacity: 1 !important;"
                 ></iframe>
             </div>
+            <div id="player-poster-overlay" style="
+                position: absolute;
+                top: 0; left: 0; width: 100%; height: 100%;
+                background: url('${project.image}') center center / cover no-repeat;
+                z-index: 5;
+                pointer-events: none;
+                transition: opacity 0.4s ease-in-out;
+            "></div>
         `;
         
         // Initialize Plyr player wrapper with full custom control bar
@@ -1030,6 +1038,11 @@ function openVideoPlayer(project) {
         });
         
         plyrInstance.on('play', () => {
+            const poster = document.getElementById('player-poster-overlay');
+            if (poster) {
+                poster.style.opacity = '0';
+                setTimeout(() => poster.remove(), 400);
+            }
             container.classList.add('video-has-played');
         });
         
@@ -1056,6 +1069,14 @@ function openVideoPlayer(project) {
             <video id="custom-native-player" autoplay playsinline controls style="width: 100%; height: 100%; border: none;">
                 <source src="${embedUrl.url}" type="video/mp4">
             </video>
+            <div id="player-poster-overlay" style="
+                position: absolute;
+                top: 0; left: 0; width: 100%; height: 100%;
+                background: url('${project.image}') center center / cover no-repeat;
+                z-index: 5;
+                pointer-events: none;
+                transition: opacity 0.4s ease-in-out;
+            "></div>
         `;
         
         plyrInstance = new Plyr('#custom-native-player', {
@@ -1072,6 +1093,11 @@ function openVideoPlayer(project) {
         });
         
         plyrInstance.on('play', () => {
+            const poster = document.getElementById('player-poster-overlay');
+            if (poster) {
+                poster.style.opacity = '0';
+                setTimeout(() => poster.remove(), 400);
+            }
             container.classList.add('video-has-played');
         });
         
