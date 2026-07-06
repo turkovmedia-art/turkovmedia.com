@@ -899,15 +899,26 @@ function initVideoModal() {
         closeVideoPlayer();
     });
     
+    let mousedownTarget = null;
+    dialog.addEventListener('mousedown', (e) => {
+        mousedownTarget = e.target;
+    });
+    
     // Close dialog when clicking outside the content area (on the backdrop)
     dialog.addEventListener('click', (e) => {
-        // If the browser is in fullscreen mode, do not close the player
-        if (document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement) {
+        // Ignore close triggers if browser is in fullscreen or Plyr is in fullscreen active state
+        const isFullscreen = document.fullscreenElement || 
+                             document.webkitFullscreenElement || 
+                             document.mozFullScreenElement || 
+                             document.msFullscreenElement ||
+                             dialog.classList.contains('fullscreen-active') ||
+                             dialog.querySelector('.plyr--fullscreen-active') !== null;
+        if (isFullscreen) {
             return;
         }
         
-        // e.target === dialog ensures the click was directly on the dialog backdrop
-        if (e.target === dialog) {
+        // Ensure both mousedown and click targets are the dialog backdrop to prevent accidental closure on drag release
+        if (e.target === dialog && mousedownTarget === dialog) {
             closeVideoPlayer();
         }
     });
@@ -1022,6 +1033,13 @@ function openVideoPlayer(project) {
             clickToPlay: true,
             autoplay: true
         });
+        
+        plyrInstance.on('enterfullscreen', () => {
+            dialog.classList.add('fullscreen-active');
+        });
+        plyrInstance.on('exitfullscreen', () => {
+            dialog.classList.remove('fullscreen-active');
+        });
     } else {
         // Fallback for non-YouTube files (HTML5 video player via Plyr)
         container.style.aspectRatio = '16 / 9';
@@ -1045,6 +1063,13 @@ function openVideoPlayer(project) {
             ],
             clickToPlay: true,
             autoplay: true
+        });
+        
+        plyrInstance.on('enterfullscreen', () => {
+            dialog.classList.add('fullscreen-active');
+        });
+        plyrInstance.on('exitfullscreen', () => {
+            dialog.classList.remove('fullscreen-active');
         });
     }
     
