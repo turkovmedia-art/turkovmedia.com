@@ -737,8 +737,7 @@ function renderPortfolioGrid(filter = 'all') {
     grid.innerHTML = '';
     
     // Check if the device is a touch screen (mobile) or supports transparent WebM video format
-    const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-    const useWebmHover = !isTouchDevice && (function() {
+    const useWebmHover = (function() {
         try {
             return document.createElement('video').canPlayType('video/webm') !== '';
         } catch (e) {
@@ -834,6 +833,41 @@ function renderPortfolioGrid(filter = 'all') {
                     }
                 }, 30);
             });
+
+            // Mobile touch events matching desktop mouseenter/mouseleave
+            card.addEventListener('touchstart', () => {
+                if (!video) return;
+                if (checkInterval) clearInterval(checkInterval);
+                
+                video.currentTime = 0;
+                video.play().catch(e => {});
+                
+                const halfTime = video.duration ? (video.duration / 2) : 2.18;
+                checkInterval = setInterval(() => {
+                    if (video.currentTime >= halfTime) {
+                        video.pause();
+                        clearInterval(checkInterval);
+                        checkInterval = null;
+                    }
+                }, 30);
+            }, { passive: true });
+            
+            card.addEventListener('touchend', () => {
+                if (!video) return;
+                if (checkInterval) clearInterval(checkInterval);
+                
+                video.play().catch(e => {});
+                
+                const fullTime = video.duration ? (video.duration - 0.1) : 4.2;
+                checkInterval = setInterval(() => {
+                    if (video.currentTime >= fullTime || video.ended) {
+                        video.pause();
+                        video.currentTime = 0;
+                        clearInterval(checkInterval);
+                        checkInterval = null;
+                    }
+                }, 30);
+            }, { passive: true });
         }
         
         grid.appendChild(card);
