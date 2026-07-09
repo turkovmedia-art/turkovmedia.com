@@ -2015,6 +2015,12 @@ html[lang="en"] .slice-btn:hover i {
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
     }
     
+    .portfolio-item, .portfolio-thumb-box {
+        -webkit-touch-callout: none !important; /* Prevent system hover context menu on iOS */
+        -webkit-user-select: none !important;   /* Prevent text selection when holding */
+        user-select: none !important;
+    }
+    
     .portfolio-item:active .portfolio-overlay {
         opacity: 1 !important;
     }
