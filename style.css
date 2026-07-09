@@ -1975,36 +1975,39 @@ html[lang="en"] .slice-btn:hover i {
     }
     
     .portfolio-filters {
-        display: grid !important;
-        grid-template-columns: repeat(2, 1fr) !important;
+        display: flex !important;
+        flex-wrap: wrap !important;
+        justify-content: center !important;
         gap: 8px !important;
         width: 100% !important;
-        max-width: 340px !important;
+        max-width: 320px !important; /* Wrap into exactly 3 rows beautifully */
         margin-left: auto !important;
         margin-right: auto !important;
-        padding: 10px 5px !important;
+        padding: 5px !important;
+        background: transparent !important;
+        border: none !important;
     }
     
     .filter-btn {
-        width: 100% !important;
-        text-align: center !important;
-        padding: 8px 6px !important;
+        background: rgba(255, 255, 255, 0.05) !important;
+        border: 1px solid rgba(255, 255, 255, 0.08) !important;
+        color: rgba(255, 255, 255, 0.7) !important;
+        padding: 6px 12px !important;
         font-size: 0.8rem !important;
-        border-radius: 8px !important;
+        border-radius: 20px !important; /* Rounded pill style */
+        flex: 0 1 auto !important;
+        width: auto !important;
+        text-align: center !important;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15) !important;
     }
 
-    /* Force exactly 3 rows of filter buttons on mobile */
-    .filter-btn:nth-child(1) {
-        grid-column: span 2 !important;
-    }
-    .filter-btn:nth-child(2) {
-        grid-column: span 2 !important;
-    }
-    .filter-btn:nth-child(3) {
-        grid-column: span 1 !important;
-    }
-    .filter-btn:nth-child(4) {
-        grid-column: span 1 !important;
+    .filter-btn.active {
+        background: #fff !important;
+        color: #000 !important;
+        font-weight: 700 !important;
+        border-color: #fff !important;
+        transform: translateY(-2px) scale(1.03) !important;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
     }
     
     .portfolio-item-title {

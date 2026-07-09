@@ -1048,6 +1048,12 @@ function openVideoPlayer(project) {
                 'volume',       // Volume bar
                 'fullscreen'    // Fullscreen toggle button
             ],
+            fullscreen: {
+                enabled: true,
+                fallback: true,
+                iosNative: true,
+                container: '#videoDialog' // Force fullscreen on dialog to bypass Safari stacking/clipping bugs
+            },
             clickToPlay: true,
             autoplay: true
         });
@@ -1079,6 +1085,12 @@ function openVideoPlayer(project) {
                 'volume',
                 'fullscreen'
             ],
+            fullscreen: {
+                enabled: true,
+                fallback: true,
+                iosNative: true,
+                container: '#videoDialog' // Force fullscreen on dialog to bypass Safari stacking/clipping bugs
+            },
             clickToPlay: true,
             autoplay: true
         });
