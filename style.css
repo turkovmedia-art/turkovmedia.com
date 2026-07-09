@@ -1855,7 +1855,7 @@ html[lang="en"] .slice-btn:hover i {
         justify-content: space-between !important;
         align-items: center !important;
         position: relative !important;
-        padding: 10px 15px !important;
+        padding: 15px 15px !important; /* Taller bar for premium spacing */
     }
     
     .logo {
@@ -1984,7 +1984,7 @@ html[lang="en"] .slice-btn:hover i {
         justify-content: center !important;
         gap: 8px !important;
         width: 100% !important;
-        max-width: 320px !important; /* Wrap into exactly 3 rows beautifully */
+        max-width: 380px !important; /* Wrap into exactly 2 rows beautifully */
         margin-left: auto !important;
         margin-right: auto !important;
         padding: 5px !important;
