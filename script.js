@@ -656,47 +656,6 @@ let clientLogos = [
     }
 ];
 
-// Preload crucial hover video file before loading site
-(function() {
-    let preloaderHidden = false;
-    
-    function hidePreloader() {
-        if (preloaderHidden) return;
-        preloaderHidden = true;
-        
-        const preloader = document.getElementById('preloader');
-        if (preloader) {
-            preloader.classList.add('fade-out');
-            setTimeout(() => {
-                preloader.remove();
-            }, 600);
-        }
-    }
-    
-    // Set a failsafe timeout: hide the preloader after a maximum of 3.5 seconds
-    // to ensure the user is never stuck if loading fails or takes too long.
-    const failsafeTimeout = setTimeout(() => {
-        console.warn("Preloader: Failsafe timeout triggered.");
-        hidePreloader();
-    }, 3500);
-    
-    // Fetch assets/Icone.webm VP9 transparent video to populate the browser cache
-    fetch('assets/Icone.webm')
-        .then(response => {
-            if (!response.ok) throw new Error("Network response was not ok");
-            return response.blob();
-        })
-        .then(() => {
-            console.log("Preloader: Transparent WebM video successfully cached.");
-            clearTimeout(failsafeTimeout);
-            hidePreloader();
-        })
-        .catch(error => {
-            console.error("Preloader: Failed to fetch and cache hover video:", error);
-            clearTimeout(failsafeTimeout);
-            hidePreloader(); // Hide anyway to load the site
-        });
-})();
 
 // ==========================================================================
 // 2. DOM Elements & Initialization
@@ -1085,8 +1044,8 @@ function openVideoPlayer(project) {
         
         if (aspectRatio === '9 / 16') {
             dialog.classList.add('vertical-player');
-            topPercent = '-9%';        // Crop margins tailored for portrait viewport
-            heightPercent = '118%';
+            topPercent = '-25%';        // Crop margins tailored to hide all YouTube header/footer symbols on mobile (Reels viewport)
+            heightPercent = '150%';
         } else {
             dialog.classList.remove('vertical-player');
         }
@@ -1137,7 +1096,7 @@ function openVideoPlayer(project) {
             fullscreen: {
                 enabled: true,
                 fallback: true,
-                iosNative: true,
+                iosNative: false,
                 container: null // Fix desktop fullscreen issues
             },
             playsinline: true,
@@ -1175,7 +1134,7 @@ function openVideoPlayer(project) {
             fullscreen: {
                 enabled: true,
                 fallback: true,
-                iosNative: true,
+                iosNative: false,
                 container: null // Fix desktop fullscreen issues
             },
             playsinline: true,
