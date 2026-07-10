@@ -4100,4 +4100,72 @@ html.modal-open, body.modal-open {
     box-shadow: 0 12px 25px rgba(0, 240, 255, 0.4);
 }
 
+/* ==========================================================================
+   Preloader Styles
+   ========================================================================== */
+#preloader {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: #050814;
+    z-index: 99999999;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.6s cubic-bezier(0.25, 1, 0.5, 1), visibility 0.6s;
+    overflow: hidden;
+}
+
+#preloader.fade-out {
+    opacity: 0;
+    visibility: hidden;
+}
+
+.preloader-glow {
+    position: absolute;
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, rgba(0, 240, 255, 0.15) 0%, rgba(0, 0, 0, 0) 70%);
+    filter: blur(40px);
+    pointer-events: none;
+    animation: preloaderPulse 2s infinite alternate ease-in-out;
+}
+
+.preloader-spinner {
+    width: 50px;
+    height: 50px;
+    border: 3.5px solid rgba(255, 255, 255, 0.05);
+    border-top: 3.5px solid var(--accent-cyan, #00f0ff);
+    border-radius: 50%;
+    animation: preloaderSpin 1s infinite linear;
+    box-shadow: 0 0 20px rgba(0, 240, 255, 0.15);
+    margin-bottom: 24px;
+    position: relative;
+    z-index: 2;
+}
+
+.preloader-text {
+    color: rgba(255, 255, 255, 0.75);
+    font-family: 'Outfit', 'Assistant', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 500;
+    letter-spacing: 1px;
+    text-align: center;
+    position: relative;
+    z-index: 2;
+    direction: rtl;
+}
+
+@keyframes preloaderPulse {
+    from { transform: scale(0.9); opacity: 0.8; }
+    to { transform: scale(1.1); opacity: 1; }
+}
+
+@keyframes preloaderSpin {
+    to { transform: rotate(360deg); }
+}
+
 
