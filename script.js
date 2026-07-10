@@ -1025,7 +1025,7 @@ function openVideoPlayer(project) {
         plyrInstance = null;
     }
     
-    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    const isMobile = window.innerWidth <= 768 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
     const ytId = getYouTubeId(project.videoUrl);
     
     if (ytId) {
@@ -1087,7 +1087,7 @@ function openVideoPlayer(project) {
                 enabled: true,
                 fallback: true,
                 iosNative: true,
-                container: isIOS ? null : '#videoDialog' // Bypass element fullscreen on iOS to allow native video fullscreen
+                container: isMobile ? null : '#videoDialog' // Bypass element fullscreen on mobile to allow native video fullscreen
             },
             playsinline: true,
             clickToPlay: true,
@@ -1125,7 +1125,7 @@ function openVideoPlayer(project) {
                 enabled: true,
                 fallback: true,
                 iosNative: true,
-                container: isIOS ? null : '#videoDialog' // Bypass element fullscreen on iOS to allow native video fullscreen
+                container: isMobile ? null : '#videoDialog' // Bypass element fullscreen on mobile to allow native video fullscreen
             },
             playsinline: true,
             clickToPlay: true,
