@@ -1107,7 +1107,7 @@ function openVideoPlayer(project) {
         container.innerHTML = `
             <div class="plyr__video-embed" id="custom-youtube-player" style="width: 100%; height: 100%;">
                 <iframe
-                    src="https://www.youtube.com/embed/${ytId}?origin=${window.location.origin}&iv_load_policy=3&modestbranding=1&playsinline=1&showinfo=0&rel=0&enablejsapi=1&autoplay=1"
+                    src="https://www.youtube.com/embed/${ytId}?origin=${window.location.origin}&iv_load_policy=3&modestbranding=1&playsinline=1&showinfo=0&rel=0&enablejsapi=1&autoplay=1&cc_load_policy=0&cc_lang_pref=off"
                     allowfullscreen
                     allowtransparency
                     allow="autoplay; fullscreen"
@@ -1117,6 +1117,15 @@ function openVideoPlayer(project) {
         
         // Initialize Plyr player wrapper with full custom control bar
         plyrInstance = new Plyr('#custom-youtube-player', {
+            youtube: {
+                noCookie: true,
+                rel: 0,
+                showinfo: 0,
+                iv_load_policy: 3,
+                modestbranding: 1,
+                cc_load_policy: 0,
+                cc_lang_pref: 'off'
+            },
             controls: [
                 'play',         // Play/Pause button
                 'progress',     // Timeline progress slider (drag/click to seek)
@@ -1129,7 +1138,7 @@ function openVideoPlayer(project) {
                 enabled: true,
                 fallback: true,
                 iosNative: true,
-                container: isMobile ? null : '#videoDialog' // Bypass element fullscreen on mobile to allow native video fullscreen
+                container: null // Fix desktop fullscreen issues
             },
             playsinline: true,
             clickToPlay: true,
@@ -1167,7 +1176,7 @@ function openVideoPlayer(project) {
                 enabled: true,
                 fallback: true,
                 iosNative: true,
-                container: isMobile ? null : '#videoDialog' // Bypass element fullscreen on mobile to allow native video fullscreen
+                container: null // Fix desktop fullscreen issues
             },
             playsinline: true,
             clickToPlay: true,

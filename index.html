@@ -61,7 +61,7 @@
     <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
     
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="style.css?v=2.6.7">
+    <link rel="stylesheet" href="style.css?v=2.6.8">
 </head>
 <body>
     <!-- Preloader Screen -->
@@ -105,25 +105,34 @@
     <!-- Hero Section -->
     <section id="hero" class="hero-section">
         <!-- Background Video Loop: Desktop -->
-        <video class="hero-video-bg video-desktop" autoplay loop muted playsinline id="heroVideoBgDesktop" preload="none"></video>
+        <video class="hero-video-bg video-desktop" autoplay loop muted playsinline id="heroVideoBgDesktop" preload="auto"></video>
         <!-- Background Video Loop: Mobile -->
-        <video class="hero-video-bg video-mobile" autoplay loop muted playsinline id="heroVideoBgMobile" preload="none"></video>
+        <video class="hero-video-bg video-mobile" autoplay loop muted playsinline id="heroVideoBgMobile" preload="auto"></video>
         
         <script>
-            window.addEventListener('load', function() {
+            (function() {
                 var isMobile = window.innerWidth <= 768;
                 var desktopVideo = document.getElementById('heroVideoBgDesktop');
                 var mobileVideo = document.getElementById('heroVideoBgMobile');
+                var activeVideo = null;
                 if (isMobile && mobileVideo) {
                     mobileVideo.src = 'assets/hero-bg-mobile.mp4';
-                    mobileVideo.preload = 'auto';
                     mobileVideo.load();
+                    activeVideo = mobileVideo;
+                    if (desktopVideo) desktopVideo.remove();
                 } else if (desktopVideo) {
                     desktopVideo.src = 'assets/hero-bg-desktop.mp4';
-                    desktopVideo.preload = 'auto';
                     desktopVideo.load();
+                    activeVideo = desktopVideo;
+                    if (mobileVideo) mobileVideo.remove();
                 }
-            });
+                if (activeVideo) {
+                    var p = activeVideo.play();
+                    if (p !== undefined) {
+                        p.catch(function(e) { console.log("Autoplay caught: ", e); });
+                    }
+                }
+            })();
         </script>
         <div class="hero-overlay"></div>
         <div class="hero-container">
@@ -824,6 +833,6 @@
     <!-- Plyr Video Player library -->
     <script src="https://cdn.plyr.io/3.7.8/plyr.js"></script>
     <script src="data.js"></script>
-    <script src="script.js?v=2.6.7" defer></script>
+    <script src="script.js?v=2.6.8" defer></script>
 </body>
 </html>
