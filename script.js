@@ -1044,14 +1044,14 @@ function openVideoPlayer(project) {
         
         if (aspectRatio === '9 / 16') {
             dialog.classList.add('vertical-player');
-            topPercent = '-25%';        // Crop margins tailored to hide all YouTube header/footer symbols on mobile (Reels viewport)
-            heightPercent = '150%';
+            topPercent = '-30%';        // Crop margins tailored to hide all YouTube header/footer symbols on mobile (Reels viewport)
+            heightPercent = '160%';
         } else {
             dialog.classList.remove('vertical-player');
-            // Crop widescreen videos further on mobile viewports to push bottom controls and top bars out of screen (about 2cm shift)
+            // Crop widescreen videos further on mobile viewports to push bottom controls and top bars out of screen (about 2.5cm shift)
             if (isMobile) {
-                topPercent = '-20%';
-                heightPercent = '140%';
+                topPercent = '-25%';
+                heightPercent = '150%';
             }
         }
         
