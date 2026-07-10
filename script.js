@@ -1048,6 +1048,11 @@ function openVideoPlayer(project) {
             heightPercent = '150%';
         } else {
             dialog.classList.remove('vertical-player');
+            // Crop widescreen videos further on mobile viewports to push bottom controls and top bars out of screen (about 2cm shift)
+            if (isMobile) {
+                topPercent = '-20%';
+                heightPercent = '140%';
+            }
         }
         
         // Allow explicit custom database override parameters
@@ -1066,7 +1071,7 @@ function openVideoPlayer(project) {
         container.innerHTML = `
             <div class="plyr__video-embed" id="custom-youtube-player" style="width: 100%; height: 100%;">
                 <iframe
-                    src="https://www.youtube.com/embed/${ytId}?origin=${window.location.origin}&iv_load_policy=3&modestbranding=1&playsinline=1&showinfo=0&rel=0&enablejsapi=1&autoplay=1&cc_load_policy=0&cc_lang_pref=off"
+                    src="https://www.youtube.com/embed/${ytId}?origin=${window.location.origin}&iv_load_policy=3&modestbranding=1&playsinline=1&showinfo=0&rel=0&enablejsapi=1&autoplay=1&cc_load_policy=3&cc_lang_pref=off"
                     allowfullscreen
                     allowtransparency
                     allow="autoplay; fullscreen"
@@ -1082,7 +1087,7 @@ function openVideoPlayer(project) {
                 showinfo: 0,
                 iv_load_policy: 3,
                 modestbranding: 1,
-                cc_load_policy: 0,
+                cc_load_policy: 3, // Disable captions completely
                 cc_lang_pref: 'off'
             },
             controls: [
@@ -1097,7 +1102,7 @@ function openVideoPlayer(project) {
                 enabled: true,
                 fallback: true,
                 iosNative: false,
-                container: null // Fix desktop fullscreen issues
+                container: isMobile ? null : '#videoDialog' // Restore desktop dialog container to prevent Safari layout stack errors
             },
             playsinline: true,
             clickToPlay: true,
@@ -1135,7 +1140,7 @@ function openVideoPlayer(project) {
                 enabled: true,
                 fallback: true,
                 iosNative: false,
-                container: null // Fix desktop fullscreen issues
+                container: isMobile ? null : '#videoDialog' // Restore desktop dialog container to prevent Safari layout stack errors
             },
             playsinline: true,
             clickToPlay: true,
