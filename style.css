@@ -1987,7 +1987,7 @@ html[lang="en"] .slice-btn:hover i {
         grid-template-rows: repeat(2, auto) !important;
         gap: 6px !important;
         width: 100% !important;
-        max-width: 440px !important; /* Slightly increased to fit 4 columns elegantly */
+        max-width: 440px !important;
         margin-left: auto !important;
         margin-right: auto !important;
         padding: 5px !important;
@@ -1996,25 +1996,27 @@ html[lang="en"] .slice-btn:hover i {
     }
     
     .filter-btn {
-        background: transparent !important;
-        border: none !important;
-        color: rgba(255, 255, 255, 0.6) !important;
-        padding: 6px 4px !important; /* Reduced padding to fit grid cells perfectly */
-        font-size: 0.72rem !important; /* Optimized font size for 4-column grid */
-        border-radius: 50px !important; /* Pill-shaped active card design matching desktop style */
-        width: 100% !important; /* Fill cell */
+        background: rgba(255, 255, 255, 0.04) !important;
+        border: 1.5px solid rgba(255, 255, 255, 0.06) !important;
+        color: rgba(255, 255, 255, 0.8) !important;
+        padding: 5px 3px !important; /* Highly compact padding to fit all devices */
+        font-size: 0.67rem !important; /* Compact font size to ensure exactly 2 rows fit */
+        border-radius: 8px !important; /* Modern rounded rectangles matching the user's preferred box style */
+        width: 100% !important; /* Fill grid cell */
         text-align: center !important;
-        box-shadow: none !important;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1) !important;
         white-space: nowrap !important;
         overflow: hidden !important;
         text-overflow: ellipsis !important;
         font-weight: 600 !important;
+        transition: all 0.2s ease !important;
     }
 
     .filter-btn.active {
         background: #fff !important;
         color: #000 !important;
-        font-weight: 600 !important; /* Match regular button font-weight to prevent text sizing layout shifts on click */
+        font-weight: 700 !important;
+        border-color: #fff !important;
         transform: translateY(-2px) scale(1.03) !important;
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
     }

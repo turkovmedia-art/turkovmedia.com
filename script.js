@@ -1067,92 +1067,115 @@ function openVideoPlayer(project) {
         container.style.setProperty('--video-top', topPercent);
         container.style.setProperty('--video-height', heightPercent);
         
-        // Render Plyr video embed wrapper (used for both vertical and widescreen to preserve navigation)
-        container.innerHTML = `
-            <div class="plyr__video-embed" id="custom-youtube-player" style="width: 100%; height: 100%;">
+        if (isMobile) {
+            // Render native iframe for mobile to allow native iOS fullscreen and instant autoplay
+            container.innerHTML = `
                 <iframe
-                    src="https://www.youtube.com/embed/${ytId}?origin=${window.location.origin}&iv_load_policy=3&modestbranding=1&playsinline=1&showinfo=0&rel=0&enablejsapi=1&autoplay=1&cc_load_policy=3&cc_lang_pref=off"
+                    src="https://www.youtube.com/embed/${ytId}?origin=${window.location.origin}&iv_load_policy=3&modestbranding=1&playsinline=1&showinfo=0&rel=0&enablejsapi=1&autoplay=1&cc_load_policy=3&cc_lang_pref=off&controls=1"
                     allowfullscreen
                     allowtransparency
                     allow="autoplay; fullscreen"
+                    style="width: 100%; height: 100%; border: none; position: absolute; top: ${topPercent}; left: 0; height: ${heightPercent};"
                 ></iframe>
-            </div>
-        `;
-        
-        // Initialize Plyr player wrapper with full custom control bar
-        plyrInstance = new Plyr('#custom-youtube-player', {
-            youtube: {
-                noCookie: true,
-                rel: 0,
-                showinfo: 0,
-                iv_load_policy: 3,
-                modestbranding: 1,
-                cc_load_policy: 3, // Disable captions completely
-                cc_lang_pref: 'off'
-            },
-            controls: [
-                'play',         // Play/Pause button
-                'progress',     // Timeline progress slider (drag/click to seek)
-                'current-time', // Running play time
-                'mute',         // Mute toggle
-                'volume',       // Volume bar
-                'fullscreen'    // Fullscreen toggle button
-            ],
-            fullscreen: {
-                enabled: true,
-                fallback: true,
-                iosNative: false,
-                container: isMobile ? null : '#videoDialog' // Restore desktop dialog container to prevent Safari layout stack errors
-            },
-            playsinline: true,
-            clickToPlay: true,
-            autoplay: true
-        });
-        
-        plyrInstance.on('enterfullscreen', () => {
-            dialog.classList.add('fullscreen-active');
-        });
-        plyrInstance.on('exitfullscreen', () => {
-            dialog.classList.remove('fullscreen-active');
-        });
+            `;
+        } else {
+            // Render Plyr video embed wrapper (used for both vertical and widescreen to preserve navigation)
+            container.innerHTML = `
+                <div class="plyr__video-embed" id="custom-youtube-player" style="width: 100%; height: 100%;">
+                    <iframe
+                        src="https://www.youtube.com/embed/${ytId}?origin=${window.location.origin}&iv_load_policy=3&modestbranding=1&playsinline=1&showinfo=0&rel=0&enablejsapi=1&autoplay=1&cc_load_policy=3&cc_lang_pref=off"
+                        allowfullscreen
+                        allowtransparency
+                        allow="autoplay; fullscreen"
+                    ></iframe>
+                </div>
+            `;
+            
+            // Initialize Plyr player wrapper with full custom control bar
+            plyrInstance = new Plyr('#custom-youtube-player', {
+                youtube: {
+                    noCookie: true,
+                    rel: 0,
+                    showinfo: 0,
+                    iv_load_policy: 3,
+                    modestbranding: 1,
+                    cc_load_policy: 3, // Disable captions completely
+                    cc_lang_pref: 'off'
+                },
+                controls: [
+                    'play',         // Play/Pause button
+                    'progress',     // Timeline progress slider (drag/click to seek)
+                    'current-time', // Running play time
+                    'mute',         // Mute toggle
+                    'volume',       // Volume bar
+                    'fullscreen'    // Fullscreen toggle button
+                ],
+                fullscreen: {
+                    enabled: true,
+                    fallback: true,
+                    iosNative: false,
+                    container: '#videoDialog' // Restore desktop dialog container to prevent Safari layout stack errors
+                },
+                playsinline: true,
+                clickToPlay: true,
+                autoplay: true
+            });
+            
+            plyrInstance.on('enterfullscreen', () => {
+                dialog.classList.add('fullscreen-active');
+            });
+            plyrInstance.on('exitfullscreen', () => {
+                dialog.classList.remove('fullscreen-active');
+            });
+        }
     } else {
         // Fallback for non-YouTube files (HTML5 video player via Plyr)
         container.style.aspectRatio = '16 / 9';
         container.style.setProperty('--video-top', '0%');
         container.style.setProperty('--video-height', '100%');
         const embedUrl = resolveEmbedUrl(displayProj.videoUrl);
-        container.innerHTML = `
-            <video id="custom-native-player" autoplay playsinline controls style="width: 100%; height: 100%; border: none;">
-                <source src="${embedUrl.url}" type="video/mp4">
-            </video>
-        `;
         
-        plyrInstance = new Plyr('#custom-native-player', {
-            controls: [
-                'play',
-                'progress',
-                'current-time',
-                'mute',
-                'volume',
-                'fullscreen'
-            ],
-            fullscreen: {
-                enabled: true,
-                fallback: true,
-                iosNative: false,
-                container: isMobile ? null : '#videoDialog' // Restore desktop dialog container to prevent Safari layout stack errors
-            },
-            playsinline: true,
-            clickToPlay: true,
-            autoplay: true
-        });
-        
-        plyrInstance.on('enterfullscreen', () => {
-            dialog.classList.add('fullscreen-active');
-        });
-        plyrInstance.on('exitfullscreen', () => {
-            dialog.classList.remove('fullscreen-active');
-        });
+        if (isMobile) {
+            // Render native video controls for mobile to support native fullscreen
+            container.innerHTML = `
+                <video id="custom-native-player" autoplay playsinline controls style="width: 100%; height: 100%; border: none;">
+                    <source src="${embedUrl.url}" type="video/mp4">
+                </video>
+            `;
+        } else {
+            container.innerHTML = `
+                <video id="custom-native-player" autoplay playsinline controls style="width: 100%; height: 100%; border: none;">
+                    <source src="${embedUrl.url}" type="video/mp4">
+                </video>
+            `;
+            
+            plyrInstance = new Plyr('#custom-native-player', {
+                controls: [
+                    'play',
+                    'progress',
+                    'current-time',
+                    'mute',
+                    'volume',
+                    'fullscreen'
+                ],
+                fullscreen: {
+                    enabled: true,
+                    fallback: true,
+                    iosNative: false,
+                    container: '#videoDialog' // Restore desktop dialog container to prevent Safari layout stack errors
+                },
+                playsinline: true,
+                clickToPlay: true,
+                autoplay: true
+            });
+            
+            plyrInstance.on('enterfullscreen', () => {
+                dialog.classList.add('fullscreen-active');
+            });
+            plyrInstance.on('exitfullscreen', () => {
+                dialog.classList.remove('fullscreen-active');
+            });
+        }
     }
     
     dialog.showModal();
