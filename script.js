@@ -1114,7 +1114,7 @@ function openVideoPlayer(project) {
                     enabled: true,
                     fallback: true,
                     iosNative: false,
-                    container: '#videoDialog' // Restore desktop dialog container to prevent Safari layout stack errors
+                    container: null // Use default player container for robust native desktop fullscreen
                 },
                 playsinline: true,
                 clickToPlay: true,
@@ -1162,7 +1162,7 @@ function openVideoPlayer(project) {
                     enabled: true,
                     fallback: true,
                     iosNative: false,
-                    container: '#videoDialog' // Restore desktop dialog container to prevent Safari layout stack errors
+                    container: null // Use default player container for robust native desktop fullscreen
                 },
                 playsinline: true,
                 clickToPlay: true,
