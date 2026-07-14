@@ -960,11 +960,12 @@ function initVideoModal() {
     // Close dialog when clicking outside the content area (on the backdrop)
     dialog.addEventListener('click', (e) => {
         // Ignore close triggers if browser is in fullscreen or Plyr is in fullscreen active state
-        const isFullscreen = document.fullscreenElement || 
-                             document.webkitFullscreenElement || 
-                             document.mozFullScreenElement || 
+        const isFullscreen = document.fullscreenElement ||
+                             document.webkitFullscreenElement ||
+                             document.mozFullScreenElement ||
                              document.msFullscreenElement ||
                              dialog.classList.contains('fullscreen-active') ||
+                             dialog.classList.contains('mobile-fs-active') ||
                              dialog.querySelector('.plyr--fullscreen-active') !== null;
         if (isFullscreen) {
             return;
@@ -1077,7 +1078,23 @@ function openVideoPlayer(project) {
                     allow="autoplay; fullscreen"
                     style="width: 100%; height: 100%; border: none; position: absolute; top: ${topPercent}; left: 0; height: ${heightPercent};"
                 ></iframe>
+                <div class="yt-badge-mask"></div>
+                <button type="button" class="mobile-fs-toggle" id="mobileFsToggle" aria-label="הצג במסך מלא">
+                    <i class="fa-solid fa-expand"></i>
+                </button>
             `;
+
+            // Custom pseudo-fullscreen toggle: native crop hides YouTube's own fullscreen control along with its branding,
+            // so mobile needs its own entry point. Keeps the existing crop active (rather than resetting it) so the
+            // container's own aspect-ratio is preserved and the badge mask stays correctly aligned.
+            const mobileFsBtn = container.querySelector('#mobileFsToggle');
+            let mobileFsActive = false;
+            mobileFsBtn.addEventListener('click', () => {
+                mobileFsActive = !mobileFsActive;
+                dialog.classList.toggle('mobile-fs-active', mobileFsActive);
+                mobileFsBtn.innerHTML = mobileFsActive ? '<i class="fa-solid fa-compress"></i>' : '<i class="fa-solid fa-expand"></i>';
+                mobileFsBtn.setAttribute('aria-label', mobileFsActive ? 'צא ממסך מלא' : 'הצג במסך מלא');
+            });
         } else {
             // Render Plyr video embed wrapper (used for both vertical and widescreen to preserve navigation)
             container.innerHTML = `
@@ -1127,6 +1144,11 @@ function openVideoPlayer(project) {
             plyrInstance.on('exitfullscreen', () => {
                 dialog.classList.remove('fullscreen-active');
             });
+
+            // Mask the YouTube channel watermark badge (Plyr's control skin doesn't cover this corner)
+            const desktopBadgeMask = document.createElement('div');
+            desktopBadgeMask.className = 'yt-badge-mask';
+            container.appendChild(desktopBadgeMask);
         }
     } else {
         // Fallback for non-YouTube files (HTML5 video player via Plyr)
@@ -1204,6 +1226,7 @@ function closeVideoPlayer() {
     // Clear innerHTML to stop video sound playing in background
     container.innerHTML = '';
     dialog.classList.remove('vertical-player');
+    dialog.classList.remove('mobile-fs-active');
     dialog.close();
     
     // Remove freeze body scrolling class

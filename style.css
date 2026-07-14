@@ -1629,6 +1629,13 @@ html[lang="en"] .slice-btn:hover i {
     background: #000 !important;
 }
 
+.video-dialog.fullscreen-active .dialog-content,
+.video-dialog:has(.plyr--fullscreen-active) .dialog-content {
+    width: 100% !important;
+    height: 100% !important;
+    border-radius: 0 !important;
+}
+
 .video-dialog.fullscreen-active .video-container,
 .video-dialog:has(.plyr--fullscreen-active) .video-container {
     max-width: 100% !important;
@@ -1637,6 +1644,38 @@ html[lang="en"] .slice-btn:hover i {
     height: 100% !important;
     border-radius: 0 !important;
     aspect-ratio: auto !important;
+}
+
+/* Mobile pseudo-fullscreen: unlike Plyr's native fullscreen above, this keeps the video-container's own
+   aspect-ratio intact (letterboxing happens around it, not inside a stretched iframe) so the crop/mask trick
+   that hides YouTube's chrome and branding stays correctly aligned at any viewport size. */
+.video-dialog.mobile-fs-active {
+    max-width: 100vw !important;
+    max-height: 100vh !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    border-radius: 0 !important;
+    margin: 0 !important;
+    top: 0 !important;
+    left: 0 !important;
+    background: #000 !important;
+}
+
+.video-dialog.mobile-fs-active .dialog-content {
+    width: 100% !important;
+    height: 100% !important;
+    border-radius: 0 !important;
+    background: #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.video-dialog.mobile-fs-active .video-container {
+    width: 100% !important;
+    max-width: 100vw !important;
+    max-height: 100vh !important;
+    border-radius: 0 !important;
 }
 
 /* Elegant vertical player overrides to emulate high-end reels/shorts frame */
@@ -1768,6 +1807,39 @@ html[lang="en"] .slice-btn:hover i {
 
 .dialog-info {
     display: none !important; /* Hide description/info panel below the modal video element */
+}
+
+/* Masks the YouTube channel watermark badge that appears top-right during playback (not controllable via embed params) */
+.yt-badge-mask {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 32%;
+    height: 28%;
+    min-width: 72px;
+    min-height: 64px;
+    background: radial-gradient(circle at top right, rgba(5, 8, 20, 0.97) 0%, rgba(5, 8, 20, 0.97) 55%, rgba(5, 8, 20, 0) 100%);
+    pointer-events: none;
+    z-index: 20;
+}
+
+/* Custom fullscreen toggle for the mobile raw-iframe player (native YouTube controls are cropped out along with branding) */
+.mobile-fs-toggle {
+    position: absolute;
+    bottom: 15px;
+    left: 15px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.45);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    z-index: 6;
+    cursor: pointer;
 }
 
 /* ==========================================================================
