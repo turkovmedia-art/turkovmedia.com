@@ -1788,52 +1788,6 @@ html[lang="en"] .slice-btn:hover i {
     display: none !important; /* Hide description/info panel below the modal video element */
 }
 
-/* Opaque poster cover shown while paused: YouTube overlays its title/channel/logo on pause
-   and no embed param removes them, so the whole frame is covered with the project's own poster.
-   Sits above the video (z-index 2) but below Plyr's control bar (z-index 3) so seeking still works. */
-.yt-pause-cover {
-    position: absolute;
-    inset: 0;
-    z-index: 2;
-    background: #050814;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.25s ease;
-}
-
-.yt-pause-cover.visible {
-    opacity: 1;
-    pointer-events: auto;
-    cursor: pointer;
-}
-
-.yt-pause-cover img {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-.yt-pause-cover .cover-play-btn {
-    position: relative;
-    z-index: 1;
-    width: 74px;
-    height: 74px;
-    border-radius: 50%;
-    background: rgba(0, 240, 255, 0.9);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #050814;
-    font-size: 26px;
-    padding-left: 5px;
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
-}
-
 /* Transparent tap interceptor over the YouTube iframe: without it, taps on touch devices reach
    the iframe itself and YouTube pops its own overlay (title, channel, logo, controls).
    z-index 1 = above the video wrapper, below the pause cover (2) and Plyr's control bar (3). */

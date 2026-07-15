@@ -1040,13 +1040,22 @@ function openVideoPlayer(project) {
         
         let topPercent = '-11.5%';     // Shifts iframe up to fully hide top title bar and channel details (11.5% crop)
         let heightPercent = '123%';    // Stretches height to hide bottom player bar and logos (123% scale)
-        
+
+        const isMobile = window.innerWidth <= 768 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
         if (aspectRatio === '9 / 16') {
             dialog.classList.add('vertical-player');
             topPercent = '-30%';        // Crop margins tailored to hide all YouTube header/footer symbols on mobile (Reels viewport)
             heightPercent = '160%';
         } else {
             dialog.classList.remove('vertical-player');
+            // Deeper crop on phones (applies to windowed AND fullscreen since both read the same
+            // CSS vars): YouTube's paused-state title/branding zones are taller relative to the
+            // small mobile frame, so the desktop margins leave them borderline-visible
+            if (isMobile) {
+                topPercent = '-25%';
+                heightPercent = '150%';
+            }
         }
         
         // Allow explicit custom database override parameters
@@ -1138,36 +1147,21 @@ function openVideoPlayer(project) {
             plyrInstance.on('ready', killYouTubeCaptions);
             plyrInstance.on('playing', killYouTubeCaptions);
 
-            // When paused, YouTube overlays its title, channel and logo (no embed param removes them),
-            // so cover the whole frame with the project's own poster + play button instead
+            // Transparent shield over the iframe: on touch devices taps land directly on the
+            // YouTube iframe (revealing its title/logo/controls overlay), so intercept them
+            // and drive Plyr instead. Sits below Plyr's control bar, so controls stay usable.
+            // Pausing freezes the frame naturally - the deep crop keeps YouTube's paused-state
+            // title/branding zones outside the visible area.
             plyrInstance.on('ready', () => {
                 const plyrContainer = plyrInstance.elements && plyrInstance.elements.container;
-                if (!plyrContainer || plyrContainer.querySelector('.yt-pause-cover')) return;
+                if (!plyrContainer || plyrContainer.querySelector('.yt-touch-shield')) return;
 
-                // Transparent shield over the iframe: on touch devices taps land directly on the
-                // YouTube iframe (revealing its title/logo/controls overlay), so intercept them
-                // and drive Plyr instead. Sits below Plyr's control bar, so controls stay usable.
                 const shield = document.createElement('div');
                 shield.className = 'yt-touch-shield';
                 shield.addEventListener('click', () => {
                     if (plyrInstance) plyrInstance.togglePlay();
                 });
                 plyrContainer.appendChild(shield);
-
-                const posterUrl = project.thumbnail || `https://img.youtube.com/vi/${ytId}/hqdefault.jpg`;
-                const cover = document.createElement('div');
-                cover.className = 'yt-pause-cover';
-                cover.innerHTML = `
-                    <img src="${posterUrl}" alt="" aria-hidden="true">
-                    <span class="cover-play-btn"><i class="fa-solid fa-play"></i></span>
-                `;
-                cover.addEventListener('click', () => {
-                    if (plyrInstance) plyrInstance.play();
-                });
-                plyrContainer.appendChild(cover);
-
-                plyrInstance.on('pause', () => cover.classList.add('visible'));
-                plyrInstance.on('playing', () => cover.classList.remove('visible'));
             });
         }
     } else {
