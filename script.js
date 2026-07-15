@@ -1144,6 +1144,16 @@ function openVideoPlayer(project) {
                 const plyrContainer = plyrInstance.elements && plyrInstance.elements.container;
                 if (!plyrContainer || plyrContainer.querySelector('.yt-pause-cover')) return;
 
+                // Transparent shield over the iframe: on touch devices taps land directly on the
+                // YouTube iframe (revealing its title/logo/controls overlay), so intercept them
+                // and drive Plyr instead. Sits below Plyr's control bar, so controls stay usable.
+                const shield = document.createElement('div');
+                shield.className = 'yt-touch-shield';
+                shield.addEventListener('click', () => {
+                    if (plyrInstance) plyrInstance.togglePlay();
+                });
+                plyrContainer.appendChild(shield);
+
                 const posterUrl = project.thumbnail || `https://img.youtube.com/vi/${ytId}/hqdefault.jpg`;
                 const cover = document.createElement('div');
                 cover.className = 'yt-pause-cover';

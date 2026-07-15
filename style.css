@@ -1641,6 +1641,8 @@ html[lang="en"] .slice-btn:hover i {
     width: 100% !important;
     height: 100% !important;
     border-radius: 0 !important;
+    border: none !important; /* No frosted bezel in fullscreen - edge-to-edge video */
+    background: #000 !important;
 }
 
 .video-dialog.fullscreen-active .video-container,
@@ -1830,6 +1832,17 @@ html[lang="en"] .slice-btn:hover i {
     font-size: 26px;
     padding-left: 5px;
     box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+}
+
+/* Transparent tap interceptor over the YouTube iframe: without it, taps on touch devices reach
+   the iframe itself and YouTube pops its own overlay (title, channel, logo, controls).
+   z-index 1 = above the video wrapper, below the pause cover (2) and Plyr's control bar (3). */
+.yt-touch-shield {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background: transparent;
+    cursor: pointer;
 }
 
 
@@ -4056,27 +4069,42 @@ html.modal-open, body.modal-open {
     height: 100% !important;
 }
 
-/* CSS-fallback fullscreen (iOS Safari without a native Fullscreen API): make sure the player
-   really covers the entire dynamic viewport, not just the dialog area */
-.plyr--fullscreen-fallback {
-    position: fixed !important;
-    top: 0 !important;
-    left: 0 !important;
-    width: 100dvw !important;
-    height: 100dvh !important;
+/* CSS-fallback fullscreen (iOS Safari without a native Fullscreen API): the dialog itself is
+   already stretched over the whole screen by .fullscreen-active, so the player just needs to
+   fill it. position:fixed is deliberately avoided - the dialog's open animation leaves a
+   transform that would trap fixed children inside the dialog box. */
+.video-dialog .plyr--fullscreen-fallback {
+    position: absolute !important;
+    inset: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    max-width: none !important;
+    max-height: none !important;
     border-radius: 0 !important;
-    z-index: 10000000 !important;
     background: #000 !important;
 }
 
-/* On a phone held in portrait, rotate widescreen video 90° so fallback fullscreen
-   fills the whole phone screen in landscape - the same feel as native fullscreen */
+/* On a phone held in portrait, rotate the whole fullscreen dialog content 90° so widescreen
+   video fills the entire phone screen in landscape - the same feel as native fullscreen.
+   The <dialog> lives in the browser's top layer, so no ancestor transform can trap it. */
 @media (pointer: coarse) and (orientation: portrait) {
-    .video-dialog:not(.vertical-player) .plyr--fullscreen-fallback {
-        width: 100dvh !important;
-        height: 100dvw !important;
-        transform: rotate(90deg) translateY(-100dvw) !important;
+    .video-dialog.fullscreen-active:not(.vertical-player) .dialog-content,
+    .video-dialog:has(.plyr--fullscreen-fallback):not(.vertical-player) .dialog-content {
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 100vh !important;
+        height: 100vw !important;
+        transform: rotate(90deg) translateY(-100vw) !important;
         transform-origin: top left !important;
+    }
+
+    .video-dialog.fullscreen-active:not(.vertical-player) .video-container,
+    .video-dialog:has(.plyr--fullscreen-fallback):not(.vertical-player) .video-container {
+        width: 100% !important;
+        height: 100% !important;
+        max-width: none !important;
+        max-height: none !important;
     }
 }
 
