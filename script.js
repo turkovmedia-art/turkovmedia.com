@@ -1107,9 +1107,16 @@ function openVideoPlayer(project) {
             
             plyrInstance.on('enterfullscreen', () => {
                 dialog.classList.add('fullscreen-active');
+                // Rotate widescreen video to landscape when the phone is held in portrait (native fullscreen only)
+                if (!dialog.classList.contains('vertical-player') && screen.orientation && screen.orientation.lock) {
+                    screen.orientation.lock('landscape').catch(() => {});
+                }
             });
             plyrInstance.on('exitfullscreen', () => {
                 dialog.classList.remove('fullscreen-active');
+                if (screen.orientation && screen.orientation.unlock) {
+                    try { screen.orientation.unlock(); } catch (_) {}
+                }
             });
             // YouTube's end screen (title, channel, logo) can't be suppressed via embed params,
             // so close the player the moment the video finishes instead of letting it show
@@ -1117,10 +1124,41 @@ function openVideoPlayer(project) {
                 closeVideoPlayer();
             });
 
-            // Mask the YouTube channel watermark badge (Plyr's control skin doesn't cover this corner)
-            const badgeMask = document.createElement('div');
-            badgeMask.className = 'yt-badge-mask';
-            container.appendChild(badgeMask);
+            // cc_load_policy=3 alone doesn't always stop YouTube from auto-enabling captions/auto-translate;
+            // unloading the captions modules through the IFrame API kills them for good
+            const killYouTubeCaptions = () => {
+                try {
+                    const yt = plyrInstance && plyrInstance.embed;
+                    if (yt && yt.unloadModule) {
+                        try { yt.unloadModule('captions'); } catch (_) {}
+                        try { yt.unloadModule('cc'); } catch (_) {}
+                    }
+                } catch (_) {}
+            };
+            plyrInstance.on('ready', killYouTubeCaptions);
+            plyrInstance.on('playing', killYouTubeCaptions);
+
+            // When paused, YouTube overlays its title, channel and logo (no embed param removes them),
+            // so cover the whole frame with the project's own poster + play button instead
+            plyrInstance.on('ready', () => {
+                const plyrContainer = plyrInstance.elements && plyrInstance.elements.container;
+                if (!plyrContainer || plyrContainer.querySelector('.yt-pause-cover')) return;
+
+                const posterUrl = project.thumbnail || `https://img.youtube.com/vi/${ytId}/hqdefault.jpg`;
+                const cover = document.createElement('div');
+                cover.className = 'yt-pause-cover';
+                cover.innerHTML = `
+                    <img src="${posterUrl}" alt="" aria-hidden="true">
+                    <span class="cover-play-btn"><i class="fa-solid fa-play"></i></span>
+                `;
+                cover.addEventListener('click', () => {
+                    if (plyrInstance) plyrInstance.play();
+                });
+                plyrContainer.appendChild(cover);
+
+                plyrInstance.on('pause', () => cover.classList.add('visible'));
+                plyrInstance.on('playing', () => cover.classList.remove('visible'));
+            });
         }
     } else {
         // Fallback for non-YouTube files (HTML5 video player via Plyr)
