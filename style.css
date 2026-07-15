@@ -4062,9 +4062,10 @@ html.modal-open, body.modal-open {
     transform: none !important;
 }
 
-/* Reset cropping completely in fullscreen mode to display the entire video frame on screen */
-.plyr--fullscreen-active .plyr__video-embed iframe,
-.plyr--fullscreen-fallback .plyr__video-embed iframe {
+/* Native (desktop/Android) fullscreen: reset the crop to show the entire video frame.
+   The mobile CSS-fallback fullscreen deliberately KEEPS the crop (same enlarge-and-clip trick
+   as the windowed player) so YouTube's top/bottom chrome stays pushed out of view on phones. */
+.plyr--fullscreen-active:not(.plyr--fullscreen-fallback) .plyr__video-embed iframe {
     top: 0 !important;
     height: 100% !important;
 }
