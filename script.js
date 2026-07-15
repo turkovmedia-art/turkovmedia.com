@@ -737,16 +737,7 @@ function renderPortfolioGrid(filter = 'all') {
     
     grid.innerHTML = '';
     
-    // Check if the device is a touch screen (mobile) or supports transparent WebM video format
-    const useWebmHover = (function() {
-        try {
-            return document.createElement('video').canPlayType('video/webm') !== '';
-        } catch (e) {
-            return false;
-        }
-    })();
-    
-    const filteredProjects = filter === 'all' 
+    const filteredProjects = filter === 'all'
         ? videoProjects 
         : videoProjects.filter(p => p.categories.includes(filter));
         
@@ -766,26 +757,10 @@ function renderPortfolioGrid(filter = 'all') {
                 <img src="${displayProj.thumbnail}" alt="${displayProj.title}" class="portfolio-thumb" loading="lazy">
                 <div class="portfolio-overlay">
                     <div class="play-trigger">
-                        ${useWebmHover ? `
-                            <video class="hover-logo-video" muted playsinline preload="auto" style="width: 100%; height: 100%; object-fit: contain; pointer-events: none;">
-                                <source src="assets/Icone.webm" type="video/webm">
-                            </video>
-                        ` : `
-                            <div class="hover-logo-fallback-circle" style="
-                                width: 55px;
-                                height: 55px;
-                                border: 2px solid rgba(255, 255, 255, 0.9);
-                                border-radius: 50%;
-                                display: flex;
-                                align-items: center;
-                                justify-content: center;
-                                background: rgba(0, 0, 0, 0.55);
-                                backdrop-filter: blur(4px);
-                                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
-                            ">
-                                <i class="fa-solid fa-play" style="color: #ffffff; font-size: 18px; margin-left: 3px;"></i>
-                            </div>
-                        `}
+                        <video class="hover-logo-video" muted playsinline preload="auto" style="width: 100%; height: 100%; object-fit: contain; pointer-events: none;">
+                            <source src="assets/Icone.webm" type="video/webm">
+                            <source src="assets/Icone.mp4" type="video/mp4">
+                        </video>
                     </div>
                 </div>
             </div>
@@ -794,7 +769,7 @@ function renderPortfolioGrid(filter = 'all') {
             </div>
         `;
         
-        if (useWebmHover) {
+        {
             const video = card.querySelector('.hover-logo-video');
             let checkInterval = null;
             
@@ -1027,21 +1002,21 @@ function openVideoPlayer(project) {
     }
     
     const ytId = getYouTubeId(project.videoUrl);
-    
+    // Fullscreen is desktop-only by request - phones stay windowed at all times
+    const isMobile = window.innerWidth <= 768 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
     if (ytId) {
         // Determine dynamic aspect ratio and vertical stretch proportions based on video layout
         let aspectRatio = project.aspectRatio || '16 / 9';
-        
+
         if (project.videoUrl && project.videoUrl.includes('/shorts/')) {
             aspectRatio = '9 / 16';
         } else if (aspectRatio.includes('21') || aspectRatio.includes('2.3')) {
             aspectRatio = '21 / 9';  // Set container format to widescreen
         }
-        
+
         let topPercent = '-11.5%';     // Shifts iframe up to fully hide top title bar and channel details (11.5% crop)
         let heightPercent = '123%';    // Stretches height to hide bottom player bar and logos (123% scale)
-
-        const isMobile = window.innerWidth <= 768 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
         if (aspectRatio === '9 / 16') {
             dialog.classList.add('vertical-player');
@@ -1049,12 +1024,11 @@ function openVideoPlayer(project) {
             heightPercent = '160%';
         } else {
             dialog.classList.remove('vertical-player');
-            // Deeper crop on phones (applies to windowed AND fullscreen since both read the same
-            // CSS vars): YouTube's paused-state title/branding zones are taller relative to the
-            // small mobile frame, so the desktop margins leave them borderline-visible
+            // Deeper crop on phones: YouTube's paused-state title/branding zones are taller
+            // relative to the small mobile frame, so the desktop margins leave them visible
             if (isMobile) {
-                topPercent = '-25%';
-                heightPercent = '150%';
+                topPercent = '-28%';
+                heightPercent = '156%';
             }
         }
         
@@ -1085,6 +1059,7 @@ function openVideoPlayer(project) {
             `;
             
             // Initialize Plyr player wrapper with full custom control bar
+            // Fullscreen is desktop-only by request - on phones it stays windowed
             plyrInstance = new Plyr('#custom-youtube-player', {
                 youtube: {
                     noCookie: true,
@@ -1095,16 +1070,22 @@ function openVideoPlayer(project) {
                     cc_load_policy: 3, // Disable captions completely
                     cc_lang_pref: 'off'
                 },
-                controls: [
+                controls: isMobile ? [
                     'play',         // Play/Pause button
                     'progress',     // Timeline progress slider (drag/click to seek)
                     'current-time', // Running play time
                     'mute',         // Mute toggle
-                    'volume',       // Volume bar
+                    'volume'        // Volume bar
+                ] : [
+                    'play',
+                    'progress',
+                    'current-time',
+                    'mute',
+                    'volume',
                     'fullscreen'    // Fullscreen toggle button
                 ],
                 fullscreen: {
-                    enabled: true,
+                    enabled: !isMobile,
                     fallback: true,
                     iosNative: false,
                     container: null // Use default player container for robust native desktop fullscreen
@@ -1113,24 +1094,23 @@ function openVideoPlayer(project) {
                 clickToPlay: true,
                 autoplay: true
             });
-            
+
             plyrInstance.on('enterfullscreen', () => {
                 dialog.classList.add('fullscreen-active');
-                // Rotate widescreen video to landscape when the phone is held in portrait (native fullscreen only)
-                if (!dialog.classList.contains('vertical-player') && screen.orientation && screen.orientation.lock) {
-                    screen.orientation.lock('landscape').catch(() => {});
-                }
             });
             plyrInstance.on('exitfullscreen', () => {
                 dialog.classList.remove('fullscreen-active');
-                if (screen.orientation && screen.orientation.unlock) {
-                    try { screen.orientation.unlock(); } catch (_) {}
-                }
             });
             // YouTube's end screen (title, channel, logo) can't be suppressed via embed params,
             // so close the player the moment the video finishes instead of letting it show
             plyrInstance.on('ended', () => {
                 closeVideoPlayer();
+            });
+            // Hide the frame until actual playback starts, so the brief moment where the embed
+            // loads its still frame/title before autoplay kicks in never flashes YouTube branding
+            container.classList.add('yt-awaiting-playback');
+            plyrInstance.on('playing', () => {
+                container.classList.remove('yt-awaiting-playback');
             });
 
             // cc_load_policy=3 alone doesn't always stop YouTube from auto-enabling captions/auto-translate;
@@ -1179,7 +1159,13 @@ function openVideoPlayer(project) {
             `;
             
             plyrInstance = new Plyr('#custom-native-player', {
-                controls: [
+                controls: isMobile ? [
+                    'play',
+                    'progress',
+                    'current-time',
+                    'mute',
+                    'volume'
+                ] : [
                     'play',
                     'progress',
                     'current-time',
@@ -1188,7 +1174,7 @@ function openVideoPlayer(project) {
                     'fullscreen'
                 ],
                 fullscreen: {
-                    enabled: true,
+                    enabled: !isMobile,
                     fallback: true,
                     iosNative: false,
                     container: null // Use default player container for robust native desktop fullscreen
