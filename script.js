@@ -965,7 +965,6 @@ function initVideoModal() {
                              document.mozFullScreenElement ||
                              document.msFullscreenElement ||
                              dialog.classList.contains('fullscreen-active') ||
-                             dialog.classList.contains('mobile-fs-active') ||
                              dialog.querySelector('.plyr--fullscreen-active') !== null;
         if (isFullscreen) {
             return;
@@ -1027,7 +1026,6 @@ function openVideoPlayer(project) {
         plyrInstance = null;
     }
     
-    const isMobile = window.innerWidth <= 768 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
     const ytId = getYouTubeId(project.videoUrl);
     
     if (ytId) {
@@ -1049,11 +1047,6 @@ function openVideoPlayer(project) {
             heightPercent = '160%';
         } else {
             dialog.classList.remove('vertical-player');
-            // Crop widescreen videos further on mobile viewports to push bottom controls and top bars out of screen (about 2.5cm shift)
-            if (isMobile) {
-                topPercent = '-25%';
-                heightPercent = '150%';
-            }
         }
         
         // Allow explicit custom database override parameters
@@ -1068,35 +1061,9 @@ function openVideoPlayer(project) {
         container.style.setProperty('--video-top', topPercent);
         container.style.setProperty('--video-height', heightPercent);
         
-        if (isMobile) {
-            // Render native iframe for mobile to allow native iOS fullscreen and instant autoplay
-            container.innerHTML = `
-                <iframe
-                    src="https://www.youtube.com/embed/${ytId}?origin=${window.location.origin}&iv_load_policy=3&modestbranding=1&playsinline=1&showinfo=0&rel=0&enablejsapi=1&autoplay=1&cc_load_policy=3&cc_lang_pref=off&controls=1"
-                    allowfullscreen
-                    allowtransparency
-                    allow="autoplay; fullscreen"
-                    style="width: 100%; height: 100%; border: none; position: absolute; top: ${topPercent}; left: 0; height: ${heightPercent};"
-                ></iframe>
-                <div class="yt-badge-mask"></div>
-                <button type="button" class="mobile-fs-toggle" id="mobileFsToggle" aria-label="הצג במסך מלא">
-                    <i class="fa-solid fa-expand"></i>
-                </button>
-            `;
-
-            // Custom pseudo-fullscreen toggle: native crop hides YouTube's own fullscreen control along with its branding,
-            // so mobile needs its own entry point. Keeps the existing crop active (rather than resetting it) so the
-            // container's own aspect-ratio is preserved and the badge mask stays correctly aligned.
-            const mobileFsBtn = container.querySelector('#mobileFsToggle');
-            let mobileFsActive = false;
-            mobileFsBtn.addEventListener('click', () => {
-                mobileFsActive = !mobileFsActive;
-                dialog.classList.toggle('mobile-fs-active', mobileFsActive);
-                mobileFsBtn.innerHTML = mobileFsActive ? '<i class="fa-solid fa-compress"></i>' : '<i class="fa-solid fa-expand"></i>';
-                mobileFsBtn.setAttribute('aria-label', mobileFsActive ? 'צא ממסך מלא' : 'הצג במסך מלא');
-            });
-        } else {
-            // Render Plyr video embed wrapper (used for both vertical and widescreen to preserve navigation)
+        {
+            // Plyr on all devices (mobile included) so the player always has its own custom controls
+            // with no visible YouTube chrome; fullscreen fallback covers the whole phone screen on iOS.
             container.innerHTML = `
                 <div class="plyr__video-embed" id="custom-youtube-player" style="width: 100%; height: 100%;">
                     <iframe
@@ -1144,11 +1111,16 @@ function openVideoPlayer(project) {
             plyrInstance.on('exitfullscreen', () => {
                 dialog.classList.remove('fullscreen-active');
             });
+            // YouTube's end screen (title, channel, logo) can't be suppressed via embed params,
+            // so close the player the moment the video finishes instead of letting it show
+            plyrInstance.on('ended', () => {
+                closeVideoPlayer();
+            });
 
             // Mask the YouTube channel watermark badge (Plyr's control skin doesn't cover this corner)
-            const desktopBadgeMask = document.createElement('div');
-            desktopBadgeMask.className = 'yt-badge-mask';
-            container.appendChild(desktopBadgeMask);
+            const badgeMask = document.createElement('div');
+            badgeMask.className = 'yt-badge-mask';
+            container.appendChild(badgeMask);
         }
     } else {
         // Fallback for non-YouTube files (HTML5 video player via Plyr)
@@ -1157,14 +1129,7 @@ function openVideoPlayer(project) {
         container.style.setProperty('--video-height', '100%');
         const embedUrl = resolveEmbedUrl(displayProj.videoUrl);
         
-        if (isMobile) {
-            // Render native video controls for mobile to support native fullscreen
-            container.innerHTML = `
-                <video id="custom-native-player" autoplay playsinline controls style="width: 100%; height: 100%; border: none;">
-                    <source src="${embedUrl.url}" type="video/mp4">
-                </video>
-            `;
-        } else {
+        {
             container.innerHTML = `
                 <video id="custom-native-player" autoplay playsinline controls style="width: 100%; height: 100%; border: none;">
                     <source src="${embedUrl.url}" type="video/mp4">
@@ -1226,7 +1191,6 @@ function closeVideoPlayer() {
     // Clear innerHTML to stop video sound playing in background
     container.innerHTML = '';
     dialog.classList.remove('vertical-player');
-    dialog.classList.remove('mobile-fs-active');
     dialog.close();
     
     // Remove freeze body scrolling class
