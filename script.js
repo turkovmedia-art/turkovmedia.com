@@ -4389,23 +4389,9 @@ function getTranslatedProject(project) {
     return project;
 }
 
-// Initialize expanding image-slice services accordion (Inspired by tzvaim.com)
+// Ambient mouse-trailing glow behind the services cards
 function initServicesAccordion() {
     const servicesSection = document.querySelector('.services-section');
-    const slices = document.querySelectorAll('.service-slice');
-    
-    slices.forEach(slice => {
-        slice.addEventListener('mouseenter', () => {
-            slices.forEach(s => s.classList.remove('active'));
-            slice.classList.add('active');
-        });
-        
-        // Touch screens click to expand support
-        slice.addEventListener('click', () => {
-            slices.forEach(s => s.classList.remove('active'));
-            slice.classList.add('active');
-        });
-    });
 
     // High-performance single-blob trailing Siri glow (GPU accelerated, no layout thrashes, zero flashes!)
     if (servicesSection) {
@@ -4429,7 +4415,7 @@ function initServicesAccordion() {
         
         servicesSection.addEventListener('mousemove', (e) => {
             // Hide the glow when hovering directly over card elements to keep cards clean
-            if (e.target.closest('.service-slice')) {
+            if (e.target.closest('.service-card')) {
                 blob.style.opacity = '0';
                 return;
             } else {
