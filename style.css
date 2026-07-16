@@ -959,6 +959,99 @@ img {
     animation: float-node 12s infinite ease-in-out 3s;
 }
 
+/* Illustrated scene layer: a small themed drawing per card (camera rig, edit suite, drone
+   over a skyline, neural network) sitting behind the centered title/text, at the same low
+   opacity as the older abstract shapes above so it reads like a dimmed background photo. */
+.slice-scene {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: scene-breathe 16s ease-in-out infinite;
+    transform-origin: center;
+}
+
+.scene-svg {
+    width: 100%;
+    height: 100%;
+}
+
+@keyframes scene-breathe {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.06); }
+}
+
+/* Cinema: blinking record dot */
+.rec-dot {
+    animation: rec-blink 1.6s ease-in-out infinite;
+}
+
+@keyframes rec-blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.15; }
+}
+
+/* Editing: playhead sweeping across the timeline, color-wheel dots orbiting */
+.playhead {
+    animation: playhead-sweep 3.2s ease-in-out infinite;
+}
+
+@keyframes playhead-sweep {
+    0%, 100% { transform: translateX(0); }
+    50% { transform: translateX(90px); }
+}
+
+.wheel-dot {
+    transform-box: fill-box;
+    transform-origin: center;
+}
+.wheel-dot { animation: wheel-orbit 5s linear infinite; }
+.wheel-dot-2 { animation-duration: 6.5s; animation-direction: reverse; }
+.wheel-dot-3 { animation-duration: 4.2s; }
+
+@keyframes wheel-orbit {
+    from { transform: rotate(0deg) translateX(18px) rotate(0deg); }
+    to { transform: rotate(360deg) translateX(18px) rotate(-360deg); }
+}
+
+/* Drone: slow side-to-side drift over the skyline, fast-spinning propellers */
+.drone-icon {
+    animation: drone-drift 9s ease-in-out infinite;
+    transform-box: fill-box;
+}
+
+@keyframes drone-drift {
+    0%, 100% { transform: translate(0, 0); }
+    50% { transform: translate(22px, -10px); }
+}
+
+.propeller {
+    animation: prop-spin 0.5s linear infinite;
+}
+.propeller-b { animation-direction: reverse; }
+.propeller-c { animation-duration: 0.45s; animation-direction: reverse; }
+.propeller-d { animation-duration: 0.55s; }
+
+@keyframes prop-spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* AI: signal pulses traveling outward along the network's connections */
+.signal-path {
+    stroke-dasharray: 12 150;
+    stroke-dashoffset: 0;
+    animation: signal-travel 2.4s linear infinite;
+}
+
+@keyframes signal-travel {
+    0% { stroke-dashoffset: 150; opacity: 0; }
+    10% { opacity: 1; }
+    90% { opacity: 1; }
+    100% { stroke-dashoffset: 0; opacity: 0; }
+}
+
 /* Common animation keyframes */
 @keyframes rotate-clockwise {
     0% { transform: rotate(0deg); }
