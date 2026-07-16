@@ -926,7 +926,23 @@ function initVideoModal() {
     closeBtn.addEventListener('click', () => {
         closeVideoPlayer();
     });
-    
+
+    // ESC closes the <dialog> natively (cancel -> close) without going through closeVideoPlayer,
+    // which left the YouTube iframe playing audio in the background. Run the same teardown on
+    // ANY close; every step here is idempotent so the closeVideoPlayer path is unaffected.
+    dialog.addEventListener('close', () => {
+        if (plyrInstance) {
+            plyrInstance.destroy();
+            plyrInstance = null;
+        }
+        const container = document.getElementById('dialogVideoContainer');
+        if (container) container.innerHTML = '';
+        dialog.classList.remove('vertical-player');
+        dialog.classList.remove('fullscreen-active');
+        document.documentElement.classList.remove('modal-open');
+        document.body.classList.remove('modal-open');
+    });
+
     let mousedownTarget = null;
     dialog.addEventListener('mousedown', (e) => {
         mousedownTarget = e.target;
@@ -1059,7 +1075,6 @@ function openVideoPlayer(project) {
             `;
             
             // Initialize Plyr player wrapper with full custom control bar
-            // Fullscreen is desktop-only by request - on phones it stays windowed
             plyrInstance = new Plyr('#custom-youtube-player', {
                 youtube: {
                     noCookie: true,
@@ -1070,23 +1085,17 @@ function openVideoPlayer(project) {
                     cc_load_policy: 3, // Disable captions completely
                     cc_lang_pref: 'off'
                 },
-                controls: isMobile ? [
+                controls: [
                     'play',         // Play/Pause button
                     'progress',     // Timeline progress slider (drag/click to seek)
                     'current-time', // Running play time
                     'mute',         // Mute toggle
-                    'volume'        // Volume bar
-                ] : [
-                    'play',
-                    'progress',
-                    'current-time',
-                    'mute',
-                    'volume',
+                    'volume',       // Volume bar
                     'fullscreen'    // Fullscreen toggle button
                 ],
                 fullscreen: {
-                    enabled: !isMobile,
-                    fallback: true,
+                    enabled: true,
+                    fallback: true, // On phones without a native Fullscreen API, use CSS fallback (rotated to landscape below)
                     iosNative: false,
                     container: null // Use default player container for robust native desktop fullscreen
                 },
@@ -1159,13 +1168,7 @@ function openVideoPlayer(project) {
             `;
             
             plyrInstance = new Plyr('#custom-native-player', {
-                controls: isMobile ? [
-                    'play',
-                    'progress',
-                    'current-time',
-                    'mute',
-                    'volume'
-                ] : [
+                controls: [
                     'play',
                     'progress',
                     'current-time',
@@ -1174,7 +1177,7 @@ function openVideoPlayer(project) {
                     'fullscreen'
                 ],
                 fullscreen: {
-                    enabled: !isMobile,
+                    enabled: true,
                     fallback: true,
                     iosNative: false,
                     container: null // Use default player container for robust native desktop fullscreen
