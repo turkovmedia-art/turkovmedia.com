@@ -1788,6 +1788,29 @@ html[lang="en"] .slice-btn:hover i {
     display: none !important; /* Hide description/info panel below the modal video element */
 }
 
+/* Custom iOS volume slider (Plyr omits its own on iPhone) - drives the YouTube IFrame API */
+.ios-volume-range {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 64px;
+    height: 4px;
+    border-radius: 2px;
+    background: rgba(255, 255, 255, 0.35);
+    accent-color: var(--accent-cyan);
+    margin: 0 6px;
+    cursor: pointer;
+}
+
+.ios-volume-range::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--accent-cyan);
+    border: none;
+}
+
 /* Transparent tap interceptor over the YouTube iframe: without it, taps on touch devices reach
    the iframe itself and YouTube pops its own overlay (title, channel, logo, controls).
    z-index 1 = above the video wrapper, below the pause cover (2) and Plyr's control bar (3). */

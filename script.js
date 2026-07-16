@@ -1151,6 +1151,33 @@ function openVideoPlayer(project) {
                     if (plyrInstance) plyrInstance.togglePlay();
                 });
                 plyrContainer.appendChild(shield);
+
+                // iOS: Plyr deliberately omits its volume slider (historic WebKit limitation),
+                // so add our own range that drives the YouTube player's volume directly
+                // through the IFrame API - modern iOS honors it
+                const isIosDevice = /iPhone|iPad|iPod/i.test(navigator.userAgent) ||
+                    (navigator.maxTouchPoints > 1 && /Mac/.test(navigator.userAgent));
+                const volumeWrap = plyrContainer.querySelector('.plyr__volume');
+                if (isIosDevice && volumeWrap && !volumeWrap.querySelector('.ios-volume-range')) {
+                    const range = document.createElement('input');
+                    range.type = 'range';
+                    range.min = '0';
+                    range.max = '100';
+                    range.step = '5';
+                    range.value = '100';
+                    range.className = 'ios-volume-range';
+                    range.setAttribute('aria-label', 'עוצמת שמע');
+                    range.addEventListener('input', () => {
+                        try {
+                            const yt = plyrInstance && plyrInstance.embed;
+                            if (yt && yt.setVolume) {
+                                yt.setVolume(parseInt(range.value, 10));
+                                if (parseInt(range.value, 10) > 0 && yt.unMute) yt.unMute();
+                            }
+                        } catch (_) {}
+                    });
+                    volumeWrap.appendChild(range);
+                }
             });
         }
     } else {
@@ -3323,7 +3350,7 @@ const translationDictionary = {
         about_tag: "מי אני",
         about_title: "יוצרים מציאות דרך העדשה",
         about_bio: "שלום, אני מנדי טורקוב.",
-        about_bio_detail: "יוצר סרטים, צלם שטח ואוויר, ועורך וידאו, המתמחה ביצירת תוכן קולנועי, פרסומות, קליפים וסרטוני רשת שמשאירים חותם. אני משלב צילום קרקעי ואווירי מתקדם (רחפן), עריכה קולנועית וטכנולוגיות AI כדי להפוך כל רעיון ליצירה ויזואלית סוחפת ויוצאת דופן. ברוכים הבאים לתיק העבודות שלי.",
+        about_bio_detail: "יוצר סרטים, צלם ועורך וידאו, המתמחה ביצירת תוכן קולנועי, פרסומות וסיפורים ויזואליים שמשאירים רושם. אני משלב צילום, עריכה, כתיבה וטכנולוגיות AI מתקדמות כדי להפוך רעיונות לסרטים ברמה גבוהה, עם דגש על איכות, דיוק וירידה לפרטים. ברוכים הבאים לתיק העבודות שלי.",
         about_clients_title: "הגופים והמותגים שבחרו בנו:",
         stat_completed_works: "עבודות שהושלמו",
         stat_years_exp: "שנות ניסיון",
@@ -3422,7 +3449,7 @@ const translationDictionary = {
         about_tag: "Who Am I",
         about_title: "Creating Reality Through the Lens",
         about_bio: "Hello, I'm Mendy Turkov.",
-        about_bio_detail: "Filmmaker, field and aerial videographer, and video editor specializing in cinematic content, commercials, music videos, and social media videos that leave a mark. I combine advanced ground and aerial drone shooting, cinematic editing, and AI technologies to turn every idea into an immersive and extraordinary visual piece. Welcome to my portfolio.",
+        about_bio_detail: "Filmmaker, videographer, and video editor specializing in cinematic content, commercials, and visual stories that leave an impression. I combine filming, editing, writing, and advanced AI technologies to turn ideas into high-end films, with an emphasis on quality, precision, and attention to detail. Welcome to my portfolio.",
         about_clients_title: "Clients and brands who chose us:",
         stat_completed_works: "Completed Projects",
         stat_years_exp: "Years Experience",
