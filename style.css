@@ -945,8 +945,19 @@ html[lang="en"] .service-card-btn:hover i {
         margin-left: 38%; /* clear the photo column on the left */
         padding: 16px 15px;
         gap: 7px;
-        align-items: flex-end; /* RTL: keep text/button to the right */
+        align-items: flex-start; /* RTL: pushes title/text to the RIGHT */
         text-align: right;
+    }
+
+    .service-card-title,
+    .service-card-text {
+        align-self: stretch; /* fill the text column so they sit flush right */
+        width: 100%;
+    }
+
+    /* Keep the button where it was (centred in its column), not dragged to the right */
+    .service-card-content .service-card-btn {
+        align-self: center;
     }
 
     .service-card-title {
