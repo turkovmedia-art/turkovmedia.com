@@ -801,6 +801,8 @@ img {
     display: flex;
     flex-direction: column;
     gap: 12px;
+    align-items: center;   /* desktop: centered text block */
+    text-align: center;
 }
 
 .service-card-title {
@@ -820,7 +822,7 @@ img {
 }
 
 .service-card-btn {
-    align-self: flex-start;
+    align-self: center;
     margin-top: 6px;
     background: #fff;
     color: #000;
@@ -872,14 +874,15 @@ html[lang="en"] .service-card-btn:hover i {
         margin-top: 30px;
     }
 
+    /* Card is a plain block so its height is driven by the TEXT; the photo is layered in
+       absolutely on the left, so the card ends exactly where the text ends. */
     .service-card {
         height: auto;
-        min-height: 140px;
-        display: flex;
-        flex-direction: row-reverse; /* RTL: photo (first DOM child) on the LEFT */
-        align-items: stretch;
-        background: #06090f;
+        min-height: 130px;
+        display: block;
         position: relative;
+        overflow: hidden;
+        background: #06090f;
     }
 
     /* Blurred, darkened copy of the card's own photo fills the whole card for a colour-matched base */
@@ -899,16 +902,17 @@ html[lang="en"] .service-card-btn:hover i {
         transform: none; /* no lift on touch */
     }
 
-    /* Crisp photo column on the left; smaller, showing only the main subject, its inner
-       edge fading into the blurred same-image base behind it. */
+    /* Crisp photo pinned to the left, covering the full (text-driven) card height, fading
+       into the blurred same-image base on its inner edge. */
     .service-card-bg {
-        position: relative;
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: auto;
         z-index: 1;
-        inset: auto;
         width: 46%;
-        flex-shrink: 0;
-        height: auto;
-        min-height: 100%;
+        height: 100%;
         object-fit: cover;
         object-position: center 32%; /* frame the main subject */
         transform: none; /* drop the desktop crop transform */
@@ -931,18 +935,18 @@ html[lang="en"] .service-card-btn:hover i {
         display: none;
     }
 
-    /* Text at the top, bleeding leftward over the blended photo zone */
+    /* Text on the right, its own height sets the card height; leaves room for the photo on the left */
     .service-card-content {
         position: relative;
         z-index: 2;
         left: auto;
         right: auto;
         bottom: auto;
-        flex: 1;
-        justify-content: flex-start;
-        padding: 15px 15px 15px 0;
-        margin-left: -16%;
+        margin-left: 38%; /* clear the photo column on the left */
+        padding: 16px 15px;
         gap: 7px;
+        align-items: flex-end; /* RTL: keep text/button to the right */
+        text-align: right;
     }
 
     .service-card-title {
@@ -955,6 +959,7 @@ html[lang="en"] .service-card-btn:hover i {
     }
 
     .service-card-btn {
+        align-self: flex-end; /* RTL: button to the right on mobile */
         padding: 7px 16px;
         font-size: 0.76rem;
         margin-top: 3px;
