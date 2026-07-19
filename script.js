@@ -4431,6 +4431,18 @@ function initServicesAccordion() {
             blob.style.transform = `translate3d(${x - 80}px, ${y - 80}px, 0) scale(4.2)`;
         });
     }
+
+    // Touch: play each card's themed photo animation on tap (there is no hover on phones)
+    document.querySelectorAll('.service-card').forEach(card => {
+        card.addEventListener('touchstart', () => {
+            card.classList.remove('svc-active');
+            // Force reflow so the animation restarts on every tap
+            void card.offsetWidth;
+            card.classList.add('svc-active');
+            clearTimeout(card._svcTimer);
+            card._svcTimer = setTimeout(() => card.classList.remove('svc-active'), 1500);
+        }, { passive: true });
+    });
 }
 
 // Scroll to portfolio gallery section and activate category filter
