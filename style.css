@@ -3833,12 +3833,15 @@ html.modal-open, body.modal-open {
     transition: opacity 0.2s ease;
 }
 
-/* Any fullscreen mode (native or CSS fallback): reset the crop completely so the entire
-   video frame is visible - nothing gets clipped at the top or bottom in fullscreen */
+/* Fullscreen (e.g. Android native): keep a gentle VERTICAL crop so YouTube's top title bar and
+   bottom logo/controls stay pushed out of view, while keeping width at 100% and left at 0 so
+   nothing is ever cropped horizontally - the full width of the frame fills the screen. */
 .plyr--fullscreen-active .plyr__video-embed iframe,
 .plyr--fullscreen-fallback .plyr__video-embed iframe {
-    top: 0 !important;
-    height: 100% !important;
+    top: -11% !important;
+    height: 124% !important;
+    width: 100% !important;
+    left: 0 !important;
 }
 
 /* CSS-fallback fullscreen (phones without a native Fullscreen API): the dialog itself is
