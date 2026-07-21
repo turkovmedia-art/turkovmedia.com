@@ -3833,13 +3833,13 @@ html.modal-open, body.modal-open {
     transition: opacity 0.2s ease;
 }
 
-/* Fullscreen (e.g. Android native): keep a gentle VERTICAL crop so YouTube's top title bar and
-   bottom logo/controls stay pushed out of view, while keeping width at 100% and left at 0 so
-   nothing is ever cropped horizontally - the full width of the frame fills the screen. */
+/* Fullscreen (e.g. Android native): crop ONLY the top of the frame, so YouTube's top title bar
+   is pushed off-screen, while the BOTTOM stays exactly at 100% - the burned-in subtitles that
+   sit at the bottom of the video are never clipped. Width stays 100% (no horizontal crop). */
 .plyr--fullscreen-active .plyr__video-embed iframe,
 .plyr--fullscreen-fallback .plyr__video-embed iframe {
-    top: -11% !important;
-    height: 124% !important;
+    top: -9% !important;
+    height: 109% !important;   /* -9% top + 109% height = bottom edge lands exactly at 100% */
     width: 100% !important;
     left: 0 !important;
 }
