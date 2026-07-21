@@ -3852,8 +3852,17 @@ html.modal-open, body.modal-open {
    and logo, so its marks land off the picture instead of on top of it.
 
    The 0.75 safety factor means even a badly reported 100vh (phones move the address bar) only
-   changes how big the margins are; it can never make the picture overflow. */
-.video-dialog:not(.vertical-player) .plyr--fullscreen-active .plyr__video-embed,
+   changes how big the margins are; it can never make the picture overflow.
+
+   CRITICAL selector note: in NATIVE fullscreen (Android) Plyr does NOT add any
+   "plyr--fullscreen-active" class - the only signals are the :fullscreen pseudo-class on the
+   .plyr container and the "fullscreen-active" class our own JS puts on the dialog from the
+   enterfullscreen event (which fires for the CSS fallback too). Every fullscreen rule must
+   therefore match all three: dialog.fullscreen-active, .plyr:fullscreen, and the fallback class.
+   Matching only "plyr--fullscreen-active" is the historic bug that kept the windowed 156%
+   enlarge-crop running inside Android native fullscreen and cut the subtitles. */
+.video-dialog.fullscreen-active:not(.vertical-player) .plyr__video-embed,
+.video-dialog:not(.vertical-player) .plyr:fullscreen .plyr__video-embed,
 .video-dialog:not(.vertical-player) .plyr--fullscreen-fallback .plyr__video-embed {
     position: absolute !important;
     top: 0 !important;
@@ -3868,7 +3877,8 @@ html.modal-open, body.modal-open {
 }
 
 /* Same idea for portrait (9:16) videos */
-.video-dialog.vertical-player .plyr--fullscreen-active .plyr__video-embed,
+.video-dialog.vertical-player.fullscreen-active .plyr__video-embed,
+.video-dialog.vertical-player .plyr:fullscreen .plyr__video-embed,
 .video-dialog.vertical-player .plyr--fullscreen-fallback .plyr__video-embed {
     position: absolute !important;
     top: 0 !important;
@@ -3882,7 +3892,9 @@ html.modal-open, body.modal-open {
     background: #000 !important;
 }
 
-.video-dialog .plyr--fullscreen-active .plyr__video-embed iframe,
+/* The iframe exactly fills the embed box - kills the windowed enlarge-crop in fullscreen */
+.video-dialog.fullscreen-active .plyr__video-embed iframe,
+.video-dialog .plyr:fullscreen .plyr__video-embed iframe,
 .video-dialog .plyr--fullscreen-fallback .plyr__video-embed iframe {
     top: 0 !important;
     left: 0 !important;
@@ -3895,7 +3907,8 @@ html.modal-open, body.modal-open {
    reach the iframe thanks to .yt-touch-shield). Rather than crop the picture to push those
    out of view, black the frame out for exactly that moment - Plyr's own play button stays on
    top of it. Nothing is ever cut, and no YouTube mark is ever visible. */
-.video-dialog .plyr--fullscreen-active.plyr--paused .plyr__video-embed iframe,
+.video-dialog.fullscreen-active .plyr--paused .plyr__video-embed iframe,
+.video-dialog .plyr--paused:fullscreen .plyr__video-embed iframe,
 .video-dialog .plyr--fullscreen-fallback.plyr--paused .plyr__video-embed iframe {
     opacity: 0 !important;
 }
@@ -3923,7 +3936,8 @@ html.modal-open, body.modal-open {
 }
 
 /* No leftover radius from the windowed player */
-.plyr--fullscreen-active,
+.video-dialog.fullscreen-active .plyr,
+.plyr:fullscreen,
 .plyr--fullscreen-fallback {
     border-radius: 0 !important;
     background: #000 !important;
