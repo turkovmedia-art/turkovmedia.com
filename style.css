@@ -3958,6 +3958,16 @@ html.modal-open, body.modal-open {
         width: 100% !important;
         height: 100% !important;
     }
+
+    /* Paused is the one moment YouTube draws its own title bar and logo by itself (taps never
+       reach the iframe thanks to .yt-touch-shield). So bring the enlarge-and-clip crop back
+       just for that moment - it switches off again the instant playback resumes, so nothing
+       is ever cropped while the video and its subtitles are actually running. */
+    .video-dialog.video-dialog .plyr--fullscreen-active.plyr--paused .plyr__video-embed iframe,
+    .video-dialog.video-dialog .plyr--fullscreen-fallback.plyr--paused .plyr__video-embed iframe {
+        top: var(--video-top, -28%) !important;
+        height: var(--video-height, 156%) !important;
+    }
 }
 
 /* Hide the frame until real playback starts, so the moment where the YouTube embed shows its
