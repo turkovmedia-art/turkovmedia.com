@@ -3843,18 +3843,16 @@ html.modal-open, body.modal-open {
     transition: opacity 0.2s ease;
 }
 
-/* Fullscreen: reset the crop completely and show the ENTIRE video frame at its exact size -
-   nothing is ever clipped, so burned-in subtitles at the bottom stay fully visible. */
-.plyr--fullscreen-active .plyr__video-embed iframe,
-.plyr--fullscreen-fallback .plyr__video-embed iframe {
-    top: 0 !important;
-    height: 100% !important;
-}
+/* Fullscreen "contain" box: modern phones are wider than 16:9 (20:9), so a width-based
+   16:9 layout overflows the screen bottom and clips the subtitles. Size the video area to
+   the largest 16:9 box that FITS the screen, centered - black bars on the sides if needed.
 
-/* Fullscreen "contain" box for widescreen videos: modern phones are wider than 16:9 (20:9),
-   so a width-based 16:9 letterbox overflows the screen bottom and clips the subtitles.
-   Instead, size the video area to the largest 16:9 box that FITS the screen, centered -
-   black bars on the sides if needed, but the whole frame (and subtitles) always visible. */
+   The enlarge-and-clip crop above stays ON in fullscreen (that is what hides every YouTube
+   mark), and inside an exactly-16:9 box it costs nothing: YouTube letterboxes the 16:9 frame
+   inside the taller iframe, so with height H% the frame sits centered with (H-100)/2 of empty
+   letterbox above and below it - exactly the offset --video-top pulls up by (-11.5/123,
+   -28/156, -30/160). Result: the full frame lands precisely on the visible box, at its
+   original 16:9 size, while YouTube's title bar and logo stay in the hidden letterbox. */
 .video-dialog:not(.vertical-player) .plyr--fullscreen-active .plyr__video-embed,
 .video-dialog:not(.vertical-player) .plyr--fullscreen-fallback .plyr__video-embed {
     position: absolute !important;
@@ -3864,6 +3862,32 @@ html.modal-open, body.modal-open {
     width: min(100%, calc(100vh * 16 / 9)) !important;
     height: min(100%, calc(100vw * 9 / 16)) !important;
     padding: 0 !important;
+    aspect-ratio: auto !important;
+    overflow: hidden !important;
+    border-radius: 0 !important;
+}
+
+/* Same contain box for portrait (9:16) videos in fullscreen */
+.video-dialog.vertical-player .plyr--fullscreen-active .plyr__video-embed,
+.video-dialog.vertical-player .plyr--fullscreen-fallback .plyr__video-embed {
+    position: absolute !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    width: min(100%, calc(100vh * 9 / 16)) !important;
+    height: min(100%, calc(100vw * 16 / 9)) !important;
+    padding: 0 !important;
+    aspect-ratio: auto !important;
+    overflow: hidden !important;
+    border-radius: 0 !important;
+}
+
+/* The crop percentages are relative to this box, so the iframe must not inherit any leftover
+   radius/overflow from the windowed player */
+.plyr--fullscreen-active,
+.plyr--fullscreen-fallback {
+    border-radius: 0 !important;
+    background: #000 !important;
 }
 
 /* CSS-fallback fullscreen (phones without a native Fullscreen API): the dialog itself is
