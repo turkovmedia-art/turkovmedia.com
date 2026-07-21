@@ -3851,6 +3851,21 @@ html.modal-open, body.modal-open {
     height: 100% !important;
 }
 
+/* Fullscreen "contain" box for widescreen videos: modern phones are wider than 16:9 (20:9),
+   so a width-based 16:9 letterbox overflows the screen bottom and clips the subtitles.
+   Instead, size the video area to the largest 16:9 box that FITS the screen, centered -
+   black bars on the sides if needed, but the whole frame (and subtitles) always visible. */
+.video-dialog:not(.vertical-player) .plyr--fullscreen-active .plyr__video-embed,
+.video-dialog:not(.vertical-player) .plyr--fullscreen-fallback .plyr__video-embed {
+    position: absolute !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    width: min(100%, calc(100vh * 16 / 9)) !important;
+    height: min(100%, calc(100vw * 9 / 16)) !important;
+    padding: 0 !important;
+}
+
 /* CSS-fallback fullscreen (phones without a native Fullscreen API): the dialog itself is
    already stretched over the whole screen by the rules above, so the player just needs to
    fill it. position:fixed is deliberately avoided - see the containing-block note above. */
@@ -3884,6 +3899,13 @@ html.modal-open, body.modal-open {
         height: 100% !important;
         max-width: none !important;
         max-height: none !important;
+    }
+
+    /* Inside the rotated dialog the visual axes are swapped relative to the real viewport,
+       so the 16:9 contain-box formula swaps vw and vh accordingly. */
+    .video-dialog:has(.plyr--fullscreen-fallback):not(.vertical-player) .plyr__video-embed {
+        width: min(100%, calc(100vw * 16 / 9)) !important;
+        height: min(100%, calc(100vh * 9 / 16)) !important;
     }
 }
 
