@@ -3843,17 +3843,38 @@ html.modal-open, body.modal-open {
     transition: opacity 0.2s ease;
 }
 
-/* FULLSCREEN - one plain rule for every device and every video shape: the player fills the
-   screen and the video letterboxes itself, exactly like any ordinary video player. No contain
-   box, no vh math, no enlarge-and-clip - so there is no state in which any part of the frame,
-   subtitles included, can be cut off. */
-.video-dialog .plyr--fullscreen-active .plyr__video-embed,
-.video-dialog .plyr--fullscreen-fallback .plyr__video-embed {
+/* FULLSCREEN - the video is shown at its natural size with generous black margins all around.
+
+   The embed box is deliberately narrower than the screen while keeping the full screen height.
+   YouTube always FITS the frame inside the iframe (it never crops), so the picture comes out
+   smaller and centred - there is no state in which anything can be cut off - and the empty
+   strips left above and below the picture are exactly where YouTube parks its own title bar
+   and logo, so its marks land off the picture instead of on top of it.
+
+   The 0.75 safety factor means even a badly reported 100vh (phones move the address bar) only
+   changes how big the margins are; it can never make the picture overflow. */
+.video-dialog:not(.vertical-player) .plyr--fullscreen-active .plyr__video-embed,
+.video-dialog:not(.vertical-player) .plyr--fullscreen-fallback .plyr__video-embed {
     position: absolute !important;
     top: 0 !important;
-    left: 0 !important;
-    transform: none !important;
-    width: 100% !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    width: min(80%, calc(100vh * 16 / 9 * 0.75)) !important;
+    height: 100% !important;
+    padding: 0 !important;
+    aspect-ratio: auto !important;
+    border-radius: 0 !important;
+    background: #000 !important;
+}
+
+/* Same idea for portrait (9:16) videos */
+.video-dialog.vertical-player .plyr--fullscreen-active .plyr__video-embed,
+.video-dialog.vertical-player .plyr--fullscreen-fallback .plyr__video-embed {
+    position: absolute !important;
+    top: 0 !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    width: min(80%, calc(100vh * 9 / 16 * 0.75)) !important;
     height: 100% !important;
     padding: 0 !important;
     aspect-ratio: auto !important;
@@ -3941,6 +3962,12 @@ html.modal-open, body.modal-open {
         height: 100% !important;
         max-width: none !important;
         max-height: none !important;
+    }
+
+    /* Inside the rotated dialog the visual axes are swapped relative to the real viewport,
+       so the margin formula swaps vw for vh. */
+    .video-dialog:has(.plyr--fullscreen-fallback):not(.vertical-player) .plyr__video-embed {
+        width: min(80%, calc(100vw * 16 / 9 * 0.75)) !important;
     }
 }
 
