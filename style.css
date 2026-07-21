@@ -3843,47 +3843,65 @@ html.modal-open, body.modal-open {
     transition: opacity 0.2s ease;
 }
 
-/* Fullscreen "contain" box: modern phones are wider than 16:9 (20:9), so a width-based
-   16:9 layout overflows the screen bottom and clips the subtitles. Size the video area to
-   the largest 16:9 box that FITS the screen, centered - black bars on the sides if needed.
-
-   The enlarge-and-clip crop above stays ON in fullscreen (that is what hides every YouTube
-   mark), and inside an exactly-16:9 box it costs nothing: YouTube letterboxes the 16:9 frame
-   inside the taller iframe, so with height H% the frame sits centered with (H-100)/2 of empty
-   letterbox above and below it - exactly the offset --video-top pulls up by (-11.5/123,
-   -28/156, -30/160). Result: the full frame lands precisely on the visible box, at its
-   original 16:9 size, while YouTube's title bar and logo stay in the hidden letterbox. */
-.video-dialog:not(.vertical-player) .plyr--fullscreen-active .plyr__video-embed,
-.video-dialog:not(.vertical-player) .plyr--fullscreen-fallback .plyr__video-embed {
+/* FULLSCREEN - one plain rule for every device and every video shape: the player fills the
+   screen and the video letterboxes itself, exactly like any ordinary video player. No contain
+   box, no vh math, no enlarge-and-clip - so there is no state in which any part of the frame,
+   subtitles included, can be cut off. */
+.video-dialog .plyr--fullscreen-active .plyr__video-embed,
+.video-dialog .plyr--fullscreen-fallback .plyr__video-embed {
     position: absolute !important;
-    top: 50% !important;
-    left: 50% !important;
-    transform: translate(-50%, -50%) !important;
-    width: min(100%, calc(100vh * 16 / 9)) !important;
-    height: min(100%, calc(100vw * 9 / 16)) !important;
+    top: 0 !important;
+    left: 0 !important;
+    transform: none !important;
+    width: 100% !important;
+    height: 100% !important;
     padding: 0 !important;
     aspect-ratio: auto !important;
-    overflow: hidden !important;
+    border-radius: 0 !important;
+    background: #000 !important;
+}
+
+.video-dialog .plyr--fullscreen-active .plyr__video-embed iframe,
+.video-dialog .plyr--fullscreen-fallback .plyr__video-embed iframe {
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    transform: none !important;
+}
+
+/* Paused is the only moment YouTube draws its own title bar and logo by itself (taps never
+   reach the iframe thanks to .yt-touch-shield). Rather than crop the picture to push those
+   out of view, black the frame out for exactly that moment - Plyr's own play button stays on
+   top of it. Nothing is ever cut, and no YouTube mark is ever visible. */
+.video-dialog .plyr--fullscreen-active.plyr--paused .plyr__video-embed iframe,
+.video-dialog .plyr--fullscreen-fallback.plyr--paused .plyr__video-embed iframe {
+    opacity: 0 !important;
+}
+
+/* Vertical (9:16) videos keep a compact 380px dialog in the windowed player - that must not
+   survive into fullscreen, or the "fullscreen" video stays a small column in the middle. */
+.video-dialog.vertical-player.fullscreen-active,
+.video-dialog.vertical-player:has(.plyr--fullscreen-active),
+.video-dialog.vertical-player:has(.plyr--fullscreen-fallback) {
+    max-width: 100vw !important;
+    width: 100vw !important;
+}
+
+.video-dialog.vertical-player.fullscreen-active .video-container,
+.video-dialog.vertical-player:has(.plyr--fullscreen-active) .video-container,
+.video-dialog.vertical-player:has(.plyr--fullscreen-fallback) .video-container,
+.video-dialog.vertical-player.fullscreen-active .plyr,
+.video-dialog.vertical-player:has(.plyr--fullscreen-active) .plyr,
+.video-dialog.vertical-player:has(.plyr--fullscreen-fallback) .plyr {
+    aspect-ratio: auto !important;
+    max-height: none !important;
+    width: 100% !important;
+    height: 100% !important;
     border-radius: 0 !important;
 }
 
-/* Same contain box for portrait (9:16) videos in fullscreen */
-.video-dialog.vertical-player .plyr--fullscreen-active .plyr__video-embed,
-.video-dialog.vertical-player .plyr--fullscreen-fallback .plyr__video-embed {
-    position: absolute !important;
-    top: 50% !important;
-    left: 50% !important;
-    transform: translate(-50%, -50%) !important;
-    width: min(100%, calc(100vh * 9 / 16)) !important;
-    height: min(100%, calc(100vw * 16 / 9)) !important;
-    padding: 0 !important;
-    aspect-ratio: auto !important;
-    overflow: hidden !important;
-    border-radius: 0 !important;
-}
-
-/* The crop percentages are relative to this box, so the iframe must not inherit any leftover
-   radius/overflow from the windowed player */
+/* No leftover radius from the windowed player */
 .plyr--fullscreen-active,
 .plyr--fullscreen-fallback {
     border-radius: 0 !important;
@@ -3923,50 +3941,6 @@ html.modal-open, body.modal-open {
         height: 100% !important;
         max-width: none !important;
         max-height: none !important;
-    }
-
-    /* Inside the rotated dialog the visual axes are swapped relative to the real viewport,
-       so the 16:9 contain-box formula swaps vw and vh accordingly. */
-    .video-dialog:has(.plyr--fullscreen-fallback):not(.vertical-player) .plyr__video-embed {
-        width: min(100%, calc(100vw * 16 / 9)) !important;
-        height: min(100%, calc(100vh * 9 / 16)) !important;
-    }
-}
-
-/* PHONES (Android + iOS): plain, ordinary fullscreen. No contain box, no enlarge-and-clip -
-   the player simply fills the screen and the video letterboxes itself, exactly like any normal
-   video player. Everything above stays untouched for desktop and for the windowed phone player.
-   (.video-dialog doubled only to match the specificity of the desktop rules above, which this
-   must override; those rules use :not()/:has() pseudo-classes that add a class-level weight.) */
-@media (pointer: coarse) {
-    .video-dialog.video-dialog .plyr--fullscreen-active .plyr__video-embed,
-    .video-dialog.video-dialog .plyr--fullscreen-fallback .plyr__video-embed {
-        position: absolute !important;
-        top: 0 !important;
-        left: 0 !important;
-        transform: none !important;
-        width: 100% !important;
-        height: 100% !important;
-        padding: 0 !important;
-        aspect-ratio: auto !important;
-    }
-
-    .video-dialog.video-dialog .plyr--fullscreen-active .plyr__video-embed iframe,
-    .video-dialog.video-dialog .plyr--fullscreen-fallback .plyr__video-embed iframe {
-        top: 0 !important;
-        left: 0 !important;
-        width: 100% !important;
-        height: 100% !important;
-    }
-
-    /* Paused is the one moment YouTube draws its own title bar and logo by itself (taps never
-       reach the iframe thanks to .yt-touch-shield). So bring the enlarge-and-clip crop back
-       just for that moment - it switches off again the instant playback resumes, so nothing
-       is ever cropped while the video and its subtitles are actually running. */
-    .video-dialog.video-dialog .plyr--fullscreen-active.plyr--paused .plyr__video-embed iframe,
-    .video-dialog.video-dialog .plyr--fullscreen-fallback.plyr--paused .plyr__video-embed iframe {
-        top: var(--video-top, -28%) !important;
-        height: var(--video-height, 156%) !important;
     }
 }
 
