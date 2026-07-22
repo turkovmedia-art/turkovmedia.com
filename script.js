@@ -1086,7 +1086,6 @@ function openVideoPlayer(project) {
                     cc_lang_pref: 'off'
                 },
                 controls: [
-                    'play-large',   // Big centre play/pause button - the one place a tap on the picture acts
                     'play',         // Play/Pause button
                     'progress',     // Timeline progress slider (drag/click to seek)
                     'current-time', // Running play time
@@ -1194,7 +1193,6 @@ function openVideoPlayer(project) {
             
             plyrInstance = new Plyr('#custom-native-player', {
                 controls: [
-                    'play-large',   // Big centre play/pause button - the one place a tap on the picture acts
                     'play',
                     'progress',
                     'current-time',

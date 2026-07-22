@@ -3843,20 +3843,18 @@ html.modal-open, body.modal-open {
     transition: opacity 0.2s ease;
 }
 
-/* FULLSCREEN - full-size picture with wide margins, and YouTube's marks pushed off the screen.
+/* FULLSCREEN - the picture is exactly the biggest size the screen allows, edge to edge, and
+   YouTube's marks are pushed off the screen without shrinking or cropping anything.
 
-   Two stacked tricks, and the whole point is that they cost nothing:
+   1. The embed box is 16:9 and as tall as the screen, so the picture touches the top and bottom
+      edges - the largest a 16:9 frame can be. The width comes from aspect-ratio rather than a
+      100vh calculation, so a phone mis-reporting its screen height cannot clip the picture, and
+      max-width keeps it inside the screen when the phone is upright.
 
-   1. The embed box is 3:2 and as tall as the screen (width derives from aspect-ratio, so no
-      viewport units are involved and a phone mis-reporting 100vh cannot break it). A 16:9 video
-      is WIDER than 3:2, so YouTube - which always fits, never crops - renders it width-limited:
-      the picture ends up 84% of the screen height, centred, with wide black margins left/right
-      and a thin strip above/below. That strip is the room the next step needs.
-
-   2. The iframe is then blown up to 160% height and pulled up 30%. Because YouTube keeps the
-      picture centred inside the iframe, the picture does not move by a single pixel - only
-      YouTube's own title bar and logo, which are glued to the iframe's top and bottom edges,
-      travel far off the screen. Nothing is ever cropped.
+   2. The iframe is then blown up to 160% height and pulled up 30%. YouTube keeps the picture
+      centred inside the iframe, so the picture does not move by a single pixel - only YouTube's
+      own title bar and logo, glued to the iframe's top and bottom edges, travel far above and
+      below the screen. Nothing is ever cropped and nothing is ever made smaller.
 
    CRITICAL selector note: in NATIVE fullscreen (Android) Plyr does NOT add any
    "plyr--fullscreen-active" class - the only signals are the :fullscreen pseudo-class on the
@@ -3873,26 +3871,27 @@ html.modal-open, body.modal-open {
     left: 50% !important;
     transform: translateX(-50%) !important;
     /* Fallback for engines without aspect-ratio; the @supports block below is the real path */
-    width: min(100%, calc(100vh * 16 / 9 * 0.85)) !important;
+    width: min(100%, calc(100vh * 16 / 9)) !important;
     height: 100% !important;
+    max-width: 100% !important;
     padding: 0 !important;
     border-radius: 0 !important;
     background: #000 !important;
 }
 
-@supports (aspect-ratio: 3 / 2) {
+@supports (aspect-ratio: 16 / 9) {
     .video-dialog.fullscreen-active .plyr__video-embed,
     .video-dialog .plyr:fullscreen .plyr__video-embed,
     .video-dialog .plyr--fullscreen-fallback .plyr__video-embed {
         width: auto !important;
-        aspect-ratio: 3 / 2 !important;
+        aspect-ratio: 16 / 9 !important;
     }
 
-    /* Portrait videos: box must be narrower than 9:16 for the same width-limited fit */
+    /* Portrait videos get a portrait box, by the same rule */
     .video-dialog.vertical-player.fullscreen-active .plyr__video-embed,
     .video-dialog.vertical-player .plyr:fullscreen .plyr__video-embed,
     .video-dialog.vertical-player .plyr--fullscreen-fallback .plyr__video-embed {
-        aspect-ratio: 1 / 2 !important;
+        aspect-ratio: 9 / 16 !important;
     }
 }
 
@@ -3994,52 +3993,6 @@ html.modal-open, body.modal-open {
 .plyr__control--overlaid {
     background: rgba(0, 240, 255, 0.85) !important;
     color: #050814 !important;
-    z-index: 4 !important; /* above .yt-touch-shield, so this button is tappable */
-    width: 66px !important;  /* comfortable touch target - it is the only tappable spot */
-    height: 66px !important;
-    padding: 0 !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-}
-
-.plyr__control--overlaid svg {
-    width: 24px !important;
-    height: 24px !important;
-    left: 2px !important; /* optical centring of the play triangle */
-    position: relative !important;
-}
-
-/* The centre button is the ONE spot on the picture that starts and stops playback (taps
-   anywhere else are swallowed by .yt-touch-shield). Plyr hides it during playback, so keep it
-   available whenever the control bar is showing, and draw a pause glyph instead of the arrow. */
-.plyr--video.plyr--playing:not(.plyr--hide-controls) .plyr__control--overlaid {
-    opacity: 1 !important;
-    visibility: visible !important;
-}
-
-.plyr--video.plyr--playing .plyr__control--overlaid svg {
-    display: none !important;
-}
-
-.plyr--video.plyr--playing .plyr__control--overlaid::before,
-.plyr--video.plyr--playing .plyr__control--overlaid::after {
-    content: '';
-    position: absolute;
-    top: 50%;
-    width: 5px;
-    height: 20px;
-    border-radius: 2px;
-    background: currentColor;
-    transform: translateY(-50%);
-}
-
-.plyr--video.plyr--playing .plyr__control--overlaid::before {
-    left: calc(50% - 8px);
-}
-
-.plyr--video.plyr--playing .plyr__control--overlaid::after {
-    left: calc(50% + 3px);
 }
 
 .plyr__control--overlaid:hover {
