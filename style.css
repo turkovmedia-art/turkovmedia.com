@@ -4063,11 +4063,16 @@ html.modal-open, body.modal-open {
     inset: 0;
     z-index: 4;
     pointer-events: none; /* the whole point - the tap belongs to YouTube's button below */
-    background-color: #000;
-    background-repeat: no-repeat;
-    background-position: center;
-    background-size: 74px 74px;
-    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='47' fill='rgba(255,255,255,0.12)'/><path d='M41 30 L73 50 L41 70 Z' fill='%23ffffff'/></svg>");
+    /* Three layers, top to bottom: our play mark, a light scrim so it reads on any picture, and
+       the video's own still - the image from the card that was just tapped, already in cache. */
+    background-image:
+        url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='47' fill='rgba(0,0,0,0.45)'/><path d='M41 30 L73 50 L41 70 Z' fill='%23ffffff'/></svg>"),
+        linear-gradient(rgba(0, 0, 0, 0.28), rgba(0, 0, 0, 0.28)),
+        var(--video-still, none);
+    background-size: 74px 74px, auto, cover;
+    background-position: center, center, center;
+    background-repeat: no-repeat, no-repeat, no-repeat;
+    background-color: #000; /* until the still paints, and behind a still that does not fill */
 }
 
 /* Our own tap handlers must not intercept that first tap either */

@@ -1211,9 +1211,15 @@ function openVideoPlayer(project) {
             plyrInstance.on('ended', () => {
                 closeVideoPlayer();
             });
-            // Black until the video is genuinely running - never YouTube's poster with its logo.
+            // Hidden until the video is genuinely running - never YouTube's poster with its logo.
             // This is not a timer and adds no waiting of its own: it lifts on the playing event,
-            // whenever that is.
+            // whenever that is. On Apple, where the video waits for a tap, the cover over the
+            // frame shows this still - the very image on the card that was just tapped, so it is
+            // already in cache - with our own play mark on it.
+            const stillImage = project.thumbnail || (ytId ? `https://i.ytimg.com/vi/${ytId}/hqdefault.jpg` : '');
+            if (stillImage) {
+                container.style.setProperty('--video-still', `url("${stillImage}")`);
+            }
             container.classList.add('yt-awaiting-playback');
             plyrInstance.on('playing', () => {
                 container.classList.remove('yt-awaiting-playback');
