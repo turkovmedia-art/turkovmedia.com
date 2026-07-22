@@ -1173,11 +1173,11 @@ function openVideoPlayer(project) {
                     cc_load_policy: 0, // 0 is the documented "do not show captions" value (3 is not)
                     cc_lang_pref: 'off',
                     fs: 1,
-                    // Always 1, Apple included. Setting it to 0 handed the video to Apple's own
-                    // fullscreen player - but iOS refuses to open that without a human tap, so
-                    // playback simply never started and YouTube's poster sat there with its red
-                    // logo. Playing immediately matters more than a native fullscreen.
-                    playsinline: 1
+                    // 0 on Apple hands the video to iOS's own fullscreen player the moment it
+                    // starts. iOS will not do that without a human tap, so the video waits for
+                    // one - and the cover described in the CSS hides YouTube's poster and logo
+                    // meanwhile, while letting that tap through to YouTube's own play button.
+                    playsinline: isApple ? 0 : 1
                 },
                 controls: [
                     'play',         // Play/Pause button
@@ -1185,15 +1185,17 @@ function openVideoPlayer(project) {
                     'current-time', // Running play time
                     'mute',         // Mute toggle
                     'volume',       // Volume bar
-                    'fullscreen'    // Fullscreen toggle button
+                    // On Apple playback is already inside Apple's fullscreen player, so a
+                    // fullscreen button of ours would have nothing to do
+                    ...(isApple ? [] : ['fullscreen'])
                 ],
                 fullscreen: {
-                    enabled: true,
+                    enabled: !isApple,
                     fallback: true, // On phones without a native Fullscreen API, use CSS fallback (rotated to landscape below)
-                    iosNative: false,
+                    iosNative: true,
                     container: null // Use default player container for robust native desktop fullscreen
                 },
-                playsinline: true,
+                playsinline: !isApple,
                 clickToPlay: false, // Pausing only via the control-bar button - tapping the picture must never stop playback
                 autoplay: true
             });

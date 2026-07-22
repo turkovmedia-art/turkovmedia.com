@@ -4046,6 +4046,36 @@ html.modal-open, body.modal-open {
     opacity: 0;
 }
 
+/* APPLE - waiting for the tap that opens Apple's fullscreen player.
+   iOS refuses to open that player on its own, so the video sits waiting for a real finger, and
+   that finger has to land on YouTube's own play button inside the frame - a tap of ours relayed
+   through the API does not count as a gesture to iOS. So the frame stays live and fully
+   interactive here, and an opaque cover is laid over it instead: black, with our own play mark,
+   and transparent to touch. YouTube's poster and red logo are never seen, yet the tap goes
+   straight through the cover to the button underneath. */
+.video-dialog.apple-device .yt-awaiting-playback .plyr__video-embed iframe {
+    opacity: 1 !important;
+}
+
+.video-dialog.apple-device .video-container.yt-awaiting-playback::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 4;
+    pointer-events: none; /* the whole point - the tap belongs to YouTube's button below */
+    background-color: #000;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 74px 74px;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='47' fill='rgba(255,255,255,0.12)'/><path d='M41 30 L73 50 L41 70 Z' fill='%23ffffff'/></svg>");
+}
+
+/* Our own tap handlers must not intercept that first tap either */
+.video-dialog.apple-device .yt-awaiting-playback .yt-touch-shield,
+.video-dialog.apple-device .yt-awaiting-playback .yt-centre-toggle {
+    pointer-events: none;
+}
+
 /* Smooth out transition for play overlay icon */
 .plyr__control--overlaid {
     background: rgba(0, 240, 255, 0.85) !important;
