@@ -1066,10 +1066,12 @@ function openVideoPlayer(project) {
             container.innerHTML = `
                 <div class="plyr__video-embed" id="custom-youtube-player" style="width: 100%; height: 100%;">
                     <iframe
-                        src="https://www.youtube.com/embed/${ytId}?origin=${window.location.origin}&iv_load_policy=3&modestbranding=1&playsinline=1&showinfo=0&rel=0&enablejsapi=1&autoplay=1&cc_load_policy=3&cc_lang_pref=off"
+                        src="https://www.youtube.com/embed/${ytId}?origin=${window.location.origin}&iv_load_policy=3&modestbranding=1&playsinline=1&showinfo=0&rel=0&enablejsapi=1&autoplay=1&cc_load_policy=3&cc_lang_pref=off&fs=1"
                         allowfullscreen
+                        webkitallowfullscreen
+                        mozallowfullscreen
                         allowtransparency
-                        allow="autoplay; fullscreen"
+                        allow="autoplay; fullscreen; encrypted-media; picture-in-picture"
                     ></iframe>
                 </div>
             `;
@@ -1083,7 +1085,9 @@ function openVideoPlayer(project) {
                     iv_load_policy: 3,
                     modestbranding: 1,
                     cc_load_policy: 3, // Disable captions completely
-                    cc_lang_pref: 'off'
+                    cc_lang_pref: 'off',
+                    fs: 1,             // Let the embed itself allow fullscreen (needed on iOS)
+                    playsinline: 1
                 },
                 controls: [
                     'play',         // Play/Pause button
@@ -1151,52 +1155,86 @@ function openVideoPlayer(project) {
                 const plyrContainer = plyrInstance.elements && plyrInstance.elements.container;
                 if (!plyrContainer || plyrContainer.querySelector('.yt-touch-shield')) return;
 
-                // APPLE ONLY: attempt a real, native fullscreen. Safari on iPhone historically
-                // exposes no Fullscreen API for ordinary elements, which is why Plyr falls back to
-                // stretching the player with CSS. If the API is there (iPad, and any iOS version
-                // that has since added it) take it, and ask for landscape while we are at it.
-                // When the API is missing we do nothing at all and Plyr's fallback runs as before.
                 const isApple = /iPhone|iPad|iPod/i.test(navigator.userAgent) ||
                     (navigator.maxTouchPoints > 1 && /Mac/i.test(navigator.userAgent));
-                const fullscreenButton = plyrContainer.querySelector('[data-plyr="fullscreen"]');
-                const requestNativeFullscreen = plyrContainer.requestFullscreen ||
-                    plyrContainer.webkitRequestFullscreen || plyrContainer.webkitRequestFullScreen;
 
-                if (isApple && fullscreenButton && requestNativeFullscreen) {
+                // Plyr builds its own iframe through the YouTube IFrame API, so the fullscreen
+                // permissions we put on our markup are gone by now - put them back on the live
+                // element. Without these Safari refuses the request outright.
+                const liveFrame = plyrContainer.querySelector('iframe');
+                if (liveFrame) {
+                    liveFrame.setAttribute('allowfullscreen', '');
+                    liveFrame.setAttribute('webkitallowfullscreen', '');
+                    liveFrame.setAttribute('mozallowfullscreen', '');
+                    liveFrame.setAttribute('allow',
+                        'autoplay; fullscreen; encrypted-media; picture-in-picture');
+                }
+
+                // Keep the dialog's fullscreen class in step when the browser enters or leaves
+                // fullscreen on its own (Plyr's own events do not fire on the path below)
+                if (!window.__turkovFullscreenSync) {
+                    window.__turkovFullscreenSync = true;
+                    const syncFullscreenClass = () => {
+                        const active = document.fullscreenElement || document.webkitFullscreenElement;
+                        const openDialog = document.querySelector('.video-dialog');
+                        if (openDialog) openDialog.classList.toggle('fullscreen-active', !!active);
+                    };
+                    document.addEventListener('fullscreenchange', syncFullscreenClass);
+                    document.addEventListener('webkitfullscreenchange', syncFullscreenClass);
+                }
+
+                // APPLE ONLY: ask for a real, native fullscreen.
+                // Everything up to the request runs SYNCHRONOUSLY inside the click - iOS discards
+                // a fullscreen request that is not made during the user gesture itself, so there
+                // is deliberately no await, no promise and no timer before the call.
+                // The YouTube iframe is tried first and our wrapper second: Safari grants
+                // fullscreen to the media element far more readily than to a plain div.
+                const fullscreenButton = plyrContainer.querySelector('[data-plyr="fullscreen"]');
+
+                if (isApple && fullscreenButton) {
                     fullscreenButton.addEventListener('click', (event) => {
-                        const alreadyNative = document.fullscreenElement || document.webkitFullscreenElement;
                         // Take the click away from Plyr so its CSS fallback never doubles up
                         event.stopPropagation();
                         event.preventDefault();
 
-                        if (alreadyNative) {
-                            (document.exitFullscreen || document.webkitExitFullscreen).call(document);
+                        if (document.fullscreenElement || document.webkitFullscreenElement) {
+                            const exit = document.exitFullscreen || document.webkitExitFullscreen;
+                            if (exit) exit.call(document);
                             return;
                         }
 
-                        let result;
-                        try {
-                            result = requestNativeFullscreen.call(plyrContainer, { navigationUI: 'hide' });
-                        } catch (_) {
-                            result = null;
+                        let outcome = null;
+                        let requested = false;
+                        for (const target of [plyrContainer.querySelector('iframe'), plyrContainer]) {
+                            if (!target) continue;
+                            const request = target.requestFullscreen || target.webkitRequestFullscreen ||
+                                target.webkitRequestFullScreen || target.webkitEnterFullscreen;
+                            if (!request) continue;
+                            try {
+                                outcome = request.call(target);
+                                requested = true;
+                            } catch (_) {
+                                continue; // this target refused - try the next one, still in-gesture
+                            }
+                            break;
                         }
 
-                        const landscape = () => {
+                        const lockLandscape = () => {
                             try {
                                 if (screen.orientation && screen.orientation.lock) {
                                     screen.orientation.lock('landscape').catch(() => {});
                                 }
                             } catch (_) {}
                         };
-                        // Hand back to Plyr's fallback if Safari refuses the request
+                        // Hand the job back to Plyr's CSS fallback if Safari refuses outright
                         const giveUp = () => plyrInstance.fullscreen.enter();
 
-                        if (result && typeof result.then === 'function') {
-                            result.then(landscape).catch(giveUp);
-                        } else if (!document.fullscreenElement && !document.webkitFullscreenElement) {
-                            giveUp();
+                        if (outcome && typeof outcome.then === 'function') {
+                            outcome.then(lockLandscape).catch(giveUp);
+                        } else if (requested) {
+                            lockLandscape();
                         } else {
-                            landscape();
+                            giveUp();
                         }
                     }, true);
                 }
