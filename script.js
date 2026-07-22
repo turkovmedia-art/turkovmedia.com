@@ -1154,8 +1154,16 @@ function openVideoPlayer(project) {
                 const rememberState = () => {
                     barWasHidden = plyrContainer.classList.contains('plyr--hide-controls');
                 };
+                // Plyr listens for touchend on the container too, and its handler - which runs
+                // right after ours - re-reveals the bar. That is why tapping could only ever show
+                // it, never hide it. Re-assert our state once the whole event has been dispatched
+                // so showing and hiding behave exactly the same.
                 const toggleBar = () => {
-                    plyrContainer.classList.toggle('plyr--hide-controls', !barWasHidden);
+                    const hide = !barWasHidden;
+                    const apply = () => plyrContainer.classList.toggle('plyr--hide-controls', hide);
+                    apply();
+                    requestAnimationFrame(apply);
+                    setTimeout(apply, 80);
                 };
 
                 // Act on touchend rather than waiting for the browser's click, which on Android
