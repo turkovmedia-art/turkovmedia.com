@@ -1167,7 +1167,7 @@ function openVideoPlayer(project) {
                             setTimeout(() => appleCover.remove(), 320);
                         }, delay);
                     };
-                    plyrInstance.on('playing', () => liftCover(1100));
+                    plyrInstance.on('playing', () => liftCover(1000));
                     // Safety net: never let the panel outlive a video that refuses to autoplay
                     setTimeout(() => liftCover(0), 6000);
                 }
