@@ -1633,24 +1633,11 @@ html[lang="en"] .service-card-btn:hover i {
 /* While the embed loads, the video's own still image fills the frame instead of a black gap.
    It is the same picture as the card that was just tapped, so it is already cached and paints
    in the first frame. It fades away the moment real playback starts. */
-.video-container::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    /* z-index 0 = BEHIND the player, never over it. The still is only a backdrop so the dialog
-       is never an empty black box; the video covers it the instant YouTube paints, with nothing
-       waiting on an event first. */
-    z-index: 0;
-    background-image: var(--video-still, none);
-    background-size: cover;
-    background-position: center;
-    border-radius: inherit;
-    display: none;
-    pointer-events: none;
-}
-
-.video-container.yt-awaiting-playback::before {
-    display: block;
+/* Until the video is actually running the frame is plain black - never YouTube's poster, and
+   never a still that could be mistaken for a frozen video. Black is all there is to it, so it
+   costs no time of its own. */
+.video-container {
+    background: #000;
 }
 
 /* On Apple, playback opens iOS's own fullscreen player, so a fullscreen button of ours would
@@ -3909,7 +3896,7 @@ html.modal-open, body.modal-open {
     width: 100% !important; /* Preserves 100% horizontal frame with zero side cropping */
     height: var(--video-height, 119%) !important; /* Stretches height to hide bottom logo/share buttons */
     transform: none !important;
-    transition: opacity 0.2s ease;
+    /* No fade in: the picture appears the instant playback starts, not a fifth of a second later */
 }
 
 /* FULLSCREEN - the picture is exactly the biggest size the screen allows, edge to edge, and
@@ -4058,9 +4045,12 @@ html.modal-open, body.modal-open {
     }
 }
 
-/* The frame used to be held hidden until Plyr reported 'playing'. That hold was the wait before
-   a video appeared - the picture was often ready long before the event arrived. It is gone: the
-   frame shows the instant YouTube paints it, and the still below simply stops being visible. */
+/* The frame stays hidden until the video is genuinely running, so YouTube's poster - logo and
+   all - is never seen. This adds no waiting of its own: it ends the moment playback starts, and
+   what shows meanwhile is the black frame behind it. */
+.yt-awaiting-playback .plyr__video-embed iframe {
+    opacity: 0;
+}
 
 /* Smooth out transition for play overlay icon */
 .plyr__control--overlaid {

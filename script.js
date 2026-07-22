@@ -1112,7 +1112,7 @@ function openVideoPlayer(project) {
                     showinfo: 0,
                     iv_load_policy: 3,
                     modestbranding: 1,
-                    cc_load_policy: 3, // Disable captions completely
+                    cc_load_policy: 0, // 0 is the documented "do not show captions" value (3 is not)
                     cc_lang_pref: 'off',
                     fs: 1,             // Let the embed itself allow fullscreen (needed on iOS)
                     // 0 on Apple: this is what makes iOS take the video into its own fullscreen
@@ -1151,33 +1151,34 @@ function openVideoPlayer(project) {
             plyrInstance.on('ended', () => {
                 closeVideoPlayer();
             });
-            // Nothing here holds the video back any more. The video's own still - the very image
-            // on the card that was just tapped, so it is already in cache - is painted BEHIND the
-            // player purely so the dialog is never an empty black box. The picture appears the
-            // moment YouTube paints it, without waiting for any event of ours.
-            const stillImage = project.thumbnail || (ytId ? `https://i.ytimg.com/vi/${ytId}/hqdefault.jpg` : '');
-            if (stillImage) {
-                container.style.setProperty('--video-still', `url("${stillImage}")`);
-            }
+            // Black until the video is genuinely running - never YouTube's poster with its logo.
+            // This is not a timer and adds no waiting of its own: it lifts on the playing event,
+            // whenever that is.
             container.classList.add('yt-awaiting-playback');
             plyrInstance.on('playing', () => {
                 container.classList.remove('yt-awaiting-playback');
             });
 
 
-            // cc_load_policy=3 alone doesn't always stop YouTube from auto-enabling captions/auto-translate;
-            // unloading the captions modules through the IFrame API kills them for good
+            // The URL parameters alone do not stop YouTube auto-enabling captions or
+            // auto-translation - it re-enables them once playback is under way, and on iPhone the
+            // handover to Apple's player is exactly such a moment. So besides unloading the
+            // caption modules we also clear the selected track, and repeat both for the first few
+            // seconds. This is background housekeeping - it holds nothing up.
             const killYouTubeCaptions = () => {
-                try {
-                    const yt = plyrInstance && plyrInstance.embed;
-                    if (yt && yt.unloadModule) {
-                        try { yt.unloadModule('captions'); } catch (_) {}
-                        try { yt.unloadModule('cc'); } catch (_) {}
-                    }
-                } catch (_) {}
+                const yt = plyrInstance && plyrInstance.embed;
+                if (!yt) return;
+                try { yt.setOption('captions', 'track', {}); } catch (_) {}
+                try { yt.setOption('cc', 'track', {}); } catch (_) {}
+                try { yt.unloadModule('captions'); } catch (_) {}
+                try { yt.unloadModule('cc'); } catch (_) {}
             };
             plyrInstance.on('ready', killYouTubeCaptions);
-            plyrInstance.on('playing', killYouTubeCaptions);
+            plyrInstance.on('playing', () => {
+                killYouTubeCaptions();
+                // YouTube can switch them back on a beat after playback starts
+                [400, 1200, 2500].forEach((ms) => setTimeout(killYouTubeCaptions, ms));
+            });
 
             // Transparent shield over the iframe: on touch devices taps land directly on the
             // YouTube iframe (revealing its title/logo/controls overlay), so intercept them.
