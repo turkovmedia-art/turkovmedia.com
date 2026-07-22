@@ -1147,26 +1147,32 @@ function openVideoPlayer(project) {
                 const shield = document.createElement('div');
                 shield.className = 'yt-touch-shield';
 
-                // Plyr's own container listener reveals the bar on touchstart, so read the state
-                // first - on the shield, which fires before the container - and toggle from that.
+                // A tap ANYWHERE shows or hides the control bar. Plyr's own container listener
+                // reveals the bar on touchstart, so read the state first - these listeners sit on
+                // the overlays, which fire before the container - and toggle from that.
                 let barWasHidden = false;
                 const rememberState = () => {
                     barWasHidden = plyrContainer.classList.contains('plyr--hide-controls');
                 };
-                shield.addEventListener('touchstart', rememberState, { passive: true });
-                shield.addEventListener('mousedown', rememberState);
-                shield.addEventListener('click', () => {
+                const toggleBar = () => {
                     plyrContainer.classList.toggle('plyr--hide-controls', !barWasHidden);
-                });
+                };
+                const watchTaps = (element) => {
+                    element.addEventListener('touchstart', rememberState, { passive: true });
+                    element.addEventListener('mousedown', rememberState);
+                };
 
+                watchTaps(shield);
+                shield.addEventListener('click', toggleBar);
                 plyrContainer.appendChild(shield);
 
-                // ...except dead centre, where the pause/play symbol sits: a tap there starts and
-                // stops playback instead. Invisible on purpose - no extra button is drawn.
+                // Dead centre, where the pause/play symbol sits, ALSO starts and stops playback.
+                // Invisible on purpose - no extra button is drawn over the video.
                 const centreToggle = document.createElement('div');
                 centreToggle.className = 'yt-centre-toggle';
-                centreToggle.addEventListener('click', (event) => {
-                    event.stopPropagation();
+                watchTaps(centreToggle);
+                centreToggle.addEventListener('click', () => {
+                    toggleBar();
                     if (plyrInstance) plyrInstance.togglePlay();
                 });
                 plyrContainer.appendChild(centreToggle);
