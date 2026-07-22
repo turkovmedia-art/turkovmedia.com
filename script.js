@@ -1157,21 +1157,55 @@ function openVideoPlayer(project) {
                 const toggleBar = () => {
                     plyrContainer.classList.toggle('plyr--hide-controls', !barWasHidden);
                 };
-                const watchTaps = (element) => {
-                    element.addEventListener('touchstart', rememberState, { passive: true });
+
+                // Act on touchend rather than waiting for the browser's click, which on Android
+                // only arrived reliably after the finger moved - a plain tap felt dead. A tap is
+                // a touch that lifts near where it landed; anything draggier is ignored.
+                const TAP_SLOP = 14;
+                const onTap = (element, action) => {
+                    let startX = 0;
+                    let startY = 0;
+                    let dragged = false;
+                    let handledByTouch = false;
+
+                    element.addEventListener('touchstart', (event) => {
+                        rememberState();
+                        const touch = event.changedTouches[0];
+                        startX = touch.clientX;
+                        startY = touch.clientY;
+                        dragged = false;
+                    }, { passive: true });
+
+                    element.addEventListener('touchmove', (event) => {
+                        const touch = event.changedTouches[0];
+                        if (Math.abs(touch.clientX - startX) > TAP_SLOP ||
+                            Math.abs(touch.clientY - startY) > TAP_SLOP) {
+                            dragged = true;
+                        }
+                    }, { passive: true });
+
+                    element.addEventListener('touchend', () => {
+                        if (dragged) return;
+                        handledByTouch = true; // swallow the synthetic click that follows
+                        setTimeout(() => { handledByTouch = false; }, 600);
+                        action();
+                    }, { passive: true });
+
                     element.addEventListener('mousedown', rememberState);
+                    element.addEventListener('click', () => {
+                        if (handledByTouch) return;
+                        action();
+                    });
                 };
 
-                watchTaps(shield);
-                shield.addEventListener('click', toggleBar);
+                onTap(shield, toggleBar);
                 plyrContainer.appendChild(shield);
 
                 // Dead centre, where the pause/play symbol sits, ALSO starts and stops playback.
                 // Invisible on purpose - no extra button is drawn over the video.
                 const centreToggle = document.createElement('div');
                 centreToggle.className = 'yt-centre-toggle';
-                watchTaps(centreToggle);
-                centreToggle.addEventListener('click', () => {
+                onTap(centreToggle, () => {
                     toggleBar();
                     if (plyrInstance) plyrInstance.togglePlay();
                 });
