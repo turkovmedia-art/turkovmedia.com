@@ -3400,8 +3400,7 @@ const translationDictionary = {
         contact_form_desc_ph: "ספרו לי על הפרויקט שלכם... (סוג הסרטון, אורך משוער, לוח זמנים וכדומה)",
         
         // Footer
-        footer_copyright: "מנדי טורקוב הפקות מולטימדיה. כל הזכויות שמורות.",
-        footer_credit: "כל הזכויות שמורות ל-SBD בניית אתרים",
+        footer_copyright: "כל הזכויות שמורות ל-SBD בניית אתרים",
 
         // Accessibility Widget
         a11y_title: "התאמות נגישות",
@@ -3500,8 +3499,7 @@ const translationDictionary = {
         contact_form_desc_ph: "Tell me about your project... (video type, estimated duration, timeline, etc.)",
         
         // Footer
-        footer_copyright: "Mendy Turkov Multimedia Productions. All rights reserved.",
-        footer_credit: "All rights reserved to SBD Web Design",
+        footer_copyright: "All rights reserved to SBD Web Design",
 
         // Accessibility Widget
         a11y_title: "Accessibility Adjustments",
