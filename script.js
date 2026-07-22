@@ -1151,10 +1151,10 @@ function openVideoPlayer(project) {
             plyrInstance.on('ended', () => {
                 closeVideoPlayer();
             });
-            // Hide the frame until actual playback starts, so the brief moment where the embed
-            // loads its still frame/title before autoplay kicks in never flashes YouTube branding.
-            // What shows meanwhile is the video's own still - the very image on the card that was
-            // just tapped, so it is already in cache and paints instantly - never a black gap.
+            // Nothing here holds the video back any more. The video's own still - the very image
+            // on the card that was just tapped, so it is already in cache - is painted BEHIND the
+            // player purely so the dialog is never an empty black box. The picture appears the
+            // moment YouTube paints it, without waiting for any event of ours.
             const stillImage = project.thumbnail || (ytId ? `https://i.ytimg.com/vi/${ytId}/hqdefault.jpg` : '');
             if (stillImage) {
                 container.style.setProperty('--video-still', `url("${stillImage}")`);

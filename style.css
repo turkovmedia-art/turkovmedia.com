@@ -1637,13 +1637,14 @@ html[lang="en"] .service-card-btn:hover i {
     content: '';
     position: absolute;
     inset: 0;
-    z-index: 1;
+    /* z-index 0 = BEHIND the player, never over it. The still is only a backdrop so the dialog
+       is never an empty black box; the video covers it the instant YouTube paints, with nothing
+       waiting on an event first. */
+    z-index: 0;
     background-image: var(--video-still, none);
     background-size: cover;
     background-position: center;
     border-radius: inherit;
-    /* No fade on purpose: the still IS the video's first frame, so a hard swap is invisible,
-       and nothing can leave a half-faded panel sitting on top of a playing video. */
     display: none;
     pointer-events: none;
 }
@@ -4057,11 +4058,9 @@ html.modal-open, body.modal-open {
     }
 }
 
-/* Hide the frame until real playback starts, so the moment where the YouTube embed shows its
-   still frame/title before autoplay engages never flashes through */
-.yt-awaiting-playback .plyr__video-embed iframe {
-    opacity: 0;
-}
+/* The frame used to be held hidden until Plyr reported 'playing'. That hold was the wait before
+   a video appeared - the picture was often ready long before the event arrived. It is gone: the
+   frame shows the instant YouTube paints it, and the still below simply stops being visible. */
 
 /* Smooth out transition for play overlay icon */
 .plyr__control--overlaid {
