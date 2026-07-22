@@ -1100,7 +1100,7 @@ function openVideoPlayer(project) {
                     container: null // Use default player container for robust native desktop fullscreen
                 },
                 playsinline: true,
-                clickToPlay: true,
+                clickToPlay: false, // Pausing only via the control-bar button - tapping the picture must never stop playback
                 autoplay: true
             });
 
@@ -1137,19 +1137,16 @@ function openVideoPlayer(project) {
             plyrInstance.on('playing', killYouTubeCaptions);
 
             // Transparent shield over the iframe: on touch devices taps land directly on the
-            // YouTube iframe (revealing its title/logo/controls overlay), so intercept them
-            // and drive Plyr instead. Sits below Plyr's control bar, so controls stay usable.
-            // Pausing freezes the frame naturally - the deep crop keeps YouTube's paused-state
-            // title/branding zones outside the visible area.
+            // YouTube iframe (revealing its title/logo/controls overlay), so intercept them.
+            // The shield deliberately does NOTHING on tap - playback is controlled only from
+            // the Plyr control bar, so a stray tap on the picture can never pause the video.
+            // Sits below Plyr's control bar, so controls stay usable.
             plyrInstance.on('ready', () => {
                 const plyrContainer = plyrInstance.elements && plyrInstance.elements.container;
                 if (!plyrContainer || plyrContainer.querySelector('.yt-touch-shield')) return;
 
                 const shield = document.createElement('div');
                 shield.className = 'yt-touch-shield';
-                shield.addEventListener('click', () => {
-                    if (plyrInstance) plyrInstance.togglePlay();
-                });
                 plyrContainer.appendChild(shield);
 
                 // iOS: Plyr deliberately omits its volume slider (historic WebKit limitation),
@@ -1210,7 +1207,7 @@ function openVideoPlayer(project) {
                     container: null // Use default player container for robust native desktop fullscreen
                 },
                 playsinline: true,
-                clickToPlay: true,
+                clickToPlay: false, // Pausing only via the control-bar button - tapping the picture must never stop playback
                 autoplay: true
             });
             
