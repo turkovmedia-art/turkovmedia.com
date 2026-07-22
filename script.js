@@ -1183,11 +1183,9 @@ function openVideoPlayer(project) {
                     'play',         // Play/Pause button
                     'progress',     // Timeline progress slider (drag/click to seek)
                     'current-time', // Running play time
-                    'mute',         // Mute toggle
-                    'volume',       // Volume bar
-                    // On Apple playback is already inside Apple's fullscreen player, so a
-                    // fullscreen button of ours would have nothing to do
-                    ...(isApple ? [] : ['fullscreen'])
+                    // On Apple none of these belong: sound is Apple's player and the phone's own
+                    // volume keys, and playback is already fullscreen there
+                    ...(isApple ? [] : ['mute', 'volume', 'fullscreen'])
                 ],
                 fullscreen: {
                     enabled: !isApple,
