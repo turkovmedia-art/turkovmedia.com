@@ -1630,6 +1630,28 @@ html[lang="en"] .service-card-btn:hover i {
     cursor: pointer;
 }
 
+/* Android paints a translucent highlight over whatever element a finger is resting on, and the
+   shield covers the whole picture - which is why holding a finger down tinted the entire video.
+   Kill the highlight, the long-press selection and the focus ring across the player. */
+.yt-touch-shield,
+.video-dialog .plyr,
+.video-dialog .plyr *,
+.video-dialog .plyr__video-embed,
+.video-dialog .plyr__video-embed iframe {
+    -webkit-tap-highlight-color: transparent !important;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+.yt-touch-shield:focus,
+.yt-touch-shield:active,
+.video-dialog .plyr:focus,
+.video-dialog .plyr__video-embed:focus {
+    outline: none !important;
+    background: transparent !important;
+}
+
 
 /* ==========================================================================
    12. Scroll Reveal Animations (JS Triggers)
@@ -3907,14 +3929,20 @@ html.modal-open, body.modal-open {
     transform: none !important;
 }
 
-/* Paused is the only moment YouTube draws its own title bar and logo by itself (taps never
-   reach the iframe thanks to .yt-touch-shield). Rather than crop the picture to push those
-   out of view, black the frame out for exactly that moment - Plyr's own play button stays on
-   top of it. Nothing is ever cut, and no YouTube mark is ever visible. */
-.video-dialog.fullscreen-active .plyr--paused .plyr__video-embed iframe,
-.video-dialog .plyr--paused:fullscreen .plyr__video-embed iframe,
-.video-dialog .plyr--fullscreen-fallback.plyr--paused .plyr__video-embed iframe {
-    opacity: 0 !important;
+/* Pausing must simply freeze the frame. The black screen on pause came from a rule of our own
+   that blanked the iframe while paused - it is gone. These two rules keep it that way: the
+   frame stays visible, and Plyr's poster layer (a solid black panel it fades in when the player
+   is stopped) never covers the picture. YouTube's paused-state title bar and logo are glued to
+   the iframe edges, which the 160%/-30% enlarge above has already pushed off the screen. */
+.video-dialog .plyr--youtube.plyr--paused .plyr__video-embed iframe,
+.video-dialog .plyr--youtube.plyr--paused .plyr__video-embed > div,
+.video-dialog .plyr--youtube.plyr--paused .plyr__video-wrapper {
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+
+.video-dialog .plyr__poster {
+    display: none !important;
 }
 
 /* Vertical (9:16) videos keep a compact 380px dialog in the windowed player - that must not

@@ -1138,15 +1138,27 @@ function openVideoPlayer(project) {
 
             // Transparent shield over the iframe: on touch devices taps land directly on the
             // YouTube iframe (revealing its title/logo/controls overlay), so intercept them.
-            // The shield deliberately does NOTHING on tap - playback is controlled only from
-            // the Plyr control bar, so a stray tap on the picture can never pause the video.
-            // Sits below Plyr's control bar, so controls stay usable.
+            // A tap on the picture never starts or stops playback - it only shows and hides our
+            // own control bar, the way YouTube does. Playback is changed only from the bar.
             plyrInstance.on('ready', () => {
                 const plyrContainer = plyrInstance.elements && plyrInstance.elements.container;
                 if (!plyrContainer || plyrContainer.querySelector('.yt-touch-shield')) return;
 
                 const shield = document.createElement('div');
                 shield.className = 'yt-touch-shield';
+
+                // Plyr's own container listener reveals the bar on touchstart, so read the state
+                // first - on the shield, which fires before the container - and toggle from that.
+                let barWasHidden = false;
+                const rememberState = () => {
+                    barWasHidden = plyrContainer.classList.contains('plyr--hide-controls');
+                };
+                shield.addEventListener('touchstart', rememberState, { passive: true });
+                shield.addEventListener('mousedown', rememberState);
+                shield.addEventListener('click', () => {
+                    plyrContainer.classList.toggle('plyr--hide-controls', !barWasHidden);
+                });
+
                 plyrContainer.appendChild(shield);
 
                 // iOS: Plyr deliberately omits its volume slider (historic WebKit limitation),
