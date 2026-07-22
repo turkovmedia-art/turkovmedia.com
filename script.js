@@ -3401,6 +3401,7 @@ const translationDictionary = {
         
         // Footer
         footer_copyright: "מנדי טורקוב הפקות מולטימדיה. כל הזכויות שמורות.",
+        footer_credit: "כל הזכויות שמורות ל-SBD בניית אתרים",
 
         // Accessibility Widget
         a11y_title: "התאמות נגישות",
@@ -3500,6 +3501,7 @@ const translationDictionary = {
         
         // Footer
         footer_copyright: "Mendy Turkov Multimedia Productions. All rights reserved.",
+        footer_credit: "All rights reserved to SBD Web Design",
 
         // Accessibility Widget
         a11y_title: "Accessibility Adjustments",
