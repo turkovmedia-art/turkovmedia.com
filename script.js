@@ -1021,6 +1021,13 @@ function openVideoPlayer(project) {
     // Fullscreen is desktop-only by request - phones stay windowed at all times
     const isMobile = window.innerWidth <= 768 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
+    // Safari on iPhone gives no Fullscreen API to ordinary elements, and the one call that opens
+    // Apple's player lives on the video inside YouTube's cross-origin iframe, out of our reach.
+    // So on Apple we stop asking for fullscreen at all and let iOS do it: with playsinline off,
+    // iOS pulls the video into its own fullscreen player the moment playback starts.
+    const isApple = /iPhone|iPad|iPod/i.test(navigator.userAgent) ||
+        (navigator.maxTouchPoints > 1 && /Mac/i.test(navigator.userAgent));
+
     if (ytId) {
         // Determine dynamic aspect ratio and vertical stretch proportions based on video layout
         let aspectRatio = project.aspectRatio || '16 / 9';
@@ -1030,6 +1037,10 @@ function openVideoPlayer(project) {
         } else if (aspectRatio.includes('21') || aspectRatio.includes('2.3')) {
             aspectRatio = '21 / 9';  // Set container format to widescreen
         }
+
+        // Hook for the Apple-only rules (the fullscreen button is left out of the control bar
+        // there, and this makes sure one can never slip back in through some other path)
+        dialog.classList.toggle('apple-device', isApple);
 
         let topPercent = '-11.5%';     // Shifts iframe up to fully hide top title bar and channel details (11.5% crop)
         let heightPercent = '123%';    // Stretches height to hide bottom player bar and logos (123% scale)
@@ -1066,7 +1077,7 @@ function openVideoPlayer(project) {
             container.innerHTML = `
                 <div class="plyr__video-embed" id="custom-youtube-player" style="width: 100%; height: 100%;">
                     <iframe
-                        src="https://www.youtube.com/embed/${ytId}?origin=${window.location.origin}&iv_load_policy=3&modestbranding=1&playsinline=1&showinfo=0&rel=0&enablejsapi=1&autoplay=1&cc_load_policy=3&cc_lang_pref=off&fs=1"
+                        src="https://www.youtube.com/embed/${ytId}?origin=${window.location.origin}&iv_load_policy=3&modestbranding=1&playsinline=${isApple ? 0 : 1}&showinfo=0&rel=0&enablejsapi=1&autoplay=1&cc_load_policy=3&cc_lang_pref=off&fs=1"
                         allowfullscreen
                         webkitallowfullscreen
                         mozallowfullscreen
@@ -1087,7 +1098,9 @@ function openVideoPlayer(project) {
                     cc_load_policy: 3, // Disable captions completely
                     cc_lang_pref: 'off',
                     fs: 1,             // Let the embed itself allow fullscreen (needed on iOS)
-                    playsinline: 1
+                    // 0 on Apple: this is what makes iOS take the video into its own fullscreen
+                    // player as soon as it starts, instead of keeping it inline in the page
+                    playsinline: isApple ? 0 : 1
                 },
                 controls: [
                     'play',         // Play/Pause button
@@ -1095,15 +1108,17 @@ function openVideoPlayer(project) {
                     'current-time', // Running play time
                     'mute',         // Mute toggle
                     'volume',       // Volume bar
-                    'fullscreen'    // Fullscreen toggle button
+                    // On Apple the video is already fullscreen in Apple's own player by the time
+                    // it plays, so our button would only confuse - leave it out there
+                    ...(isApple ? [] : ['fullscreen'])
                 ],
                 fullscreen: {
-                    enabled: true,
-                    fallback: true, // On phones without a native Fullscreen API, use CSS fallback (rotated to landscape below)
-                    iosNative: false,
-                    container: null // Use default player container for robust native desktop fullscreen
+                    enabled: !isApple, // Apple gets iOS's own fullscreen player instead
+                    fallback: true,    // Phones without a native Fullscreen API use the CSS fallback
+                    iosNative: true,   // Hand any video element straight to Apple's player
+                    container: null    // Use default player container for robust native desktop fullscreen
                 },
-                playsinline: true,
+                playsinline: !isApple,
                 clickToPlay: false, // Pausing only via the control-bar button - tapping the picture must never stop playback
                 autoplay: true
             });
@@ -1155,12 +1170,8 @@ function openVideoPlayer(project) {
                 const plyrContainer = plyrInstance.elements && plyrInstance.elements.container;
                 if (!plyrContainer || plyrContainer.querySelector('.yt-touch-shield')) return;
 
-                const isApple = /iPhone|iPad|iPod/i.test(navigator.userAgent) ||
-                    (navigator.maxTouchPoints > 1 && /Mac/i.test(navigator.userAgent));
-
-                // Plyr builds its own iframe through the YouTube IFrame API, so the fullscreen
-                // permissions we put on our markup are gone by now - put them back on the live
-                // element. Without these Safari refuses the request outright.
+                // Plyr builds its own iframe through the YouTube IFrame API, so the permissions
+                // we put on our markup are gone by now - put them back on the live element.
                 const liveFrame = plyrContainer.querySelector('iframe');
                 if (liveFrame) {
                     liveFrame.setAttribute('allowfullscreen', '');
@@ -1170,99 +1181,30 @@ function openVideoPlayer(project) {
                         'autoplay; fullscreen; encrypted-media; picture-in-picture');
                 }
 
-                // Keep the dialog in step when the browser enters or leaves fullscreen on its own -
-                // Plyr's own events do not fire on the path below, and on Apple the user leaves
-                // through the native player's own Done button, which we never see as a click.
-                if (!window.__turkovFullscreenSync) {
-                    window.__turkovFullscreenSync = true;
-                    const syncFullscreenClass = () => {
-                        const active = document.fullscreenElement || document.webkitFullscreenElement;
-                        const openDialog = document.querySelector('.video-dialog');
-                        if (openDialog) openDialog.classList.toggle('fullscreen-active', !!active);
-                        if (active) return;
-
-                        // Coming back into the page: the native player often hands the video back
-                        // paused. Resume only if it was playing when fullscreen started, so a
-                        // deliberate pause is never overridden. Retried once - iOS needs a beat.
-                        if (!window.__turkovResumeAfterFullscreen) return;
-                        window.__turkovResumeAfterFullscreen = false;
-                        const resume = () => {
+                // APPLE: nothing here asks for fullscreen any more - iOS opens its own player by
+                // itself once playback starts. What we do need is to catch up afterwards: while
+                // Apple's player is up our page is in the background, and closing it with Done is
+                // never a click we can see. The page coming back to the foreground IS that signal,
+                // so read the truth from the YouTube player and put Plyr's controls in step.
+                if (isApple && !window.__turkovApplePlayerSync) {
+                    window.__turkovApplePlayerSync = true;
+                    const syncFromYouTube = () => {
+                        if (document.hidden) return;
+                        setTimeout(() => {
                             try {
-                                if (plyrInstance && plyrInstance.paused) plyrInstance.play();
+                                const embed = plyrInstance && plyrInstance.embed;
+                                if (!embed || !embed.getPlayerState) return;
+                                const PLAYING = 1;
+                                const PAUSED = 2;
+                                const state = embed.getPlayerState();
+                                if (state === PAUSED && !plyrInstance.paused) plyrInstance.pause();
+                                if (state === PLAYING && plyrInstance.paused) plyrInstance.play();
                             } catch (_) {}
-                        };
-                        resume();
-                        setTimeout(resume, 350);
+                        }, 250);
                     };
-                    document.addEventListener('fullscreenchange', syncFullscreenClass);
-                    document.addEventListener('webkitfullscreenchange', syncFullscreenClass);
-                }
-
-                // APPLE ONLY: ask for a real, native fullscreen.
-                // Everything up to the request runs SYNCHRONOUSLY inside the click - iOS discards
-                // a fullscreen request that is not made during the user gesture itself, so there
-                // is deliberately no await, no promise and no timer before the call.
-                // The YouTube iframe is tried first and our wrapper second: Safari grants
-                // fullscreen to the media element far more readily than to a plain div.
-                const fullscreenButton = plyrContainer.querySelector('[data-plyr="fullscreen"]');
-
-                if (isApple && fullscreenButton) {
-                    fullscreenButton.addEventListener('click', (event) => {
-                        // Take the click away from Plyr so its CSS fallback never doubles up
-                        event.stopPropagation();
-                        event.preventDefault();
-
-                        // Already in Apple's native player - the button closes it
-                        if (document.fullscreenElement || document.webkitFullscreenElement) {
-                            const exit = document.exitFullscreen || document.webkitExitFullscreen;
-                            if (exit) exit.call(document);
-                            return;
-                        }
-
-                        // Already in Plyr's CSS fallback - the button leaves that instead, or the
-                        // press would try to enter fullscreen a second time and strand the player
-                        if (plyrContainer.classList.contains('plyr--fullscreen-fallback')) {
-                            plyrInstance.fullscreen.exit();
-                            return;
-                        }
-
-                        // Remembered so leaving the native player can resume playback in the page
-                        window.__turkovResumeAfterFullscreen = !plyrInstance.paused;
-
-                        let outcome = null;
-                        let requested = false;
-                        for (const target of [plyrContainer.querySelector('iframe'), plyrContainer]) {
-                            if (!target) continue;
-                            const request = target.requestFullscreen || target.webkitRequestFullscreen ||
-                                target.webkitRequestFullScreen || target.webkitEnterFullscreen;
-                            if (!request) continue;
-                            try {
-                                outcome = request.call(target);
-                                requested = true;
-                            } catch (_) {
-                                continue; // this target refused - try the next one, still in-gesture
-                            }
-                            break;
-                        }
-
-                        const lockLandscape = () => {
-                            try {
-                                if (screen.orientation && screen.orientation.lock) {
-                                    screen.orientation.lock('landscape').catch(() => {});
-                                }
-                            } catch (_) {}
-                        };
-                        // Hand the job back to Plyr's CSS fallback if Safari refuses outright
-                        const giveUp = () => plyrInstance.fullscreen.enter();
-
-                        if (outcome && typeof outcome.then === 'function') {
-                            outcome.then(lockLandscape).catch(giveUp);
-                        } else if (requested) {
-                            lockLandscape();
-                        } else {
-                            giveUp();
-                        }
-                    }, true);
+                    document.addEventListener('visibilitychange', syncFromYouTube);
+                    window.addEventListener('pageshow', syncFromYouTube);
+                    window.addEventListener('focus', syncFromYouTube);
                 }
 
                 const shield = document.createElement('div');

@@ -1652,6 +1652,12 @@ html[lang="en"] .service-card-btn:hover i {
     display: block;
 }
 
+/* On Apple, playback opens iOS's own fullscreen player, so a fullscreen button of ours would
+   only confuse. It is already left out of the control bar in script.js; this is the safety net. */
+.video-dialog.apple-device [data-plyr="fullscreen"] {
+    display: none !important;
+}
+
 /* Dead centre of the picture - where the pause/play symbol appears - is the one spot that
    starts and stops playback. Everywhere else the shield only shows/hides the control bar.
    Deliberately invisible: no extra button is drawn over the video.
