@@ -1169,8 +1169,10 @@ function openVideoPlayer(project) {
                 // Act on touchend rather than waiting for the browser's click, which on Android
                 // only arrived reliably after the finger moved - a plain tap felt dead. A tap is
                 // a touch that lifts near where it landed; anything draggier is ignored.
+                // A mouse click reaches the separate mouseAction: on a computer clicking anywhere
+                // on the picture plays/pauses, which is not what a finger should do on a phone.
                 const TAP_SLOP = 14;
-                const onTap = (element, action) => {
+                const onTap = (element, tapAction, mouseAction) => {
                     let startX = 0;
                     let startY = 0;
                     let dragged = false;
@@ -1196,17 +1198,21 @@ function openVideoPlayer(project) {
                         if (dragged) return;
                         handledByTouch = true; // swallow the synthetic click that follows
                         setTimeout(() => { handledByTouch = false; }, 600);
-                        action();
+                        tapAction();
                     }, { passive: true });
 
                     element.addEventListener('mousedown', rememberState);
                     element.addEventListener('click', () => {
-                        if (handledByTouch) return;
-                        action();
+                        if (handledByTouch) return; // a finger already handled this one
+                        mouseAction();
                     });
                 };
 
-                onTap(shield, toggleBar);
+                const togglePlayback = () => {
+                    if (plyrInstance) plyrInstance.togglePlay();
+                };
+
+                onTap(shield, toggleBar, togglePlayback);
                 plyrContainer.appendChild(shield);
 
                 // Dead centre, where the pause/play symbol sits, ALSO starts and stops playback.
@@ -1215,8 +1221,8 @@ function openVideoPlayer(project) {
                 centreToggle.className = 'yt-centre-toggle';
                 onTap(centreToggle, () => {
                     toggleBar();
-                    if (plyrInstance) plyrInstance.togglePlay();
-                });
+                    togglePlayback();
+                }, togglePlayback);
                 plyrContainer.appendChild(centreToggle);
 
                 // iOS: Plyr deliberately omits its volume slider (historic WebKit limitation),
