@@ -1098,10 +1098,11 @@ function openVideoPlayer(project) {
     // Fullscreen is desktop-only by request - phones stay windowed at all times
     const isMobile = window.innerWidth <= 768 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
-    // Safari on iPhone gives no Fullscreen API to ordinary elements, and the one call that opens
-    // Apple's player lives on the video inside YouTube's cross-origin iframe, out of our reach.
-    // So on Apple we stop asking for fullscreen at all and let iOS do it: with playsinline off,
-    // iOS pulls the video into its own fullscreen player the moment playback starts.
+    // Handing the video to Apple's own fullscreen player (playsinline off) was tried and dropped:
+    // iOS will not open that player without a human tap, so nothing ever started by itself and
+    // YouTube's poster sat there showing its red logo. Apple now behaves like everywhere else -
+    // the video plays inline the instant it can - and this flag is only used for the small
+    // Apple-specific bits below.
     const isApple = /iPhone|iPad|iPod/i.test(navigator.userAgent) ||
         (navigator.maxTouchPoints > 1 && /Mac/i.test(navigator.userAgent));
 
@@ -1171,10 +1172,12 @@ function openVideoPlayer(project) {
                     modestbranding: 1,
                     cc_load_policy: 0, // 0 is the documented "do not show captions" value (3 is not)
                     cc_lang_pref: 'off',
-                    fs: 1,             // Let the embed itself allow fullscreen (needed on iOS)
-                    // 0 on Apple: this is what makes iOS take the video into its own fullscreen
-                    // player as soon as it starts, instead of keeping it inline in the page
-                    playsinline: isApple ? 0 : 1
+                    fs: 1,
+                    // Always 1, Apple included. Setting it to 0 handed the video to Apple's own
+                    // fullscreen player - but iOS refuses to open that without a human tap, so
+                    // playback simply never started and YouTube's poster sat there with its red
+                    // logo. Playing immediately matters more than a native fullscreen.
+                    playsinline: 1
                 },
                 controls: [
                     'play',         // Play/Pause button
@@ -1182,17 +1185,15 @@ function openVideoPlayer(project) {
                     'current-time', // Running play time
                     'mute',         // Mute toggle
                     'volume',       // Volume bar
-                    // On Apple the video is already fullscreen in Apple's own player by the time
-                    // it plays, so our button would only confuse - leave it out there
-                    ...(isApple ? [] : ['fullscreen'])
+                    'fullscreen'    // Fullscreen toggle button
                 ],
                 fullscreen: {
-                    enabled: !isApple, // Apple gets iOS's own fullscreen player instead
-                    fallback: true,    // Phones without a native Fullscreen API use the CSS fallback
-                    iosNative: true,   // Hand any video element straight to Apple's player
-                    container: null    // Use default player container for robust native desktop fullscreen
+                    enabled: true,
+                    fallback: true, // On phones without a native Fullscreen API, use CSS fallback (rotated to landscape below)
+                    iosNative: false,
+                    container: null // Use default player container for robust native desktop fullscreen
                 },
-                playsinline: !isApple,
+                playsinline: true,
                 clickToPlay: false, // Pausing only via the control-bar button - tapping the picture must never stop playback
                 autoplay: true
             });
