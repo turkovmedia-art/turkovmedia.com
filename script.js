@@ -672,11 +672,68 @@ function warmYouTubeApi() {
     document.head.appendChild(api);
 }
 
+// A card's thumbnail URL carries the video id (.../vi/<id>/hqdefault.jpg), so the warming below
+// can work straight off the page without knowing anything about the data behind it.
+function youTubeIdFromThumb(src) {
+    const match = /\/vi\/([\w-]{6,})\//.exec(src || '');
+    return match ? match[1] : null;
+}
+
+// The first video of a session is the slow one: it pays for YouTube's whole player - a megabyte
+// of script - before a frame can appear. So once the page is idle, load a muted, stopped, 1px
+// player off-screen. Nothing plays and nothing is seen; it only puts that script in the cache,
+// so the first video the visitor actually opens starts almost at once. Skipped on a metered or
+// slow connection, and the frame is thrown away once it has served its purpose.
+function warmYouTubePlayer(attemptsLeft = 12) {
+    if (window.__turkovPlayerWarmed) return;
+    const connection = navigator.connection;
+    if (connection && (connection.saveData || /2g/.test(connection.effectiveType || ''))) return;
+
+    const thumb = document.querySelector('.portfolio-item img.portfolio-thumb');
+    const videoId = youTubeIdFromThumb(thumb && thumb.getAttribute('src'));
+    if (!videoId) {
+        // The portfolio arrives from the database, so it may simply not be on the page yet
+        if (attemptsLeft > 0) setTimeout(() => warmYouTubePlayer(attemptsLeft - 1), 800);
+        return;
+    }
+
+    window.__turkovPlayerWarmed = true;
+    const warmFrame = document.createElement('iframe');
+    warmFrame.src = `https://www.youtube-nocookie.com/embed/${videoId}?autoplay=0&mute=1&controls=0&rel=0&modestbranding=1`;
+    warmFrame.setAttribute('aria-hidden', 'true');
+    warmFrame.tabIndex = -1;
+    warmFrame.style.cssText = 'position:absolute;left:-9999px;top:0;width:1px;height:1px;' +
+        'opacity:0;border:0;pointer-events:none;';
+    document.body.appendChild(warmFrame);
+    setTimeout(() => warmFrame.remove(), 15000);
+}
+
+// And the moment a finger lands on a card - before it even lifts - start fetching that
+// particular video, buying back the fraction of a second the tap itself takes.
+const warmedVideoIds = new Set();
+document.addEventListener('pointerdown', (event) => {
+    const card = event.target && event.target.closest && event.target.closest('.portfolio-item');
+    if (!card) return;
+    const thumb = card.querySelector('img.portfolio-thumb');
+    const videoId = youTubeIdFromThumb(thumb && thumb.getAttribute('src'));
+    if (!videoId || warmedVideoIds.has(videoId)) return;
+    warmedVideoIds.add(videoId);
+
+    const prefetch = document.createElement('link');
+    prefetch.rel = 'prefetch';
+    prefetch.href = `https://www.youtube-nocookie.com/embed/${videoId}`;
+    document.head.appendChild(prefetch);
+}, { passive: true, capture: true });
+
 window.addEventListener('load', () => {
+    const warmEverything = () => {
+        warmYouTubeApi();
+        warmYouTubePlayer();
+    };
     if (window.requestIdleCallback) {
-        window.requestIdleCallback(warmYouTubeApi, { timeout: 2000 });
+        window.requestIdleCallback(warmEverything, { timeout: 2000 });
     } else {
-        setTimeout(warmYouTubeApi, 800);
+        setTimeout(warmEverything, 800);
     }
 });
 
