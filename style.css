@@ -1630,6 +1630,25 @@ html[lang="en"] .service-card-btn:hover i {
     cursor: pointer;
 }
 
+/* APPLE ONLY (added from script.js on iPhone/iPad): an opaque panel over the picture for the
+   first moment of playback, because the iOS embed keeps showing YouTube's title and logo for
+   about a second after playback starts. It is removed from the DOM as soon as it fades out, so
+   nothing here can ever block a tap later on. z-index 5 = above the shield, the centre toggle
+   and Plyr's control bar, so not a pixel of the startup frame leaks through. */
+.yt-apple-cover {
+    position: absolute;
+    inset: 0;
+    z-index: 5;
+    background: #000;
+    opacity: 1;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+}
+
+.yt-apple-cover.is-lifting {
+    opacity: 0;
+}
+
 /* Dead centre of the picture - where the pause/play symbol appears - is the one spot that
    starts and stops playback. Everywhere else the shield only shows/hides the control bar.
    Deliberately invisible: no extra button is drawn over the video.

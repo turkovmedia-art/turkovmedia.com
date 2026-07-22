@@ -1122,6 +1122,7 @@ function openVideoPlayer(project) {
                 container.classList.remove('yt-awaiting-playback');
             });
 
+
             // cc_load_policy=3 alone doesn't always stop YouTube from auto-enabling captions/auto-translate;
             // unloading the captions modules through the IFrame API kills them for good
             const killYouTubeCaptions = () => {
@@ -1143,6 +1144,33 @@ function openVideoPlayer(project) {
             plyrInstance.on('ready', () => {
                 const plyrContainer = plyrInstance.elements && plyrInstance.elements.container;
                 if (!plyrContainer || plyrContainer.querySelector('.yt-touch-shield')) return;
+
+                // APPLE ONLY: on iPhone/iPad the embed still shows YouTube's title and logo for
+                // about a second after playback starts, which .yt-awaiting-playback cannot cover
+                // because it lifts the instant 'playing' fires. Lay an opaque panel over the
+                // player and take it away once playback is genuinely running. It lives on the
+                // Plyr container so it covers the picture in fullscreen too, and it is deleted
+                // from the DOM afterwards. Nothing changes on any non-Apple device.
+                const isApple = /iPhone|iPad|iPod/i.test(navigator.userAgent) ||
+                    (navigator.maxTouchPoints > 1 && /Mac/i.test(navigator.userAgent));
+                if (isApple && !plyrContainer.querySelector('.yt-apple-cover')) {
+                    const appleCover = document.createElement('div');
+                    appleCover.className = 'yt-apple-cover';
+                    plyrContainer.appendChild(appleCover);
+
+                    let coverLifted = false;
+                    const liftCover = (delay) => {
+                        if (coverLifted) return;
+                        coverLifted = true;
+                        setTimeout(() => {
+                            appleCover.classList.add('is-lifting');
+                            setTimeout(() => appleCover.remove(), 320);
+                        }, delay);
+                    };
+                    plyrInstance.on('playing', () => liftCover(1100));
+                    // Safety net: never let the panel outlive a video that refuses to autoplay
+                    setTimeout(() => liftCover(0), 6000);
+                }
 
                 const shield = document.createElement('div');
                 shield.className = 'yt-touch-shield';
