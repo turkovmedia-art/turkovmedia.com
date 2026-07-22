@@ -3843,10 +3843,20 @@ html.modal-open, body.modal-open {
     transition: opacity 0.2s ease;
 }
 
-/* FULLSCREEN - the player fills the whole screen and YouTube fits the frame inside it.
-   YouTube always FITS the frame inside the iframe (it never crops), so the picture comes out
-   as large as the screen allows, centred, with letterbox bars on whichever axis is spare -
-   nothing can be cut off in any state. Size knob: see the width below, currently full screen.
+/* FULLSCREEN - full-size picture with wide margins, and YouTube's marks pushed off the screen.
+
+   Two stacked tricks, and the whole point is that they cost nothing:
+
+   1. The embed box is 3:2 and as tall as the screen (width derives from aspect-ratio, so no
+      viewport units are involved and a phone mis-reporting 100vh cannot break it). A 16:9 video
+      is WIDER than 3:2, so YouTube - which always fits, never crops - renders it width-limited:
+      the picture ends up 84% of the screen height, centred, with wide black margins left/right
+      and a thin strip above/below. That strip is the room the next step needs.
+
+   2. The iframe is then blown up to 160% height and pulled up 30%. Because YouTube keeps the
+      picture centred inside the iframe, the picture does not move by a single pixel - only
+      YouTube's own title bar and logo, which are glued to the iframe's top and bottom edges,
+      travel far off the screen. Nothing is ever cropped.
 
    CRITICAL selector note: in NATIVE fullscreen (Android) Plyr does NOT add any
    "plyr--fullscreen-active" class - the only signals are the :fullscreen pseudo-class on the
@@ -3860,24 +3870,41 @@ html.modal-open, body.modal-open {
 .video-dialog .plyr--fullscreen-fallback .plyr__video-embed {
     position: absolute !important;
     top: 0 !important;
-    left: 0 !important;
-    transform: none !important;
-    width: 100% !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    /* Fallback for engines without aspect-ratio; the @supports block below is the real path */
+    width: min(100%, calc(100vh * 16 / 9 * 0.85)) !important;
     height: 100% !important;
     padding: 0 !important;
-    aspect-ratio: auto !important;
     border-radius: 0 !important;
     background: #000 !important;
 }
 
-/* The iframe exactly fills the embed box - kills the windowed enlarge-crop in fullscreen */
+@supports (aspect-ratio: 3 / 2) {
+    .video-dialog.fullscreen-active .plyr__video-embed,
+    .video-dialog .plyr:fullscreen .plyr__video-embed,
+    .video-dialog .plyr--fullscreen-fallback .plyr__video-embed {
+        width: auto !important;
+        aspect-ratio: 3 / 2 !important;
+    }
+
+    /* Portrait videos: box must be narrower than 9:16 for the same width-limited fit */
+    .video-dialog.vertical-player.fullscreen-active .plyr__video-embed,
+    .video-dialog.vertical-player .plyr:fullscreen .plyr__video-embed,
+    .video-dialog.vertical-player .plyr--fullscreen-fallback .plyr__video-embed {
+        aspect-ratio: 1 / 2 !important;
+    }
+}
+
+/* Step 2: enlarge the iframe so YouTube's own chrome leaves the screen. The picture stays put
+   because YouTube centres it inside the iframe - deeper crop only moves YouTube's furniture. */
 .video-dialog.fullscreen-active .plyr__video-embed iframe,
 .video-dialog .plyr:fullscreen .plyr__video-embed iframe,
 .video-dialog .plyr--fullscreen-fallback .plyr__video-embed iframe {
-    top: 0 !important;
+    top: -30% !important;
     left: 0 !important;
     width: 100% !important;
-    height: 100% !important;
+    height: 160% !important;
     transform: none !important;
 }
 
@@ -3967,6 +3994,52 @@ html.modal-open, body.modal-open {
 .plyr__control--overlaid {
     background: rgba(0, 240, 255, 0.85) !important;
     color: #050814 !important;
+    z-index: 4 !important; /* above .yt-touch-shield, so this button is tappable */
+    width: 66px !important;  /* comfortable touch target - it is the only tappable spot */
+    height: 66px !important;
+    padding: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+.plyr__control--overlaid svg {
+    width: 24px !important;
+    height: 24px !important;
+    left: 2px !important; /* optical centring of the play triangle */
+    position: relative !important;
+}
+
+/* The centre button is the ONE spot on the picture that starts and stops playback (taps
+   anywhere else are swallowed by .yt-touch-shield). Plyr hides it during playback, so keep it
+   available whenever the control bar is showing, and draw a pause glyph instead of the arrow. */
+.plyr--video.plyr--playing:not(.plyr--hide-controls) .plyr__control--overlaid {
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+
+.plyr--video.plyr--playing .plyr__control--overlaid svg {
+    display: none !important;
+}
+
+.plyr--video.plyr--playing .plyr__control--overlaid::before,
+.plyr--video.plyr--playing .plyr__control--overlaid::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    width: 5px;
+    height: 20px;
+    border-radius: 2px;
+    background: currentColor;
+    transform: translateY(-50%);
+}
+
+.plyr--video.plyr--playing .plyr__control--overlaid::before {
+    left: calc(50% - 8px);
+}
+
+.plyr--video.plyr--playing .plyr__control--overlaid::after {
+    left: calc(50% + 3px);
 }
 
 .plyr__control--overlaid:hover {
