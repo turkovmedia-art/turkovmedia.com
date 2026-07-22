@@ -1161,6 +1161,16 @@ function openVideoPlayer(project) {
 
                 plyrContainer.appendChild(shield);
 
+                // ...except dead centre, where the pause/play symbol sits: a tap there starts and
+                // stops playback instead. Invisible on purpose - no extra button is drawn.
+                const centreToggle = document.createElement('div');
+                centreToggle.className = 'yt-centre-toggle';
+                centreToggle.addEventListener('click', (event) => {
+                    event.stopPropagation();
+                    if (plyrInstance) plyrInstance.togglePlay();
+                });
+                plyrContainer.appendChild(centreToggle);
+
                 // iOS: Plyr deliberately omits its volume slider (historic WebKit limitation),
                 // so add our own range that drives the YouTube player's volume directly
                 // through the IFrame API - modern iOS honors it

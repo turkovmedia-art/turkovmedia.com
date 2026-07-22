@@ -1630,10 +1630,28 @@ html[lang="en"] .service-card-btn:hover i {
     cursor: pointer;
 }
 
+/* Dead centre of the picture - where the pause/play symbol appears - is the one spot that
+   starts and stops playback. Everywhere else the shield only shows/hides the control bar.
+   Deliberately invisible: no extra button is drawn over the video.
+   z-index 2 = above the shield (1), below Plyr's control bar (3). */
+.yt-centre-toggle {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 120px;
+    height: 120px;
+    transform: translate(-50%, -50%);
+    z-index: 2;
+    border-radius: 50%;
+    background: transparent;
+    cursor: pointer;
+}
+
 /* Android paints a translucent highlight over whatever element a finger is resting on, and the
    shield covers the whole picture - which is why holding a finger down tinted the entire video.
    Kill the highlight, the long-press selection and the focus ring across the player. */
 .yt-touch-shield,
+.yt-centre-toggle,
 .video-dialog .plyr,
 .video-dialog .plyr *,
 .video-dialog .plyr__video-embed,
