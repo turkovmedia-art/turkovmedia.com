@@ -660,6 +660,26 @@ let clientLogos = [
 // ==========================================================================
 // 2. DOM Elements & Initialization
 // ==========================================================================
+// Fetch YouTube's IFrame API while the page is idle. Plyr otherwise only starts downloading it
+// after a video is opened, and nothing can play until it arrives - that wait was most of the
+// delay before a video appeared. Once window.YT exists Plyr skips the download entirely.
+function warmYouTubeApi() {
+    if (window.YT && window.YT.Player) return;
+    if (document.querySelector('script[src*="youtube.com/iframe_api"]')) return;
+    const api = document.createElement('script');
+    api.src = 'https://www.youtube.com/iframe_api';
+    api.async = true;
+    document.head.appendChild(api);
+}
+
+window.addEventListener('load', () => {
+    if (window.requestIdleCallback) {
+        window.requestIdleCallback(warmYouTubeApi, { timeout: 2000 });
+    } else {
+        setTimeout(warmYouTubeApi, 800);
+    }
+});
+
 document.addEventListener('DOMContentLoaded', () => {
     // Instant Site Lock cache check (prevents content flash before Firebase loads)
     if (localStorage.getItem('mendy_portfolio_site_locked') === 'true') {
@@ -1074,17 +1094,14 @@ function openVideoPlayer(project) {
         {
             // Plyr on all devices (mobile included) so the player always has its own custom controls
             // with no visible YouTube chrome; fullscreen fallback covers the whole phone screen on iOS.
+            // Handed to Plyr as an empty div, NOT as a ready-made iframe. Given an iframe, Plyr
+            // throws it away and builds its own through the YouTube API - so the first one used to
+            // download an entire YouTube player for nothing, competing for bandwidth with the real
+            // one and delaying the moment playback actually starts. Every parameter that used to
+            // sit in that URL is already in the youtube options below.
             container.innerHTML = `
-                <div class="plyr__video-embed" id="custom-youtube-player" style="width: 100%; height: 100%;">
-                    <iframe
-                        src="https://www.youtube.com/embed/${ytId}?origin=${window.location.origin}&iv_load_policy=3&modestbranding=1&playsinline=${isApple ? 0 : 1}&showinfo=0&rel=0&enablejsapi=1&autoplay=1&cc_load_policy=3&cc_lang_pref=off&fs=1"
-                        allowfullscreen
-                        webkitallowfullscreen
-                        mozallowfullscreen
-                        allowtransparency
-                        allow="autoplay; fullscreen; encrypted-media; picture-in-picture"
-                    ></iframe>
-                </div>
+                <div class="plyr__video-embed" id="custom-youtube-player" style="width: 100%; height: 100%;"
+                     data-plyr-provider="youtube" data-plyr-embed-id="${ytId}"></div>
             `;
             
             // Initialize Plyr player wrapper with full custom control bar
