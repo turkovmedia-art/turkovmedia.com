@@ -1630,23 +1630,26 @@ html[lang="en"] .service-card-btn:hover i {
     cursor: pointer;
 }
 
-/* APPLE ONLY (added from script.js on iPhone/iPad): an opaque panel over the picture for the
-   first moment of playback, because the iOS embed keeps showing YouTube's title and logo for
-   about a second after playback starts. It is removed from the DOM as soon as it fades out, so
-   nothing here can ever block a tap later on. z-index 5 = above the shield, the centre toggle
-   and Plyr's control bar, so not a pixel of the startup frame leaks through. */
-.yt-apple-cover {
+/* While the embed loads, the video's own still image fills the frame instead of a black gap.
+   It is the same picture as the card that was just tapped, so it is already cached and paints
+   in the first frame. It fades away the moment real playback starts. */
+.video-container::before {
+    content: '';
     position: absolute;
     inset: 0;
-    z-index: 5;
-    background: #000;
-    opacity: 1;
-    transition: opacity 0.3s ease;
+    z-index: 1;
+    background-image: var(--video-still, none);
+    background-size: cover;
+    background-position: center;
+    border-radius: inherit;
+    /* No fade on purpose: the still IS the video's first frame, so a hard swap is invisible,
+       and nothing can leave a half-faded panel sitting on top of a playing video. */
+    display: none;
     pointer-events: none;
 }
 
-.yt-apple-cover.is-lifting {
-    opacity: 0;
+.video-container.yt-awaiting-playback::before {
+    display: block;
 }
 
 /* Dead centre of the picture - where the pause/play symbol appears - is the one spot that

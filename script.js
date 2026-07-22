@@ -1116,7 +1116,13 @@ function openVideoPlayer(project) {
                 closeVideoPlayer();
             });
             // Hide the frame until actual playback starts, so the brief moment where the embed
-            // loads its still frame/title before autoplay kicks in never flashes YouTube branding
+            // loads its still frame/title before autoplay kicks in never flashes YouTube branding.
+            // What shows meanwhile is the video's own still - the very image on the card that was
+            // just tapped, so it is already in cache and paints instantly - never a black gap.
+            const stillImage = project.thumbnail || (ytId ? `https://i.ytimg.com/vi/${ytId}/hqdefault.jpg` : '');
+            if (stillImage) {
+                container.style.setProperty('--video-still', `url("${stillImage}")`);
+            }
             container.classList.add('yt-awaiting-playback');
             plyrInstance.on('playing', () => {
                 container.classList.remove('yt-awaiting-playback');
@@ -1145,31 +1151,54 @@ function openVideoPlayer(project) {
                 const plyrContainer = plyrInstance.elements && plyrInstance.elements.container;
                 if (!plyrContainer || plyrContainer.querySelector('.yt-touch-shield')) return;
 
-                // APPLE ONLY: on iPhone/iPad the embed still shows YouTube's title and logo for
-                // about a second after playback starts, which .yt-awaiting-playback cannot cover
-                // because it lifts the instant 'playing' fires. Lay an opaque panel over the
-                // player and take it away once playback is genuinely running. It lives on the
-                // Plyr container so it covers the picture in fullscreen too, and it is deleted
-                // from the DOM afterwards. Nothing changes on any non-Apple device.
+                // APPLE ONLY: attempt a real, native fullscreen. Safari on iPhone historically
+                // exposes no Fullscreen API for ordinary elements, which is why Plyr falls back to
+                // stretching the player with CSS. If the API is there (iPad, and any iOS version
+                // that has since added it) take it, and ask for landscape while we are at it.
+                // When the API is missing we do nothing at all and Plyr's fallback runs as before.
                 const isApple = /iPhone|iPad|iPod/i.test(navigator.userAgent) ||
                     (navigator.maxTouchPoints > 1 && /Mac/i.test(navigator.userAgent));
-                if (isApple && !plyrContainer.querySelector('.yt-apple-cover')) {
-                    const appleCover = document.createElement('div');
-                    appleCover.className = 'yt-apple-cover';
-                    plyrContainer.appendChild(appleCover);
+                const fullscreenButton = plyrContainer.querySelector('[data-plyr="fullscreen"]');
+                const requestNativeFullscreen = plyrContainer.requestFullscreen ||
+                    plyrContainer.webkitRequestFullscreen || plyrContainer.webkitRequestFullScreen;
 
-                    let coverLifted = false;
-                    const liftCover = (delay) => {
-                        if (coverLifted) return;
-                        coverLifted = true;
-                        setTimeout(() => {
-                            appleCover.classList.add('is-lifting');
-                            setTimeout(() => appleCover.remove(), 320);
-                        }, delay);
-                    };
-                    plyrInstance.on('playing', () => liftCover(1000));
-                    // Safety net: never let the panel outlive a video that refuses to autoplay
-                    setTimeout(() => liftCover(0), 6000);
+                if (isApple && fullscreenButton && requestNativeFullscreen) {
+                    fullscreenButton.addEventListener('click', (event) => {
+                        const alreadyNative = document.fullscreenElement || document.webkitFullscreenElement;
+                        // Take the click away from Plyr so its CSS fallback never doubles up
+                        event.stopPropagation();
+                        event.preventDefault();
+
+                        if (alreadyNative) {
+                            (document.exitFullscreen || document.webkitExitFullscreen).call(document);
+                            return;
+                        }
+
+                        let result;
+                        try {
+                            result = requestNativeFullscreen.call(plyrContainer, { navigationUI: 'hide' });
+                        } catch (_) {
+                            result = null;
+                        }
+
+                        const landscape = () => {
+                            try {
+                                if (screen.orientation && screen.orientation.lock) {
+                                    screen.orientation.lock('landscape').catch(() => {});
+                                }
+                            } catch (_) {}
+                        };
+                        // Hand back to Plyr's fallback if Safari refuses the request
+                        const giveUp = () => plyrInstance.fullscreen.enter();
+
+                        if (result && typeof result.then === 'function') {
+                            result.then(landscape).catch(giveUp);
+                        } else if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+                            giveUp();
+                        } else {
+                            landscape();
+                        }
+                    }, true);
                 }
 
                 const shield = document.createElement('div');
