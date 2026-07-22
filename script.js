@@ -1170,14 +1170,29 @@ function openVideoPlayer(project) {
                         'autoplay; fullscreen; encrypted-media; picture-in-picture');
                 }
 
-                // Keep the dialog's fullscreen class in step when the browser enters or leaves
-                // fullscreen on its own (Plyr's own events do not fire on the path below)
+                // Keep the dialog in step when the browser enters or leaves fullscreen on its own -
+                // Plyr's own events do not fire on the path below, and on Apple the user leaves
+                // through the native player's own Done button, which we never see as a click.
                 if (!window.__turkovFullscreenSync) {
                     window.__turkovFullscreenSync = true;
                     const syncFullscreenClass = () => {
                         const active = document.fullscreenElement || document.webkitFullscreenElement;
                         const openDialog = document.querySelector('.video-dialog');
                         if (openDialog) openDialog.classList.toggle('fullscreen-active', !!active);
+                        if (active) return;
+
+                        // Coming back into the page: the native player often hands the video back
+                        // paused. Resume only if it was playing when fullscreen started, so a
+                        // deliberate pause is never overridden. Retried once - iOS needs a beat.
+                        if (!window.__turkovResumeAfterFullscreen) return;
+                        window.__turkovResumeAfterFullscreen = false;
+                        const resume = () => {
+                            try {
+                                if (plyrInstance && plyrInstance.paused) plyrInstance.play();
+                            } catch (_) {}
+                        };
+                        resume();
+                        setTimeout(resume, 350);
                     };
                     document.addEventListener('fullscreenchange', syncFullscreenClass);
                     document.addEventListener('webkitfullscreenchange', syncFullscreenClass);
@@ -1197,11 +1212,22 @@ function openVideoPlayer(project) {
                         event.stopPropagation();
                         event.preventDefault();
 
+                        // Already in Apple's native player - the button closes it
                         if (document.fullscreenElement || document.webkitFullscreenElement) {
                             const exit = document.exitFullscreen || document.webkitExitFullscreen;
                             if (exit) exit.call(document);
                             return;
                         }
+
+                        // Already in Plyr's CSS fallback - the button leaves that instead, or the
+                        // press would try to enter fullscreen a second time and strand the player
+                        if (plyrContainer.classList.contains('plyr--fullscreen-fallback')) {
+                            plyrInstance.fullscreen.exit();
+                            return;
+                        }
+
+                        // Remembered so leaving the native player can resume playback in the page
+                        window.__turkovResumeAfterFullscreen = !plyrInstance.paused;
 
                         let outcome = null;
                         let requested = false;
