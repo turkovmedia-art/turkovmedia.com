@@ -1313,13 +1313,6 @@ html[lang="en"] .service-card-btn:hover i {
     color: var(--text-light);
 }
 
-.method-value {
-    font-size: 0.85rem;
-    font-weight: 700;
-    color: var(--accent-cyan);
-    direction: ltr;
-}
-
 /* Glassmorphic Contact Form with an always-rotating thin white glow around the border */
 @property --contact-glow-angle {
     syntax: "<angle>";
@@ -1334,21 +1327,21 @@ html[lang="en"] .service-card-btn:hover i {
     backdrop-filter: blur(16px);
     border: 1px solid rgba(255, 255, 255, 0.06);
     border-radius: var(--border-radius-lg);
-    padding: 42px;
-    box-shadow: 0 30px 70px rgba(0, 0, 0, 0.55);
-    isolation: isolate;
-}
-
-/* A faint hairline outline is always visible around the whole card, so the border reads as a
-   soft frame even where the travelling light is not. */
-.contact-form-box {
+    padding: 30px 28px;
+    /* Keeps the card compact rather than stretching to fill its grid column. The explicit width
+       is needed: auto inline margins on a grid item drop it to fit-content without it. */
+    width: 100%;
+    max-width: 460px;
+    margin-inline: auto;
+    /* The faint inset hairline keeps the whole border framed where the travelling light is not */
     box-shadow:
         0 30px 70px rgba(0, 0, 0, 0.55),
         inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+    isolation: isolate;
 }
 
-/* The thin cyan-neon light that always travels around the card's edge. A fine 1px ring with a
-   short bright segment; the layered cyan drop-shadow gives it the neon glow halo. */
+/* The thin cyan-neon light that always travels around the card's edge. A fine ring whose bright
+   head fades away over a long, gentle tail, drifting slowly - elegant rather than a fast streak. */
 .contact-form-box::before {
     content: "";
     position: absolute;
@@ -1358,12 +1351,13 @@ html[lang="en"] .service-card-btn:hover i {
     background: conic-gradient(
         from var(--contact-glow-angle),
         transparent 0deg,
-        transparent 300deg,
-        rgba(0, 240, 255, 0.25) 332deg,
-        var(--accent-cyan) 348deg,
-        #baffff 351deg,
-        var(--accent-cyan) 354deg,
-        rgba(0, 240, 255, 0.25) 366deg,
+        transparent 250deg,
+        rgba(0, 240, 255, 0.08) 285deg,
+        rgba(0, 240, 255, 0.3) 320deg,
+        rgba(0, 240, 255, 0.75) 344deg,
+        #d6ffff 352deg,
+        rgba(0, 240, 255, 0.6) 357deg,
+        rgba(0, 240, 255, 0.12) 366deg,
         transparent 360deg
     );
     -webkit-mask:
@@ -1372,9 +1366,9 @@ html[lang="en"] .service-card-btn:hover i {
     -webkit-mask-composite: xor;
             mask-composite: exclude;
     filter:
-        drop-shadow(0 0 3px rgba(0, 240, 255, 0.9))
-        drop-shadow(0 0 8px rgba(0, 240, 255, 0.55));
-    animation: contact-glow-spin 5s linear infinite;
+        drop-shadow(0 0 3px rgba(0, 240, 255, 0.75))
+        drop-shadow(0 0 9px rgba(0, 240, 255, 0.4));
+    animation: contact-glow-spin 12s linear infinite;
     pointer-events: none;
     z-index: 2;
 }
@@ -1401,28 +1395,12 @@ html[lang="en"] .service-card-btn:hover i {
     text-align: center;
 }
 
-.form-security {
-    margin-top: 18px;
-    font-size: 0.82rem;
-    color: var(--text-muted);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-}
-
-.form-security i {
-    color: var(--accent-cyan);
-    font-size: 0.8rem;
-}
-
 @media (max-width: 600px) {
     /* Stack the three buttons full-width on phones - horizontal icon+text rows read cleanly */
     .contact-methods { grid-template-columns: 1fr; gap: 10px; }
     .contact-method-item { padding: 14px 18px; justify-content: flex-start; }
     .method-icon { width: 44px; height: 44px; font-size: 1.15rem; }
     .method-label { font-size: 0.95rem; }
-    .method-value { font-size: 0.9rem; }
 }
 
 .form-group {

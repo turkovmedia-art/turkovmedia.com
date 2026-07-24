@@ -3605,14 +3605,13 @@ const translationDictionary = {
 
         contact_whatsapp: "שלחו הודעה בוואטסאפ",
         contact_whatsapp_desc: "לחצו לשליחת הודעה",
-        contact_email: "שלחו מייל",
+        contact_email: "שלחו הודעה במייל",
         contact_phone: "דברו איתי טלפונית",
 
         contact_form_title_1: "בואו",
         contact_form_title_2: "ניצור",
         contact_form_title_3: "משהו מדהים.",
         contact_form_subtitle: "מלאו פרטים ואחזור אליכם בהקדם.",
-        contact_security: "הפרטים שלכם נשמרים באופן מאובטח ולא יועברו לצד שלישי.",
         contact_form_name: "שם מלא",
         contact_form_phone: "טלפון ליצירת קשר",
         contact_form_email: "כתובת אימייל",
@@ -3709,14 +3708,13 @@ const translationDictionary = {
 
         contact_whatsapp: "Message me on WhatsApp",
         contact_whatsapp_desc: "Click to send a message",
-        contact_email: "Send an Email",
+        contact_email: "Send me an Email",
         contact_phone: "Call me",
 
         contact_form_title_1: "Let's",
         contact_form_title_2: "create",
         contact_form_title_3: "something amazing.",
         contact_form_subtitle: "Leave your details and I'll get back to you shortly.",
-        contact_security: "Your details are kept secure and never shared with third parties.",
         contact_form_name: "Full Name",
         contact_form_phone: "Phone Number",
         contact_form_email: "Email Address",
