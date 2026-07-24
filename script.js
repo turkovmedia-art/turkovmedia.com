@@ -1975,6 +1975,10 @@ const firebaseConfig = {
 let db = null;
 let isSiteLocked = false;
 
+// Contact-form delivery settings, loaded from Firestore so they can be changed from the admin
+// panel. Empty until the database answers; sendEmailMessage falls back to Web3Forms meanwhile.
+let emailSettings = { recipient: '', publicKey: '', serviceId: '', templateId: '' };
+
 // Synchronous polynomial rolling hash helper (works in insecure HTTP contexts where crypto.subtle is undefined)
 function simpleHash(str) {
     let hash = 0;
@@ -2085,12 +2089,14 @@ try {
 async function saveDatabaseToFirestore() {
     if (!db) return;
     try {
+        // merge, so saving the portfolio never wipes the other fields in this document -
+        // the maintenance flag and the contact-email settings live here too
         await db.collection("portfolio").doc("data").set({
             videoProjects: videoProjects,
             clientLogos: clientLogos,
             categoriesList: categoriesList,
             lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
-        });
+        }, { merge: true });
         console.log("Portfolio database successfully saved to Firestore!");
     } catch (e) {
         console.error("Error saving database to Firestore:", e);
@@ -2109,6 +2115,16 @@ async function loadDatabaseFromFirestore() {
             if (data.clientLogos) clientLogos = data.clientLogos;
             if (data.categoriesList) categoriesList = data.categoriesList;
             
+            // Where contact-form submissions are delivered, and the EmailJS account that
+            // delivers them. Kept in the database so the owner can change it from the admin
+            // panel without touching code.
+            emailSettings = {
+                recipient: data.contactRecipientEmail || '',
+                publicKey: data.emailjsPublicKey || '',
+                serviceId: data.emailjsServiceId || '',
+                templateId: data.emailjsTemplateId || ''
+            };
+
             // Site lock configurations
             isSiteLocked = data.maintenanceMode === true;
             checkSiteLock(isSiteLocked);
@@ -2650,6 +2666,9 @@ function initAdminPanel() {
         renderAdminVideosList();
         initDragAndDrop(allVideosContainer, 'videos', () => { renderAdminVideosList(); renderPortfolioGrid('all'); });
         renderVideoFormCheckboxes();
+        // Refresh here rather than only at bind time: the panel is built before Firestore has
+        // answered, so the stored values would otherwise show as empty
+        populateEmailSettingsFields();
         panelDialog.showModal();
     }
     
@@ -3214,6 +3233,78 @@ const defaultCategories = ${JSON.stringify(categoriesList, null, 4)};
             }
         });
     }
+
+    initEmailSettingsPanel();
+}
+
+// The admin panel's email-settings inputs, keyed the same way as emailSettings
+function getEmailSettingsFields() {
+    return {
+        recipient: document.getElementById('admin-recipient-email'),
+        publicKey: document.getElementById('admin-emailjs-public'),
+        serviceId: document.getElementById('admin-emailjs-service'),
+        templateId: document.getElementById('admin-emailjs-template')
+    };
+}
+
+// Show whatever is currently stored in the database
+function populateEmailSettingsFields() {
+    const fields = getEmailSettingsFields();
+    Object.keys(fields).forEach(key => {
+        if (fields[key]) fields[key].value = emailSettings[key] || '';
+    });
+}
+
+// Admin panel: read and write the contact-form delivery settings that live in Firestore
+function initEmailSettingsPanel() {
+    const saveBtn = document.getElementById('btn-save-email-settings');
+    if (!saveBtn || saveBtn.dataset.bound === 'true') return;
+    saveBtn.dataset.bound = 'true';
+
+    const fields = getEmailSettingsFields();
+    const status = document.getElementById('email-settings-status');
+    populateEmailSettingsFields();
+
+    saveBtn.addEventListener('click', async () => {
+        const values = {
+            recipient: (fields.recipient.value || '').trim(),
+            publicKey: (fields.publicKey.value || '').trim(),
+            serviceId: (fields.serviceId.value || '').trim(),
+            templateId: (fields.templateId.value || '').trim()
+        };
+
+        if (values.recipient && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(values.recipient)) {
+            status.style.color = '#f87171';
+            status.textContent = 'כתובת המייל אינה תקינה';
+            return;
+        }
+
+        saveBtn.disabled = true;
+        status.style.color = 'var(--text-muted)';
+        status.textContent = 'שומר בענן...';
+
+        try {
+            await db.collection("portfolio").doc("data").set({
+                contactRecipientEmail: values.recipient,
+                emailjsPublicKey: values.publicKey,
+                emailjsServiceId: values.serviceId,
+                emailjsTemplateId: values.templateId
+            }, { merge: true });
+
+            emailSettings = values;
+            status.style.color = '#34d399';
+            const complete = values.recipient && values.publicKey && values.serviceId && values.templateId;
+            status.textContent = complete
+                ? 'נשמר! פניות יישלחו לכתובת הזו ✅'
+                : 'נשמר. חסרים עדיין פרטי EmailJS — עד שיושלמו, הפניות ממשיכות להגיע לכתובת הישנה';
+        } catch (err) {
+            console.error('Error saving email settings:', err);
+            status.style.color = '#f87171';
+            status.textContent = 'שגיאה בשמירה: ' + err.message;
+        } finally {
+            saveBtn.disabled = false;
+        }
+    });
 }
 
 /**
@@ -3409,9 +3500,35 @@ function initVisitorAlert() {
 }
 
 async function sendEmailMessage(name, email, phone, message) {
+    // Preferred route: EmailJS, because the recipient comes from the database and can be
+    // changed from the admin panel. Web3Forms below is the fallback - it can only ever deliver
+    // to the address registered on its own account, which is why it is not the main route.
+    const { recipient, publicKey, serviceId, templateId } = emailSettings;
+    const emailjsReady = recipient && publicKey && serviceId && templateId &&
+        typeof emailjs !== 'undefined';
+
+    if (emailjsReady) {
+        try {
+            emailjs.init({ publicKey: publicKey });
+            await emailjs.send(serviceId, templateId, {
+                to_email: recipient,   // the template's "To Email" field must be {{to_email}}
+                from_name: name,
+                reply_to: email,
+                user_email: email,
+                user_phone: phone,
+                message: message,
+                subject: '📬 פנייה חדשה מאתר מנדי טורקוב'
+            });
+            return;
+        } catch (error) {
+            console.error('EmailJS send failed, falling back to Web3Forms:', error);
+            // fall through - a configured-but-broken EmailJS must not lose the enquiry
+        }
+    }
+
     const accessKey = '711193cc-865b-40ce-a08e-d7ccc9544e3f';
     const url = 'https://api.web3forms.com/submit';
-    
+
     try {
         await fetch(url, {
             method: 'POST',
