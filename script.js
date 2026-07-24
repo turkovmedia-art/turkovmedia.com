@@ -3598,16 +3598,18 @@ const translationDictionary = {
         portfolio_desc: "הצצה לכמה מהפרויקטים שהובלתי. לחיצה על כל פרויקט תפתח את הסרטון לצפייה מהירה.",
         
         // Contact Section
-        contact_tag: "בואו ניצור משהו מטורף",
-        contact_title: "מוכנים להתחיל בפרויקט הבא?",
-        contact_desc: "צרו איתי קשר לתיאום פגישה, הזמנת עבודה או סתם כדי להתייעץ על הרעיון הבא שלכם.",
-        
-        contact_whatsapp: "וואטסאפ מהיר",
+        contact_tag: "יצירת סרטים. חוויה מושלמת.",
+        contact_title: "בואו ניצור את הסרט הבא שלכם",
+        contact_desc: "כל פרויקט מתחיל בשיחה. יחד נבין את החזון, נחשוב את הרעיון ונביא אותו למסך בצורה המדויקת ביותר.",
+
+        contact_whatsapp: "שלחו הודעה בוואטסאפ",
         contact_whatsapp_desc: "לחצו לשליחת הודעה",
-        contact_email: "אימייל",
-        contact_phone: "טלפון",
-        
-        contact_form_title: "שלחו לי הודעה",
+        contact_email: "שלחו מייל",
+        contact_phone: "דברו איתי טלפונית",
+
+        contact_form_title: "בואו ניצור משהו מדהים",
+        contact_form_subtitle: "מלאו פרטים ואחזור אליכם בהקדם.",
+        contact_security: "הפרטים שלכם נשמרים באופן מאובטח ולא יועברו לצד שלישי.",
         contact_form_name: "שם מלא",
         contact_form_phone: "טלפון ליצירת קשר",
         contact_form_email: "כתובת אימייל",
@@ -3697,16 +3699,18 @@ const translationDictionary = {
         portfolio_desc: "A glimpse of some of the projects I've led. Click on any project to watch the video.",
         
         // Contact Section
-        contact_tag: "Let's Build Something Crazy",
-        contact_title: "Ready to start your next project?",
-        contact_desc: "Contact me to schedule a meeting, order a video, or just consult on your next big idea.",
-        
-        contact_whatsapp: "Quick WhatsApp",
+        contact_tag: "Filmmaking. A flawless experience.",
+        contact_title: "Let's create your next film",
+        contact_desc: "Every project starts with a conversation. Together we'll define the vision, shape the idea, and bring it to screen with the utmost precision.",
+
+        contact_whatsapp: "Message me on WhatsApp",
         contact_whatsapp_desc: "Click to send a message",
-        contact_email: "Email",
-        contact_phone: "Phone",
-        
-        contact_form_title: "Send Me a Message",
+        contact_email: "Send an Email",
+        contact_phone: "Call me",
+
+        contact_form_title: "Let's make something amazing",
+        contact_form_subtitle: "Leave your details and I'll get back to you shortly.",
+        contact_security: "Your details are kept secure and never shared with third parties.",
         contact_form_name: "Full Name",
         contact_form_phone: "Phone Number",
         contact_form_email: "Email Address",

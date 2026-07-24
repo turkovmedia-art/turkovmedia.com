@@ -1187,141 +1187,216 @@ html[lang="en"] .service-card-btn:hover i {
    9. Contact Section
    ========================================================================== */
 .contact-section {
+    position: relative;
     padding: 140px 0;
     background: var(--bg-primary);
+    overflow: hidden;
+    isolation: isolate;
+}
+
+/* Cinematic background photo behind the whole section. If assets/contact-bg.jpg is present it
+   shows through; the gradients keep the copy readable and double as a dark cinematic fallback
+   when the photo is not there yet. */
+.contact-section::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background:
+        linear-gradient(90deg, rgba(5, 8, 20, 0.97) 0%, rgba(5, 8, 20, 0.86) 30%, rgba(5, 8, 20, 0.45) 62%, rgba(5, 8, 20, 0.72) 100%),
+        radial-gradient(130% 105% at 82% 32%, rgba(5, 8, 20, 0) 0%, rgba(5, 8, 20, 0.42) 55%, rgba(5, 8, 20, 0.95) 100%),
+        url("assets/contact-bg.jpg") center center / cover no-repeat,
+        #04060f;
 }
 
 .contact-grid {
     display: grid;
-    grid-template-columns: 1fr 1.1fr;
-    gap: 80px;
-    align-items: start;
+    grid-template-columns: 1fr 1.05fr;
+    gap: 70px;
+    align-items: center;
+}
+
+.contact-info {
+    text-align: right;
+}
+
+.contact-info .section-tag {
+    justify-content: flex-start;
+    text-transform: none;
+    letter-spacing: 0.02em;
+    font-size: 0.98rem;
+}
+
+.contact-heading {
+    font-size: clamp(2.2rem, 4vw, 3.4rem);
+    font-weight: 800;
+    line-height: 1.15;
+    margin-bottom: 22px;
+}
+
+.accent-dot {
+    color: var(--accent-cyan);
 }
 
 .contact-desc {
-    color: var(--text-muted);
-    font-size: 1.15rem;
-    margin-bottom: 40px;
+    color: var(--text-body);
+    font-size: 1.12rem;
+    line-height: 1.7;
+    margin-bottom: 46px;
     font-weight: 300;
+    max-width: 32em;
 }
 
 .contact-methods {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
 }
 
 .contact-method-item {
-    background: var(--bg-glass);
-    border: 1px solid var(--border-glass);
+    background: rgba(8, 12, 28, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: var(--border-radius-md);
-    padding: 20px 24px;
+    padding: 26px 14px;
     display: flex;
+    flex-direction: column;
     align-items: center;
-    gap: 20px;
+    text-align: center;
+    gap: 12px;
+    backdrop-filter: blur(6px);
     transition: var(--transition-smooth);
 }
 
 .contact-method-item:hover {
     border-color: var(--border-glass-hover);
-    transform: scale(1.02);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-}
-
-.contact-method-item.whatsapp {
-    background: rgba(37, 211, 102, 0.04);
-    border-color: rgba(37, 211, 102, 0.15);
-}
-
-.contact-method-item.whatsapp:hover {
-    border-color: rgba(37, 211, 102, 0.45);
-    background: rgba(37, 211, 102, 0.08);
-}
-
-.contact-method-item.email {
-    background: rgba(240, 70, 70, 0.04);
-    border-color: rgba(240, 70, 70, 0.15);
-}
-
-.contact-method-item.email:hover {
-    border-color: rgba(240, 70, 70, 0.45);
-    background: rgba(240, 70, 70, 0.08);
+    background: rgba(0, 240, 255, 0.06);
+    transform: translateY(-4px);
+    box-shadow: 0 14px 34px rgba(0, 0, 0, 0.4);
 }
 
 .method-icon {
-    width: 50px;
-    height: 50px;
-    border-radius: var(--border-radius-sm);
-    background: rgba(255,255,255,0.03);
-    border: 1px solid rgba(255,255,255,0.08);
+    width: 58px;
+    height: 58px;
+    border-radius: 50%;
+    background: rgba(0, 240, 255, 0.06);
+    border: 1px solid rgba(0, 240, 255, 0.28);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.4rem;
+    font-size: 1.5rem;
     color: var(--accent-cyan);
     transition: var(--transition-smooth);
-}
-
-.contact-method-item.whatsapp .method-icon {
-    color: #25D366;
-    background: rgba(37, 211, 102, 0.06);
-    border-color: rgba(37, 211, 102, 0.2);
-}
-
-.contact-method-item.email .method-icon {
-    color: #ff4d4d;
-    background: rgba(240, 70, 70, 0.06);
-    border-color: rgba(240, 70, 70, 0.2);
 }
 
 .contact-method-item:hover .method-icon {
     background: var(--accent-cyan);
     color: var(--text-dark);
-}
-
-.contact-method-item.whatsapp:hover .method-icon {
-    background: #25D366;
-    color: #fff;
-    box-shadow: 0 0 20px rgba(37, 211, 102, 0.4);
-}
-
-.contact-method-item.email:hover .method-icon {
-    background: #ff4d4d;
-    color: #fff;
-    box-shadow: 0 0 20px rgba(240, 70, 70, 0.4);
-}
-
-.method-details {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
+    box-shadow: 0 0 22px rgba(0, 240, 255, 0.5);
 }
 
 .method-label {
-    font-size: 0.85rem;
-    color: var(--text-muted);
-    font-weight: 500;
+    font-size: 0.98rem;
+    font-weight: 600;
+    color: var(--text-light);
+    line-height: 1.35;
 }
 
 .method-value {
-    font-size: 1.1rem;
+    font-size: 0.92rem;
     font-weight: 700;
-    color: var(--text-light);
+    color: var(--accent-cyan);
+    direction: ltr;
 }
 
-/* Glassmorphic Contact Form */
+/* Glassmorphic Contact Form with an always-rotating thin white glow around the border */
+@property --contact-glow-angle {
+    syntax: "<angle>";
+    initial-value: 0deg;
+    inherits: false;
+}
+
 .contact-form-box {
-    background: var(--bg-glass);
-    backdrop-filter: blur(12px);
-    border: 1px solid var(--border-glass);
+    --contact-glow-angle: 0deg; /* fallback value where @property is unsupported */
+    position: relative;
+    background: rgba(8, 11, 26, 0.72);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.06);
     border-radius: var(--border-radius-lg);
-    padding: 40px;
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+    padding: 42px;
+    box-shadow: 0 30px 70px rgba(0, 0, 0, 0.55);
+    isolation: isolate;
+}
+
+/* The thin white light that always travels around the card's edge. A conic gradient whose
+   start angle is animated, masked down to just the 1.5px border ring, with a soft drop-shadow
+   for the glow. */
+.contact-form-box::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1.5px;
+    background: conic-gradient(
+        from var(--contact-glow-angle),
+        transparent 0deg,
+        transparent 230deg,
+        rgba(255, 255, 255, 0.08) 288deg,
+        rgba(255, 255, 255, 0.85) 340deg,
+        #ffffff 355deg,
+        transparent 360deg
+    );
+    -webkit-mask:
+        linear-gradient(#000 0 0) content-box,
+        linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+            mask-composite: exclude;
+    filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.55));
+    animation: contact-glow-spin 5.5s linear infinite;
+    pointer-events: none;
+    z-index: 2;
+}
+
+@keyframes contact-glow-spin {
+    to { --contact-glow-angle: 360deg; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .contact-form-box::before { animation: none; }
 }
 
 .form-title {
     font-size: 1.8rem;
-    margin-bottom: 30px;
+    margin-bottom: 6px;
+}
+
+.form-subtitle {
+    color: var(--text-muted);
+    font-size: 1rem;
+    font-weight: 300;
+    margin-bottom: 28px;
+}
+
+.form-security {
+    margin-top: 18px;
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.form-security i {
+    color: var(--accent-cyan);
+    font-size: 0.8rem;
+}
+
+@media (max-width: 560px) {
+    .contact-methods { gap: 10px; }
+    .contact-method-item { padding: 18px 8px; }
+    .method-icon { width: 48px; height: 48px; font-size: 1.25rem; }
+    .method-label { font-size: 0.82rem; }
+    .method-value { font-size: 0.85rem; }
 }
 
 .form-group {
