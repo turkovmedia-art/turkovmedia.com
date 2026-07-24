@@ -3599,7 +3599,8 @@ const translationDictionary = {
         
         // Contact Section
         contact_tag: "יצירת סרטים. חוויה מושלמת.",
-        contact_title: "בואו ניצור את הסרט הבא שלכם",
+        contact_title_1: "בואו ניצור",
+        contact_title_2: "את הסרט הבא שלכם",
         contact_desc: "כל פרויקט מתחיל בשיחה. יחד נבין את החזון, נחשוב את הרעיון ונביא אותו למסך בצורה המדויקת ביותר.",
 
         contact_whatsapp: "שלחו הודעה בוואטסאפ",
@@ -3607,7 +3608,9 @@ const translationDictionary = {
         contact_email: "שלחו מייל",
         contact_phone: "דברו איתי טלפונית",
 
-        contact_form_title: "בואו ניצור משהו מדהים",
+        contact_form_title_1: "בואו",
+        contact_form_title_2: "ניצור",
+        contact_form_title_3: "משהו מדהים.",
         contact_form_subtitle: "מלאו פרטים ואחזור אליכם בהקדם.",
         contact_security: "הפרטים שלכם נשמרים באופן מאובטח ולא יועברו לצד שלישי.",
         contact_form_name: "שם מלא",
@@ -3700,7 +3703,8 @@ const translationDictionary = {
         
         // Contact Section
         contact_tag: "Filmmaking. A flawless experience.",
-        contact_title: "Let's create your next film",
+        contact_title_1: "Let's create",
+        contact_title_2: "your next film",
         contact_desc: "Every project starts with a conversation. Together we'll define the vision, shape the idea, and bring it to screen with the utmost precision.",
 
         contact_whatsapp: "Message me on WhatsApp",
@@ -3708,7 +3712,9 @@ const translationDictionary = {
         contact_email: "Send an Email",
         contact_phone: "Call me",
 
-        contact_form_title: "Let's make something amazing",
+        contact_form_title_1: "Let's",
+        contact_form_title_2: "create",
+        contact_form_title_3: "something amazing.",
         contact_form_subtitle: "Leave your details and I'll get back to you shortly.",
         contact_security: "Your details are kept secure and never shared with third parties.",
         contact_form_name: "Full Name",
