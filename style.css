@@ -1327,22 +1327,63 @@ html[lang="en"] .service-card-btn:hover i {
     isolation: isolate;
 }
 
-/* The thin white light that always travels around the card's edge. A conic gradient whose
-   start angle is animated, masked down to just the 1.5px border ring, with a soft drop-shadow
-   for the glow. */
+/* A faint hairline outline is always visible around the whole card, so the border reads as a
+   soft frame even where the travelling light is not - like the reference. */
+.contact-form-box {
+    box-shadow:
+        0 30px 70px rgba(0, 0, 0, 0.55),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+}
+
+/* The luminous light that always travels around the card's edge. A conic gradient whose start
+   angle is animated, masked down to the border ring. The bright head is wide and its tail fades
+   over a long arc, and a layered drop-shadow blooms it outward - a soft glow, not a hard line. */
 .contact-form-box::before {
     content: "";
     position: absolute;
     inset: 0;
     border-radius: inherit;
-    padding: 1.5px;
+    padding: 2px;
+    background: conic-gradient(
+        from var(--contact-glow-angle),
+        rgba(255, 255, 255, 0)     0deg,
+        rgba(255, 255, 255, 0.04)  170deg,
+        rgba(255, 255, 255, 0.18)  250deg,
+        rgba(255, 255, 255, 0.55)  305deg,
+        rgba(255, 255, 255, 0.95)  340deg,
+        #ffffff                    350deg,
+        rgba(255, 255, 255, 0.85)  358deg,
+        rgba(255, 255, 255, 0.15)  360deg
+    );
+    -webkit-mask:
+        linear-gradient(#000 0 0) content-box,
+        linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+            mask-composite: exclude;
+    filter:
+        drop-shadow(0 0 3px rgba(255, 255, 255, 0.9))
+        drop-shadow(0 0 10px rgba(255, 255, 255, 0.55))
+        drop-shadow(0 0 22px rgba(190, 225, 255, 0.4));
+    animation: contact-glow-spin 6s linear infinite;
+    pointer-events: none;
+    z-index: 2;
+}
+
+/* A wider, very soft bloom on the same rotation so the light casts a halo just outside the edge,
+   the way a real light source would - this is what turns the thin ring into a glow. */
+.contact-form-box::after {
+    content: "";
+    position: absolute;
+    inset: -6px;
+    border-radius: calc(var(--border-radius-lg) + 6px);
+    padding: 8px;
     background: conic-gradient(
         from var(--contact-glow-angle),
         transparent 0deg,
-        transparent 230deg,
-        rgba(255, 255, 255, 0.08) 288deg,
-        rgba(255, 255, 255, 0.85) 340deg,
-        #ffffff 355deg,
+        transparent 285deg,
+        rgba(255, 255, 255, 0.25) 340deg,
+        rgba(255, 255, 255, 0.45) 350deg,
+        rgba(255, 255, 255, 0.2) 358deg,
         transparent 360deg
     );
     -webkit-mask:
@@ -1350,10 +1391,10 @@ html[lang="en"] .service-card-btn:hover i {
         linear-gradient(#000 0 0);
     -webkit-mask-composite: xor;
             mask-composite: exclude;
-    filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.55));
-    animation: contact-glow-spin 5.5s linear infinite;
+    filter: blur(9px);
+    animation: contact-glow-spin 6s linear infinite;
     pointer-events: none;
-    z-index: 2;
+    z-index: 1;
 }
 
 @keyframes contact-glow-spin {
@@ -1361,7 +1402,8 @@ html[lang="en"] .service-card-btn:hover i {
 }
 
 @media (prefers-reduced-motion: reduce) {
-    .contact-form-box::before { animation: none; }
+    .contact-form-box::before,
+    .contact-form-box::after { animation: none; }
 }
 
 .form-title {
