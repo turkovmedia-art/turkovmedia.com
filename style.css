@@ -1209,6 +1209,23 @@ html[lang="en"] .service-card-btn:hover i {
         #04060f;
 }
 
+/* .contact-grid mirrors automatically between languages - it is a CSS Grid, and grid column
+   placement follows `direction`, so the form/text columns swap sides for English on their own.
+   This background gradient does not get that for free: it is a physical, absolute-position
+   gradient behind BOTH columns, unrelated to `direction`. Left un-mirrored, the "hidden" dark
+   zone and the "revealed photo" zone stay on their original screen side while the columns swap
+   under them - so in English the photo ends up showing behind the form instead of the text.
+   This override mirrors the same two gradients (stops reversed, radial focus flipped) so the
+   dark zone always sits behind the text column and the reveal always sits behind the form,
+   regardless of which physical side either currently occupies. */
+html[lang="en"] .contact-section::before {
+    background:
+        linear-gradient(90deg, rgba(5, 8, 20, 0.7) 0%, rgba(5, 8, 20, 0.6) 34%, rgba(5, 8, 20, 0.98) 56%, rgba(5, 8, 20, 0.99) 100%),
+        radial-gradient(120% 100% at 20% 40%, rgba(5, 8, 20, 0) 0%, rgba(5, 8, 20, 0.35) 58%, rgba(5, 8, 20, 0.9) 100%),
+        url("assets/contact-bg.jpg?v=1") center center / cover no-repeat,
+        #04060f;
+}
+
 .contact-grid {
     display: grid;
     grid-template-columns: 1fr 1.05fr;
@@ -1270,6 +1287,15 @@ html[lang="en"] .service-card-btn:hover i {
     text-align: right;
     backdrop-filter: blur(6px);
     transition: var(--transition-smooth);
+}
+
+/* English: pin the icon+label pair to the start edge instead of floating centred. Centring
+   looked fine in Hebrew, but a short label ("Call me") leaves the pair adrift in the middle of
+   the button with a lot of dead space before it - flex-start keeps every button's icon starting
+   at the same spot, tight against its label, regardless of how long that button's text is. */
+html[lang="en"] .contact-method-item {
+    justify-content: flex-start;
+    text-align: left;
 }
 
 .contact-method-item:hover {

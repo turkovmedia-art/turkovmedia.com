@@ -3781,16 +3781,16 @@ const translationDictionary = {
         services_desc: "Comprehensive video solutions from the concept stage to the final product at the highest cinematic level.",
         
         service1_title: "Cinematic Videography",
-        service1_text: "Bringing your story to the big screen. Premium field and studio shooting utilizing professional cinema rigs, anamorphic prime lenses, and dramatic lighting designed to build atmosphere, not just light a scene.",
-        
+        service1_text: "Bringing your story to the big screen with premium cinema rigs, anamorphic lenses, and dramatic lighting that builds atmosphere — not just lights a scene.",
+
         service2_title: "Color & Post-Production",
-        service2_text: "The magic happens in the cutting room. Shaping narrative rhythm and flow, immersive sound design, and color grading that gives every shot its signature cinematic look and texture.",
-        
+        service2_text: "The magic happens in the edit — shaping narrative rhythm, immersive sound design, and color grading that gives every shot its signature cinematic look.",
+
         service3_title: "Aerial Cinematography",
-        service3_text: "Seeing the world from perspectives people aren't used to. Dynamic aerial shots, complex camera movements, and flight path designs that add epic scale, depth, and production value.",
-        
+        service3_text: "Seeing the world from angles people rarely see. Dynamic aerial shots and complex flight paths that add epic scale, depth, and production value.",
+
         service4_title: "Creative Direction & Directing",
-        service4_text: "A great film starts with a powerful idea. Conceptual development, scripting, storyboarding, and directing that ensures every visual element serves the emotion and objective of the project.",
+        service4_text: "A great film starts with a powerful idea — concept, script, and storyboard, directed so every visual element serves the story's emotion and goal.",
         btn_view_works: "View Projects",
         
         // Portfolio Section
