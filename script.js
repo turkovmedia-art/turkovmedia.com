@@ -2104,36 +2104,6 @@ async function saveDatabaseToFirestore() {
     }
 }
 
-// Load database arrays from Firestore
-async function loadDatabaseFromFirestore() {
-    if (!db) return false;
-    try {
-        const doc = await db.collection("portfolio").doc("data").get();
-        if (doc.exists) {
-            const data = doc.data();
-            if (data.videoProjects) videoProjects = data.videoProjects;
-            if (data.clientLogos) clientLogos = data.clientLogos;
-            if (data.categoriesList) categoriesList = data.categoriesList;
-            
-            // Where contact-form submissions are delivered, and the Google Apps Script Web App
-            // that sends them (it runs on the owner's own Google account - no third party). Kept
-            // in the database so the owner can change either from the admin panel without code.
-            emailSettings = {
-                recipient: data.contactRecipientEmail || '',
-                appsScriptUrl: data.appsScriptUrl || ''
-            };
-
-            // Site lock configurations
-            isSiteLocked = data.maintenanceMode === true;
-            checkSiteLock(isSiteLocked);
-            return true;
-        }
-    } catch (e) {
-        console.error("Error loading database from Firestore:", e);
-    }
-    return false;
-}
-
 // Synchronize all modifications to local preview (localStorage) and cloud database (Firestore)
 function syncChanges() {
     // 1. Save locally for fallback
@@ -2241,7 +2211,15 @@ async function revalidateDatabaseFromFirestore() {
             // Background check for site maintenance lock status
             isSiteLocked = data.maintenanceMode === true;
             checkSiteLock(isSiteLocked);
-            
+
+            // Where contact-form submissions are delivered, and the Google Apps Script Web App
+            // that sends them. Kept in the database so the owner can change either from the
+            // admin panel without code - this is the path that actually runs on page load.
+            emailSettings = {
+                recipient: data.contactRecipientEmail || '',
+                appsScriptUrl: data.appsScriptUrl || ''
+            };
+
             // Compare stringified versions to check for changes
             const videosChanged = JSON.stringify(videoProjects) !== JSON.stringify(data.videoProjects);
             const logosChanged = JSON.stringify(clientLogos) !== JSON.stringify(data.clientLogos);
