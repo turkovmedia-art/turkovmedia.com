@@ -1977,7 +1977,7 @@ let isSiteLocked = false;
 
 // Contact-form delivery settings, loaded from Firestore so they can be changed from the admin
 // panel. Empty until the database answers; sendEmailMessage falls back to Web3Forms meanwhile.
-let emailSettings = { recipient: '', publicKey: '', serviceId: '', templateId: '' };
+let emailSettings = { recipient: '', appsScriptUrl: '' };
 
 // Synchronous polynomial rolling hash helper (works in insecure HTTP contexts where crypto.subtle is undefined)
 function simpleHash(str) {
@@ -2115,14 +2115,12 @@ async function loadDatabaseFromFirestore() {
             if (data.clientLogos) clientLogos = data.clientLogos;
             if (data.categoriesList) categoriesList = data.categoriesList;
             
-            // Where contact-form submissions are delivered, and the EmailJS account that
-            // delivers them. Kept in the database so the owner can change it from the admin
-            // panel without touching code.
+            // Where contact-form submissions are delivered, and the Google Apps Script Web App
+            // that sends them (it runs on the owner's own Google account - no third party). Kept
+            // in the database so the owner can change either from the admin panel without code.
             emailSettings = {
                 recipient: data.contactRecipientEmail || '',
-                publicKey: data.emailjsPublicKey || '',
-                serviceId: data.emailjsServiceId || '',
-                templateId: data.emailjsTemplateId || ''
+                appsScriptUrl: data.appsScriptUrl || ''
             };
 
             // Site lock configurations
@@ -3241,9 +3239,7 @@ const defaultCategories = ${JSON.stringify(categoriesList, null, 4)};
 function getEmailSettingsFields() {
     return {
         recipient: document.getElementById('admin-recipient-email'),
-        publicKey: document.getElementById('admin-emailjs-public'),
-        serviceId: document.getElementById('admin-emailjs-service'),
-        templateId: document.getElementById('admin-emailjs-template')
+        appsScriptUrl: document.getElementById('admin-apps-script-url')
     };
 }
 
@@ -3268,14 +3264,17 @@ function initEmailSettingsPanel() {
     saveBtn.addEventListener('click', async () => {
         const values = {
             recipient: (fields.recipient.value || '').trim(),
-            publicKey: (fields.publicKey.value || '').trim(),
-            serviceId: (fields.serviceId.value || '').trim(),
-            templateId: (fields.templateId.value || '').trim()
+            appsScriptUrl: (fields.appsScriptUrl.value || '').trim()
         };
 
         if (values.recipient && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(values.recipient)) {
             status.style.color = '#f87171';
             status.textContent = 'כתובת המייל אינה תקינה';
+            return;
+        }
+        if (values.appsScriptUrl && !/^https:\/\/script\.google\.com\/macros\/s\/.+\/exec$/.test(values.appsScriptUrl)) {
+            status.style.color = '#f87171';
+            status.textContent = 'כתובת ה-Web App אינה תקינה - היא צריכה להסתיים ב-/exec';
             return;
         }
 
@@ -3286,17 +3285,15 @@ function initEmailSettingsPanel() {
         try {
             await db.collection("portfolio").doc("data").set({
                 contactRecipientEmail: values.recipient,
-                emailjsPublicKey: values.publicKey,
-                emailjsServiceId: values.serviceId,
-                emailjsTemplateId: values.templateId
+                appsScriptUrl: values.appsScriptUrl
             }, { merge: true });
 
             emailSettings = values;
             status.style.color = '#34d399';
-            const complete = values.recipient && values.publicKey && values.serviceId && values.templateId;
+            const complete = values.recipient && values.appsScriptUrl;
             status.textContent = complete
                 ? 'נשמר! פניות יישלחו לכתובת הזו ✅'
-                : 'נשמר. חסרים עדיין פרטי EmailJS — עד שיושלמו, הפניות ממשיכות להגיע לכתובת הישנה';
+                : 'נשמר. חסרה עדיין כתובת ה-Web App — עד שתושלם, הפניות ממשיכות להגיע לכתובת הישנה';
         } catch (err) {
             console.error('Error saving email settings:', err);
             status.style.color = '#f87171';
@@ -3500,29 +3497,35 @@ function initVisitorAlert() {
 }
 
 async function sendEmailMessage(name, email, phone, message) {
-    // Preferred route: EmailJS, because the recipient comes from the database and can be
-    // changed from the admin panel. Web3Forms below is the fallback - it can only ever deliver
-    // to the address registered on its own account, which is why it is not the main route.
-    const { recipient, publicKey, serviceId, templateId } = emailSettings;
-    const emailjsReady = recipient && publicKey && serviceId && templateId &&
-        typeof emailjs !== 'undefined';
+    // Preferred route: the owner's own Google Apps Script Web App. It runs on their Google
+    // account and sends via MailApp, so no third-party mail service is involved and the
+    // recipient comes straight from the database. Web3Forms below is only the fallback - it can
+    // only ever deliver to the address registered on its own account.
+    const { recipient, appsScriptUrl } = emailSettings;
 
-    if (emailjsReady) {
+    if (recipient && appsScriptUrl) {
         try {
-            emailjs.init({ publicKey: publicKey });
-            await emailjs.send(serviceId, templateId, {
-                to_email: recipient,   // the template's "To Email" field must be {{to_email}}
-                from_name: name,
-                reply_to: email,
-                user_email: email,
-                user_phone: phone,
-                message: message,
-                subject: '📬 פנייה חדשה מאתר מנדי טורקוב'
-            });
-            return;
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 8000);
+            let response;
+            try {
+                response = await fetch(appsScriptUrl, {
+                    method: 'POST',
+                    // text/plain (not application/json) keeps this a CORS "simple request" -
+                    // Apps Script web apps cannot answer the preflight a JSON content-type triggers
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify({ recipient, name, email, phone, message }),
+                    signal: controller.signal
+                });
+            } finally {
+                clearTimeout(timeoutId);
+            }
+            const result = await response.json();
+            if (result && result.success) return;
+            throw new Error((result && result.error) || 'Apps Script reported failure');
         } catch (error) {
-            console.error('EmailJS send failed, falling back to Web3Forms:', error);
-            // fall through - a configured-but-broken EmailJS must not lose the enquiry
+            console.error('Apps Script send failed, falling back to Web3Forms:', error);
+            // fall through - a configured-but-broken script must not lose the enquiry
         }
     }
 
