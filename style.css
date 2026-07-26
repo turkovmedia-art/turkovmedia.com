@@ -2621,6 +2621,13 @@ html[lang="en"] .service-card-btn:hover i {
     height: calc(100vh - 180px);
 }
 
+/* The cloud-connection tab is a plain stack of cards, not the two-column grid the other tabs
+   use (which scroll internally via .admin-list-col) - so it needs its own scrollbar, or content
+   past the fixed panel height is just clipped with no way to reach it. */
+#tab-publish.admin-tab-content.active {
+    overflow-y: auto;
+}
+
 .admin-panel-grid {
     display: grid;
     grid-template-columns: 1fr 1.6fr;
